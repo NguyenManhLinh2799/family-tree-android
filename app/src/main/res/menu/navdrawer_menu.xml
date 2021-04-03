@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/myTreesFragment"
+        android:icon="@drawable/ic_my_trees"
+        android:title="@string/my_trees"/>
+    <item
+        android:id="@+id/sharedWithMe"
+        android:icon="@drawable/ic_share"
+        android:title="@string/shared_with_me"/>
+</menu>
