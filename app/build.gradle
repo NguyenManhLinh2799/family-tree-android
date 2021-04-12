@@ -17,7 +17,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.familytree"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -61,4 +61,7 @@ dependencies {
 
     // Lifecycles
     implementation "androidx.lifecycle:lifecycle-extensions:$version_lifecycle_extensions"
+
+    // Mindo
+    implementation 'com.github.JagarYousef:Mindo:2.0.0'
 }

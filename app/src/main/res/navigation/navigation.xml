@@ -4,10 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
     android:label="@string/my_trees"
-    app:startDestination="@id/my_tree_fragment">
+    app:startDestination="@id/my_trees_fragment">
     <fragment
-        android:id="@+id/my_tree_fragment"
+        android:id="@+id/my_trees_fragment"
         android:name="com.example.familytree.MyTreesFragment"
         android:label="MyTreesFragment"
-        tools:layout="@layout/fragment_my_trees"/>
+        tools:layout="@layout/fragment_my_trees">
+        <action
+            android:id="@+id/action_my_trees_fragment_to_tree_members_fragment"
+            app:destination="@id/tree_members_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/tree_members_fragment"
+        android:name="com.example.familytree.TreeMembersFragment"
+        android:label="TreeMembersFragment" >
+        <action
+            android:id="@+id/action_tree_members_fragment_to_member_info_fragment"
+            app:destination="@id/member_info_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/member_info_fragment"
+        android:name="com.example.familytree.MemberInfoFragment"
+        android:label="MemberInfoFragment" />
 </navigation>

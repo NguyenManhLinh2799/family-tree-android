@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.example.familytree.databinding.ListItemMyTreesBinding
 
 class TreeAdapter(private val treeList: List<String>) : RecyclerView.Adapter<TreeAdapter.TreeViewHolder>() {
 
@@ -24,6 +24,9 @@ class TreeAdapter(private val treeList: List<String>) : RecyclerView.Adapter<Tre
 
         fun bind(treeName: String) {
             name.text = treeName
+            itemView.setOnClickListener { view: View ->
+                view.findNavController().navigate(MyTreesFragmentDirections.actionMyTreesFragmentToTreeMembersFragment())
+            }
         }
 
         companion object {

@@ -26,6 +26,9 @@ allprojects {
     repositories {
         google()
         jcenter()
+
+        // Mindo
+        maven { url 'https://jitpack.io' }
     }
 }
 
