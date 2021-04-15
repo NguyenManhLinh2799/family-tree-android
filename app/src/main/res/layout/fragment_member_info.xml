@@ -5,16 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<!--    <ScrollView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent">-->
-
-<!--    </ScrollView>-->
-
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="100dp"
         android:background="@color/primary"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,7 +16,7 @@
         android:id="@+id/imageView"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_marginTop="75dp"
+        android:layout_marginTop="25dp"
         android:background="@color/secondary"
         android:src="@drawable/ic_launcher_foreground"
         app:layout_constraintEnd_toEndOf="@+id/frameLayout"
@@ -43,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
-        android:layout_marginTop="275dp"
+        android:layout_marginTop="225dp"
         android:layout_marginEnd="50dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
