@@ -1,2 +1,3 @@
+include ':mindmappingandroidlibrary'
 include ':app'
 rootProject.name = "Family Tree"

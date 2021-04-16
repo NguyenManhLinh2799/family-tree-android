@@ -9,6 +9,10 @@
         android:icon="@drawable/ic_share"
         android:title="@string/shared_with_me"/>
     <item
+        android:id="@+id/settings"
+        android:icon="@drawable/ic_settings_filled"
+        android:title="@string/settings"/>
+    <item
         android:id="@+id/help"
         android:icon="@drawable/ic_help"
         android:title="@string/help"/>

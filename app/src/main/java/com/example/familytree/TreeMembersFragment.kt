@@ -55,7 +55,7 @@ class TreeMembersFragment: Fragment() {
         setFamilyStyle(family)
 
         treeView.addItem(father, family, 300, 0, ItemLocation.LEFT, false, null)
-        treeView.addItem(mother, family, 300, 0, ItemLocation.RIGHT, false, null)
+        treeView.addItem(mother, family, 200, 0, ItemLocation.RIGHT, false, null)
         treeView.addItem(me, family, 300, 150, ItemLocation.BOTTOM, false, null)
         treeView.addItem(brother, family, 300, 150, ItemLocation.BOTTOM, false, null)
         treeView.addItem(sister, family, 300, 150, ItemLocation.BOTTOM, false, null)
@@ -67,6 +67,11 @@ class TreeMembersFragment: Fragment() {
 
         val addMemberBtn = view.findViewById<LinearLayout>(R.id.addMemberBtn)
         addMemberBtn.setOnClickListener {
+            it.findNavController().navigate(TreeMembersFragmentDirections.actionTreeMembersFragmentToAddMemberFragment())
+        }
+
+        val editMemberBtn = view.findViewById<LinearLayout>(R.id.editMemberBtn)
+        editMemberBtn.setOnClickListener {
             it.findNavController().navigate(TreeMembersFragmentDirections.actionTreeMembersFragmentToAddMemberFragment())
         }
 
