@@ -21,9 +21,16 @@
         <action
             android:id="@+id/action_tree_members_fragment_to_member_info_fragment"
             app:destination="@id/member_info_fragment" />
+        <action
+            android:id="@+id/action_tree_members_fragment_to_add_member_fragment"
+            app:destination="@id/add_member_fragment" />
     </fragment>
     <fragment
         android:id="@+id/member_info_fragment"
         android:name="com.example.familytree.MemberInfoFragment"
         android:label="MemberInfoFragment" />
+    <fragment
+        android:id="@+id/add_member_fragment"
+        android:name="com.example.familytree.AddMemberFragment"
+        android:label="AddMemberFragment" />
 </navigation>

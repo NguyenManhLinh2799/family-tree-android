@@ -8,4 +8,12 @@
         android:id="@+id/sharedWithMe"
         android:icon="@drawable/ic_share"
         android:title="@string/shared_with_me"/>
+    <item
+        android:id="@+id/help"
+        android:icon="@drawable/ic_help"
+        android:title="@string/help"/>
+    <item
+        android:id="@+id/feedback"
+        android:icon="@drawable/ic_feedback"
+        android:title="@string/feedback"/>
 </menu>

@@ -65,6 +65,11 @@ class TreeMembersFragment: Fragment() {
             it.findNavController().navigate(TreeMembersFragmentDirections.actionTreeMembersFragmentToMemberInfoFragment())
         }
 
+        val addMemberBtn = view.findViewById<LinearLayout>(R.id.addMemberBtn)
+        addMemberBtn.setOnClickListener {
+            it.findNavController().navigate(TreeMembersFragmentDirections.actionTreeMembersFragmentToAddMemberFragment())
+        }
+
         val memberMenuBar = view.findViewById<LinearLayout>(R.id.memberMenuBar)
         memberMenuBar.visibility = View.INVISIBLE
 
@@ -104,7 +109,7 @@ class TreeMembersFragment: Fragment() {
 
     private fun setFamilyStyle(family: Item) {
         val params = family.layoutParams
-        params.height = 200
+        params.height = 225
         family.layoutParams = params
     }
 }
