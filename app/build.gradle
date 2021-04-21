@@ -41,6 +41,9 @@ android {
 }
 
 dependencies {
+    // Mindo
+    // implementation 'com.github.JagarYousef:Mindo:2.0.0'
+    implementation project(":mindmappingandroidlibrary")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.3.2'
@@ -61,10 +64,6 @@ dependencies {
 
     // Lifecycles
     implementation "androidx.lifecycle:lifecycle-extensions:$version_lifecycle_extensions"
-
-    // Mindo
-    //implementation 'com.github.JagarYousef:Mindo:2.0.0'
-    implementation project(":mindmappingandroidlibrary")
 
     // Moshi & Retrofit
     implementation "com.squareup.moshi:moshi:$version_moshi"
