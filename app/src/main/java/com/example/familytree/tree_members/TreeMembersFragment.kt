@@ -1,4 +1,4 @@
-package com.example.familytree
+package com.example.familytree.tree_members
 
 import android.os.Bundle
 import android.view.Gravity
@@ -9,6 +9,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import com.example.familytree.R
+import com.example.familytree.tree_members.TreeMembersFragmentDirections
 import me.jagar.mindmappingandroidlibrary.Views.Item
 import me.jagar.mindmappingandroidlibrary.Views.ItemLocation
 import me.jagar.mindmappingandroidlibrary.Views.MindMappingView

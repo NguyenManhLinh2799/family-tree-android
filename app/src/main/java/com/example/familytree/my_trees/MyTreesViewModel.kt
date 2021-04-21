@@ -1,4 +1,4 @@
-package com.example.familytree
+package com.example.familytree.my_trees
 
 import androidx.lifecycle.ViewModel
 

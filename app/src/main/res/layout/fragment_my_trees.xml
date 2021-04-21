@@ -6,7 +6,7 @@
     <data>
         <variable
             name="myTreesViewModel"
-            type="com.example.familytree.MyTreesViewModel" />
+            type="com.example.familytree.my_trees.MyTreesViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

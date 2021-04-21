@@ -1,10 +1,11 @@
-package com.example.familytree
+package com.example.familytree.member
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.familytree.R
 
 class AddMemberFragment: Fragment() {
 
