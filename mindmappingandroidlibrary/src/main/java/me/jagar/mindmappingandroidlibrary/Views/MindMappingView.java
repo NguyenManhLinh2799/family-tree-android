@@ -296,6 +296,7 @@ public class MindMappingView extends RelativeLayout {
             int x2 = (int) (item.getX() + item.getWidth()/2);
             int y2 = (int) (item.getY() + item.getHeight());
             int radius = (int) (((item.getY() + item.getHeight()) - (parent.getY()))/4);
+            radius = 0;
             drawCurvedArrowTop(x1, y1, x2, y2, radius, canvas,
                     item.getX() > parent.getX(), item.getConnectionByParent(parent).getConnectionTextMessage(), connection);
 
@@ -312,6 +313,7 @@ public class MindMappingView extends RelativeLayout {
             int x2 = (int) (item.getX() + item.getWidth());
             int y2 = (int) (item.getY() + item.getHeight()/2);
             int radius = (int) (((item.getX() + item.getWidth()) - (parent.getX()))/4);
+            radius = 0;
             drawCurvedArrowLeft(x1, y1, x2, y2, radius, canvas,
                     (item.getY()+item.getHeight()) < (parent.getY() + parent.getHeight()),
                     item.getConnectionByParent(parent).getConnectionTextMessage(), connection);
@@ -327,6 +329,7 @@ public class MindMappingView extends RelativeLayout {
             int x2 = (int) (item.getX());
             int y2 = (int) (item.getY() + item.getHeight()/2);
             int radius = (int) (((parent.getX() + parent.getWidth()) - (item.getX()))/4);
+            radius = 0;
             drawCurvedArrowRight(x1, y1, x2, y2, radius, canvas,
                     (item.getY()+item.getHeight()) < (parent.getY() + parent.getHeight()),
                     item.getConnectionByParent(parent).getConnectionTextMessage(), connection);
@@ -342,6 +345,7 @@ public class MindMappingView extends RelativeLayout {
             int x2 = (int) (item.getX() + item.getWidth()/2);
             int y2 = (int) (item.getY());
             int radius = (int) (((parent.getY() + parent.getHeight()) - (item.getY()))/4);
+            radius = 0;
             drawCurvedArrowBottom(x1, y1, x2, y2, radius, canvas,
                     item.getX() > parent.getX(), item.getConnectionByParent(parent).getConnectionTextMessage(), connection);
         }

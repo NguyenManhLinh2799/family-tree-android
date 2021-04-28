@@ -9,27 +9,22 @@ import com.example.familytree.network.FamilyTreeApi
 import com.example.familytree.network.Tree
 import kotlinx.coroutines.launch
 
-class MyTreesViewModel: ViewModel() {
+class MyTreesViewModel : ViewModel() {
     var myTrees = MutableLiveData<List<Tree>>()
 
     init {
         viewModelScope.launch {
             try {
                 myTrees.value = FamilyTreeApi.retrofitService.getTrees()
-                Log.e("MyTreesViewModelLog", myTrees.value!![0].name)
-            }
-            catch (e: Exception)
-            {
-                myTrees.value = ArrayList()
+                Log.e("MyTreesViewModel", myTrees.value!![0].name)
+            } catch (e: Exception) {
+                myTrees.value = listOf(
+                        Tree(1, "Tree1", ""),
+                        Tree(2, "Tree2", ""),
+                        Tree(3, "Tree3", ""),
+                        Tree(4, "Tree4", ""),
+                        Tree(5, "Tree5", ""))
             }
         }
-
-//        myTrees.value = listOf(
-//            Tree(1, "Tree1", ""),
-//            Tree(2, "Tree2", ""),
-//            Tree(3, "Tree3", ""),
-//            Tree(4, "Tree4", ""),
-//            Tree(5, "Tree5", "")
-//        )
     }
 }

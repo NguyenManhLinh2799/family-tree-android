@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:maxZoom="2.5"
         app:maxZoomType="zoom"
-        app:minZoom="0.7"
+        app:minZoom="0.1"
         app:minZoomType="zoom"
         app:oneFingerScrollEnabled="false"
         app:overPinchable="true"
@@ -40,8 +40,8 @@
 
         <me.jagar.mindmappingandroidlibrary.Views.MindMappingView
             android:id="@+id/treeView"
-            android:layout_width="600dp"
-            android:layout_height="800dp"
+            android:layout_width="800dp"
+            android:layout_height="1300dp"
             android:background="@android:color/white" />
 
     </me.jagar.mindmappingandroidlibrary.Zoom.ZoomLayout>
