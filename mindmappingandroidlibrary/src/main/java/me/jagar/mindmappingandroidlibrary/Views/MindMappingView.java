@@ -10,6 +10,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,6 +23,15 @@ import java.util.ArrayList;
 import me.jagar.mindmappingandroidlibrary.Listeners.OnItemClicked;
 
 public class MindMappingView extends RelativeLayout {
+
+    private static final int LEVEL_SPACING = 500;
+    private static final int PARENT_SPACING = 300;
+    private static final int MIN_SPACING = 300;
+    private Item centralItem;
+    private float centralPointX;
+    private ArrayList<Item> levelOneItems = new ArrayList<>();
+    private ArrayList<Item> levelZeroItems = new ArrayList<>();
+    private ArrayList<Item> levelNegativeOneItems = new ArrayList<>();
 
     private Context context;
     private Activity activity;
@@ -40,7 +51,6 @@ public class MindMappingView extends RelativeLayout {
         this.context = context;
         this.activity = (Activity) context;
         mindMappingView = this;
-
     }
 
     public MindMappingView(Context context, AttributeSet attrs) {
@@ -111,9 +121,12 @@ public class MindMappingView extends RelativeLayout {
             dragItem(item);
         }
 
-
+        item.setLevel(0);
+        item.setCentral(true);
+        centralItem = item;
+        centralPointX = item.getX();
+        levelZeroItems.add(item);
         this.addView(item);
-
     }
     /*Make any item drag able, This will make issues with
     a simple call of OnClickListener on the Item objects so you set it off to call the normal onclicklistener
@@ -163,20 +176,24 @@ public class MindMappingView extends RelativeLayout {
 
             item.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
             parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            item.setY(parent.getY() - (item.getMeasuredHeight() + distance));
+            //item.setY(parent.getY() - (item.getMeasuredHeight() + distance));
+            item.setY(parent.getY() - LEVEL_SPACING);
+
             parent.addTopChild(item);
 
-            if (parent.getTopChildItems().size() > 1){
-                Item lastChildItem = parent.getTopChildByIndex(parent.getTopChildItems().size() - 2);
-                lastChildItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                for (Item topItem : parent.getTopChildItems()){
-                    topItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                    topItem.setX(topItem.getX() - (item.getMeasuredWidth()/2 + spacing));
-                }
-                item.setX(lastChildItem.getX() + lastChildItem.getMeasuredWidth() + spacing);
-            }else{
-                item.setX(parent.getX());
-            }
+//            if (parent.getTopChildItems().size() > 1){
+//                Item lastChildItem = parent.getTopChildByIndex(parent.getTopChildItems().size() - 2);
+//                lastChildItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//                for (Item topItem : parent.getTopChildItems()){
+//                    topItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//                    topItem.setX(topItem.getX() - (item.getMeasuredWidth()/2 + spacing));
+//                }
+//                item.setX(lastChildItem.getX() + lastChildItem.getMeasuredWidth() + spacing);
+//            }else{
+//                item.setX(parent.getX());
+//            }
+            item.setX(parent.getX());
+            item.setLevel(parent.getLevel() + 1);
 
             Connection connection = new Connection(item, parent, connectionTextMessage);
             topItems.add(connection);
@@ -191,19 +208,22 @@ public class MindMappingView extends RelativeLayout {
 
             item.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
             parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            item.setX(parent.getX() - (item.getMeasuredWidth() + distance));
+            //item.setX(parent.getX() - (item.getMeasuredWidth() + distance));
+            item.setX(parent.getX() - (float) PARENT_SPACING);
 
             parent.addLeftChild(item);
 
-            if (parent.getLeftChildItems().size() > 1){
-                Item lastChildItem = parent.getLeftChildByIndex(parent.getLeftChildItems().size() - 2);
-                lastChildItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                for (Item leftItem : parent.getLeftChildItems()){
-                    leftItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                    leftItem.setY(leftItem.getY() - (item.getMeasuredHeight()/2 + spacing));
-                }
-                item.setY(lastChildItem.getY() + lastChildItem.getMeasuredHeight() + spacing);
-            }
+//            if (parent.getLeftChildItems().size() > 1){
+//                Item lastChildItem = parent.getLeftChildByIndex(parent.getLeftChildItems().size() - 2);
+//                lastChildItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//                for (Item leftItem : parent.getLeftChildItems()){
+//                    leftItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//                    leftItem.setY(leftItem.getY() - (item.getMeasuredHeight()/2 + spacing));
+//                }
+//                item.setY(lastChildItem.getY() + lastChildItem.getMeasuredHeight() + spacing);
+//            }
+            item.setY(parent.getY());
+            item.setLevel(parent.getLevel());
 
             Connection connection = new Connection(item, parent);
             leftItems.add(connection);
@@ -218,19 +238,22 @@ public class MindMappingView extends RelativeLayout {
 
             item.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
             parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            item.setX(parent.getX() + (parent.getMeasuredWidth() + distance));
+            //item.setX(parent.getX() + (parent.getMeasuredWidth() + distance));
+            item.setX(parent.getX() + (float) PARENT_SPACING);
 
             parent.addRightChild(item);
 
-            if (parent.getRightChildItems().size() > 1){
-                Item lastChildItem = parent.getRightChildByIndex(parent.getRightChildItems().size() - 2);
-                lastChildItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                for (Item rightItem : parent.getRightChildItems()){
-                    rightItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                    rightItem.setY(rightItem.getY() - (item.getMeasuredHeight()/2 + spacing));
-                }
-                item.setY(lastChildItem.getY() + lastChildItem.getMeasuredHeight() + spacing);
-            }
+//            if (parent.getRightChildItems().size() > 1){
+//                Item lastChildItem = parent.getRightChildByIndex(parent.getRightChildItems().size() - 2);
+//                lastChildItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//                for (Item rightItem : parent.getRightChildItems()){
+//                    rightItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//                    rightItem.setY(rightItem.getY() - (item.getMeasuredHeight()/2 + spacing));
+//                }
+//                item.setY(lastChildItem.getY() + lastChildItem.getMeasuredHeight() + spacing);
+//            }
+            item.setY(parent.getY());
+            item.setLevel(parent.getLevel());
 
             Connection connection = new Connection(item, parent);
             rightItems.add(connection);
@@ -246,21 +269,26 @@ public class MindMappingView extends RelativeLayout {
 
             item.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
             parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            item.setY(parent.getY() + (parent.getMeasuredHeight() + distance));
+            //item.setY(parent.getY() + (parent.getMeasuredHeight() + distance));
+            item.setY(parent.getY() + LEVEL_SPACING);
 
             parent.addBottomChild(item);
 
-            if (parent.getBottomChildItems().size() > 1){
-                Item lastChildItem = parent.getBottomChildByIndex(parent.getBottomChildItems().size() - 2);
-                lastChildItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                for (Item bottomItem : parent.getBottomChildItems()){
-                    bottomItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                    bottomItem.setX(bottomItem.getX() - (item.getMeasuredWidth()/2 + spacing));
-                }
-                item.setX(lastChildItem.getX() + lastChildItem.getMeasuredWidth() + spacing);
-            }else{
-                item.setX(parent.getX());
-            }
+//            if (parent.getBottomChildItems().size() > 1){
+//                Item lastChildItem = parent.getBottomChildByIndex(parent.getBottomChildItems().size() - 2);
+//                lastChildItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//                for (Item bottomItem : parent.getBottomChildItems()){
+//                    bottomItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//                    bottomItem.setX(bottomItem.getX() - (item.getMeasuredWidth()/2 + spacing));
+//                }
+//                item.setX(lastChildItem.getX() + lastChildItem.getMeasuredWidth() + spacing);
+//            }else{
+//                item.setX(parent.getX());
+//            }
+            item.setX(parent.getX());
+            item.setLevel(parent.getLevel() - 1);
+            levelZeroItems.add(item);
+            spacingLevelZero();
 
             Connection connection = new Connection(item, parent);
             bottomItems.add(connection);
@@ -269,6 +297,35 @@ public class MindMappingView extends RelativeLayout {
 
             if (dragAble)
                 dragItem(item);
+        }
+
+    }
+
+    // My spacing
+    private void spacingLevelZero() {
+        int n = levelZeroItems.size();
+
+        if (n == 1) {
+            return;
+        }
+
+        if (n % 2 == 0) {
+            levelZeroItems.get(n / 2 - 1).setX(centralPointX - (float) MIN_SPACING / 2);
+            levelZeroItems.get(n / 2).setX(centralPointX + (float) MIN_SPACING / 2);
+            for (int i = n / 2 - 2; i >= 0; i--) {
+                levelZeroItems.get(i).setX(levelZeroItems.get(i + 1).getX() - (float) MIN_SPACING);
+            }
+            for (int i = n / 2 + 1; i < n; i++) {
+                levelZeroItems.get(i).setX(levelZeroItems.get(i - 1).getX() + (float) MIN_SPACING);
+            }
+        } else {
+            levelZeroItems.get(n / 2).setX(centralPointX);
+            for (int i = n / 2 - 1; i >= 0; i--) {
+                levelZeroItems.get(i).setX(levelZeroItems.get(i + 1).getX() - (float) MIN_SPACING);
+            }
+            for (int i = n / 2 + 1; i < n; i++) {
+                levelZeroItems.get(i).setX(levelZeroItems.get(i - 1).getX() + (float) MIN_SPACING);
+            }
         }
 
     }
@@ -292,11 +349,11 @@ public class MindMappingView extends RelativeLayout {
             Item item = connection.getItem();
             Item parent = connection.getParent();
             int x1 = (int) (parent.getX() + parent.getWidth()/2);
-            int y1 = (int) (parent.getY());
+            int y1 = (int) (parent.getY() + parent.getHeight()/2);
             int x2 = (int) (item.getX() + item.getWidth()/2);
-            int y2 = (int) (item.getY() + item.getHeight());
-            int radius = (int) (((item.getY() + item.getHeight()) - (parent.getY()))/4);
-            radius = 0;
+            int y2 = (int) (item.getY() + item.getHeight()/2);
+            //int radius = (int) (((item.getY() + item.getHeight()) - (parent.getY()))/4);
+            int radius = 0;
             drawCurvedArrowTop(x1, y1, x2, y2, radius, canvas,
                     item.getX() > parent.getX(), item.getConnectionByParent(parent).getConnectionTextMessage(), connection);
 
@@ -308,12 +365,12 @@ public class MindMappingView extends RelativeLayout {
         for (Connection connection : leftItems){
             Item item = connection.getItem();
             Item parent = connection.getParent();
-            int x1 = (int) (parent.getX());
+            int x1 = (int) (parent.getX() + parent.getWidth()/2);
             int y1 = (int) (parent.getY() + parent.getHeight()/2);
-            int x2 = (int) (item.getX() + item.getWidth());
+            int x2 = (int) (item.getX() + item.getWidth()/2);
             int y2 = (int) (item.getY() + item.getHeight()/2);
-            int radius = (int) (((item.getX() + item.getWidth()) - (parent.getX()))/4);
-            radius = 0;
+            //int radius = (int) (((item.getX() + item.getWidth()) - (parent.getX()))/4);
+            int radius = 0;
             drawCurvedArrowLeft(x1, y1, x2, y2, radius, canvas,
                     (item.getY()+item.getHeight()) < (parent.getY() + parent.getHeight()),
                     item.getConnectionByParent(parent).getConnectionTextMessage(), connection);
@@ -324,12 +381,12 @@ public class MindMappingView extends RelativeLayout {
         for (Connection connection : rightItems){
             Item item = connection.getItem();
             Item parent = connection.getParent();
-            int x1 = (int) (parent.getX() + parent.getWidth());
+            int x1 = (int) (parent.getX() + parent.getWidth()/2);
             int y1 = (int) (parent.getY() + parent.getHeight()/2);
-            int x2 = (int) (item.getX());
+            int x2 = (int) (item.getX() + item.getWidth()/2);
             int y2 = (int) (item.getY() + item.getHeight()/2);
-            int radius = (int) (((parent.getX() + parent.getWidth()) - (item.getX()))/4);
-            radius = 0;
+            //int radius = (int) (((parent.getX() + parent.getWidth()) - (item.getX()))/4);
+            int radius = 0;
             drawCurvedArrowRight(x1, y1, x2, y2, radius, canvas,
                     (item.getY()+item.getHeight()) < (parent.getY() + parent.getHeight()),
                     item.getConnectionByParent(parent).getConnectionTextMessage(), connection);
@@ -341,11 +398,11 @@ public class MindMappingView extends RelativeLayout {
             Item item = connection.getItem();
             Item parent = connection.getParent();
             int x1 = (int) (parent.getX() + parent.getWidth()/2);
-            int y1 = (int) (parent.getY() + parent.getHeight());
+            int y1 = (int) (parent.getY() + parent.getHeight()/2);
             int x2 = (int) (item.getX() + item.getWidth()/2);
-            int y2 = (int) (item.getY());
-            int radius = (int) (((parent.getY() + parent.getHeight()) - (item.getY()))/4);
-            radius = 0;
+            int y2 = (int) (item.getY() + item.getHeight()/2);
+            //int radius = (int) (((parent.getY() + parent.getHeight()) - (item.getY()))/4);
+            int radius = 0;
             drawCurvedArrowBottom(x1, y1, x2, y2, radius, canvas,
                     item.getX() > parent.getX(), item.getConnectionByParent(parent).getConnectionTextMessage(), connection);
         }
@@ -393,10 +450,15 @@ public class MindMappingView extends RelativeLayout {
             pointY        = (float) (midY - curveRadius * Math.sin(angleRadians));
         }
 
-        path.moveTo(x1, y1_from_circ);
-        path.cubicTo(x1,y1_from_circ,pointX, pointY, x2, y2_to_trg);
-        path.moveTo(x2, y2_to_trg);
-        path.lineTo(x2, y2_to_trg - argExt);
+//        path.moveTo(x1, y1_from_circ);
+//        path.cubicTo(x1,y1_from_circ,pointX, pointY, x2, y2_to_trg);
+//        path.moveTo(x2, y2_to_trg);
+//        path.lineTo(x2, y2_to_trg - argExt);
+        float yMid = (float) (y1 + y2)/2;
+        path.moveTo(x1, y1);
+        path.lineTo(x1, yMid);
+        path.lineTo(x2, yMid);
+        path.lineTo(x2, y2);
 
         canvas.drawPath(path, paint);
 
@@ -479,11 +541,13 @@ public class MindMappingView extends RelativeLayout {
             pointY        = (float) (midY - curveRadius * Math.sin(angleRadians));
         }
 
-        path.moveTo(x1_from_circ, y1);
-        path.cubicTo(x1_from_circ,y1,pointX, pointY, x2_to_trg, y2);
-        path.moveTo(x2_to_trg, y2);
-        path.lineTo(x2_to_trg - argExt, y2);
-        path.close();
+//        path.moveTo(x1_from_circ, y1);
+//        path.cubicTo(x1_from_circ,y1,pointX, pointY, x2_to_trg, y2);
+//        path.moveTo(x2_to_trg, y2);
+//        path.lineTo(x2_to_trg - argExt, y2);
+//        path.close();
+        path.moveTo(x1, y1);
+        path.lineTo(x2, y2);
 
         canvas.drawPath(path, paint);
 
@@ -575,11 +639,13 @@ public class MindMappingView extends RelativeLayout {
             pointY        = (float) (midY + curveRadius * Math.sin(angleRadians));
         }
 
-        path.moveTo(x1_from_circ, y1);
-        path.cubicTo(x1_from_circ,y1,pointX, pointY, x2_to_trg, y2);
-        path.moveTo(x2_to_trg, y2);
-        path.lineTo(x2_to_trg + argExt, y2);
-        path.close();
+//        path.moveTo(x1_from_circ, y1);
+//        path.cubicTo(x1_from_circ,y1,pointX, pointY, x2_to_trg, y2);
+//        path.moveTo(x2_to_trg, y2);
+//        path.lineTo(x2_to_trg + argExt, y2);
+//        path.close();
+        path.moveTo(x1, y1);
+        path.lineTo(x2, y2);
 
         canvas.drawPath(path, paint);
 
@@ -671,11 +737,16 @@ public class MindMappingView extends RelativeLayout {
             pointY        = (float) (midY + curveRadius * Math.sin(angleRadians));
         }
 
-        path.moveTo(x1, y1_from_circ);
-        path.cubicTo(x1,y1_from_circ,pointX, pointY, x2, y2_to_trg);
-        path.moveTo(x2, y2_to_trg);
+//        path.moveTo(x1, y1_from_circ);
+//        path.cubicTo(x1,y1_from_circ,pointX, pointY, x2, y2_to_trg);
+//        path.moveTo(x2, y2_to_trg);
+//        path.lineTo(x2, y2);
+//        path.close();
+        float yMid = (float) (y1 + y2)/2;
+        path.moveTo(x1, y1);
+        path.lineTo(x1, yMid);
+        path.lineTo(x2, yMid);
         path.lineTo(x2, y2);
-        path.close();
         canvas.drawPath(path, paint);
 
         Paint paint2  = new Paint();

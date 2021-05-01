@@ -39,33 +39,6 @@ class TreeMembersFragment : Fragment() {
 
         treeView = view.findViewById(R.id.treeView)
 
-        // Init dump item
-        val family = Item(context, "", null, false)
-        val me = Item(context, "Tôi", null, false)
-        val mother = Item(context, "Mẹ", null, false)
-        val father = Item(context, "Bố", null, false)
-
-        allNodes = listOf(me, mother, father)
-
-        // Add item into view
-        treeView.addCentralItem(family, false)
-        setFamilyStyle(family)
-        treeView.addItem(me, family, 300, 0, ItemLocation.BOTTOM, false, null)
-        treeView.addItem(mother, family, 100, 0, ItemLocation.RIGHT, false, null)
-        treeView.addItem(father, family, 150, 0, ItemLocation.LEFT, false, null)
-
-        // Custom member node
-        allNodes.forEach { node ->
-            setStyle(node, true)
-            node.setOnClickListener {
-                memberMenuBar.visibility = when (memberMenuBar.visibility) {
-                    View.INVISIBLE -> View.VISIBLE
-                    View.VISIBLE -> View.INVISIBLE
-                    else -> View.VISIBLE
-                }
-            }
-        }
-
         // Observe members
         treeMembersViewModel.treeMembers.observe(viewLifecycleOwner, {
             updateNodes(it.people)
@@ -78,20 +51,26 @@ class TreeMembersFragment : Fragment() {
         treeView.removeAllViews()
 
         // And update
-        val family = Item(context, "", null, false)
-        val me = Item(context, members[0].fullName, null, false)
-        val mother = Item(context, members[1].fullName, null, false)
-        val father = Item(context, members[2].fullName, null, false)
+        val me = Item(context, "Tôi", null, false, false)
+        val family = Item(context, "", null, false, true)
+        val father = Item(context, "Ba", null, false, false)
+        val mother = Item(context, "Mẹ", null, false, false)
+        val sister = Item(context, "Chị", null, false, false)
+        val brother = Item(context, "Anh", null, false, false)
+        val young = Item(context, "Em", null, false, false)
 
-        allNodes = listOf(me, mother, father)
+        allNodes = listOf(me, family, father, mother, sister, brother, young)
 
-        treeView.addCentralItem(family, false); setFamilyStyle(family)
-        treeView.addItem(me, family, 300, 0, ItemLocation.BOTTOM, false, null)
-        treeView.addItem(mother, family, 100, 0, ItemLocation.RIGHT, false, null)
-        treeView.addItem(father, family, 150, 0, ItemLocation.LEFT, false, null)
+        treeView.addCentralItem(me, false)
+        treeView.addItem(family, me, 300, 300, ItemLocation.TOP, false, null)
+        treeView.addItem(father, family, 200, 0, ItemLocation.LEFT, false, null)
+        treeView.addItem(mother, family, 200, 0, ItemLocation.RIGHT, false, null)
+        treeView.addItem(sister, family, 300, 300, ItemLocation.BOTTOM, false, null)
+        treeView.addItem(brother, family, 300, 300, ItemLocation.BOTTOM, false, null)
+        treeView.addItem(young, family, 300, 300, ItemLocation.BOTTOM, false, null)
 
         allNodes.forEachIndexed { index, node ->
-            setStyle(node, members[index].isMale)
+            setStyle(node, true)
             node.setOnClickListener {
                 memberMenuBar.visibility = when (memberMenuBar.visibility) {
                     View.INVISIBLE -> View.VISIBLE
@@ -103,6 +82,10 @@ class TreeMembersFragment : Fragment() {
     }
 
     private fun setStyle(item: Item, isMale: Boolean) {
+        if (item.isFamily) {
+            return setFamilyStyle(item)
+        }
+
         item.setBackgroundResource(when (isMale) {
             true -> R.drawable.bg_male
             else -> R.drawable.bg_female
@@ -124,8 +107,11 @@ class TreeMembersFragment : Fragment() {
     }
 
     private fun setFamilyStyle(family: Item) {
+        family.setBackgroundResource(R.drawable.ic_family_node)
+
         val params = family.layoutParams
-        params.height = 225
+        params.height = 228
+        //params.width = 183
         family.layoutParams = params
     }
 

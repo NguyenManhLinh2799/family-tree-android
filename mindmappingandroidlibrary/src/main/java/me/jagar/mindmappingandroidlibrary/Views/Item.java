@@ -14,6 +14,10 @@ import java.util.HashMap;
 
 public class Item extends LinearLayout {
 
+    int level;
+    boolean isCentral = false;
+    boolean isFamily;
+
     Context context;
     TextView title;
     TextView content;
@@ -25,10 +29,33 @@ public class Item extends LinearLayout {
     HashMap<Connection, Integer> connections = new HashMap<>();
     HashMap<Item, Integer>  parents = new HashMap<>();
 
-    public Item(Context context, String title, String content, boolean defaultStyle){
+    // My customization
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int lv) {
+        level = lv;
+    }
+
+    public void setCentral(boolean bool) {
+        isCentral = bool;
+    }
+
+    public boolean isCentral() {
+        return isCentral;
+    }
+
+    public boolean isFamily() {
+        return isFamily;
+    }
+    // My customization
+
+    public Item(Context context, String title, String content, boolean defaultStyle, boolean isFamily){
         super(context);
         this.context = context;
         this.defaultStyle = defaultStyle;
+        this.isFamily = isFamily;
         this.setTitle(title);
         this.setContent(content);
         this.addTextViews();
