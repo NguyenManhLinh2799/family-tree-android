@@ -24,14 +24,12 @@ import me.jagar.mindmappingandroidlibrary.Listeners.OnItemClicked;
 
 public class MindMappingView extends RelativeLayout {
 
-    private static final int LEVEL_SPACING = 500;
-    private static final int PARENT_SPACING = 300;
-    private static final int MIN_SPACING = 300;
+    private static final int LEVEL_SPACING = 300;
+    private static final int PARENT_SPACING = 200;
+    private static final int MIN_SPACING = 250;
     private Item centralItem;
     private float centralPointX;
-    private ArrayList<Item> levelOneItems = new ArrayList<>();
-    private ArrayList<Item> levelZeroItems = new ArrayList<>();
-    private ArrayList<Item> levelNegativeOneItems = new ArrayList<>();
+    private ArrayList<ArrayList<Item>> levels = new ArrayList<>();
 
     private Context context;
     private Activity activity;
@@ -113,7 +111,8 @@ public class MindMappingView extends RelativeLayout {
 
     //Adding the root item
     @SuppressLint("ClickableViewAccessibility")
-    public void addCentralItem(Item item, boolean dragAble){
+    public void addCentralItem(Item item){
+        boolean dragAble = false;
 
         item.setGravity(CENTER_IN_PARENT);
         this.setGravity(Gravity.CENTER);
@@ -121,11 +120,17 @@ public class MindMappingView extends RelativeLayout {
             dragItem(item);
         }
 
-        item.setLevel(0);
+        item.setLevel(2);
         item.setCentral(true);
         centralItem = item;
         centralPointX = item.getX();
-        levelZeroItems.add(item);
+        
+        for (int i = 0; i < 5; i++) {
+            ArrayList<Item> lv = new ArrayList<>();
+            levels.add(lv);
+        }
+        levels.get(2).add(item);
+        
         this.addView(item);
     }
     /*Make any item drag able, This will make issues with
@@ -167,167 +172,258 @@ public class MindMappingView extends RelativeLayout {
     }
 
     //Adding an item that has the parent already on the view
-    public void addItem(Item item, Item parent, int distance, int spacing, int location,
-                        boolean dragAble, ConnectionTextMessage connectionTextMessage){
+    public void addItem(Item newItem, Item base, int location){
+        ConnectionTextMessage connectionTextMessage = null;
+
+        if (newItem.getType() == ItemType.FAMILY) {
+            newItem.setZ(-10);
+        }
 
         if (location == ItemLocation.TOP){
+            this.addView(newItem);
 
-            this.addView(item);
+            newItem.addChild(base);
+            base.setParent(newItem);
 
-            item.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            //item.setY(parent.getY() - (item.getMeasuredHeight() + distance));
-            item.setY(parent.getY() - LEVEL_SPACING);
+            newItem.setY(base.getY() - LEVEL_SPACING);
+            newItem.setX(base.getX());
 
-            parent.addTopChild(item);
+            int lv = base.getLevel() + 1;
+            newItem.setLevel(lv);
+            levels.get(lv).add(newItem);
+            spacingLevel(lv);
 
-//            if (parent.getTopChildItems().size() > 1){
-//                Item lastChildItem = parent.getTopChildByIndex(parent.getTopChildItems().size() - 2);
-//                lastChildItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//                for (Item topItem : parent.getTopChildItems()){
-//                    topItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//                    topItem.setX(topItem.getX() - (item.getMeasuredWidth()/2 + spacing));
-//                }
-//                item.setX(lastChildItem.getX() + lastChildItem.getMeasuredWidth() + spacing);
-//            }else{
-//                item.setX(parent.getX());
-//            }
-            item.setX(parent.getX());
-            item.setLevel(parent.getLevel() + 1);
-
-            Connection connection = new Connection(item, parent, connectionTextMessage);
+            Connection connection = new Connection(newItem, base, connectionTextMessage);
             topItems.add(connection);
-            item.addParent(parent, ItemLocation.TOP);
-            item.addConnection(parent, ItemLocation.TOP, connectionTextMessage);
-
-            if (dragAble)
-                dragItem(item);
+            newItem.addParent(base, ItemLocation.TOP);
+            newItem.addConnection(base, ItemLocation.TOP, connectionTextMessage);
 
         }else if (location == ItemLocation.LEFT){
-            this.addView(item);
+            this.addView(newItem);
 
-            item.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            //item.setX(parent.getX() - (item.getMeasuredWidth() + distance));
-            item.setX(parent.getX() - (float) PARENT_SPACING);
+            if (base.getType() != ItemType.FAMILY) {
+                base.setPartner(newItem);
+                newItem.setPartner(base);
+            }
 
-            parent.addLeftChild(item);
+            newItem.setX(base.getX() - (float) PARENT_SPACING);
+            newItem.setY(base.getY());
 
-//            if (parent.getLeftChildItems().size() > 1){
-//                Item lastChildItem = parent.getLeftChildByIndex(parent.getLeftChildItems().size() - 2);
-//                lastChildItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//                for (Item leftItem : parent.getLeftChildItems()){
-//                    leftItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//                    leftItem.setY(leftItem.getY() - (item.getMeasuredHeight()/2 + spacing));
-//                }
-//                item.setY(lastChildItem.getY() + lastChildItem.getMeasuredHeight() + spacing);
-//            }
-            item.setY(parent.getY());
-            item.setLevel(parent.getLevel());
+            int lv = base.getLevel();
+            newItem.setLevel(lv);
+            int parentIndex = levels.get(lv).size() - 1;
+            for (int i = 0; i < levels.get(lv).size(); i++) {
+                if (levels.get(lv).get(i) == base) {
+                    parentIndex = i;
+                    break;
+                }
+            }
+            levels.get(lv).add(parentIndex, newItem);
+            spacingLevel(lv);
 
-            Connection connection = new Connection(item, parent);
+            Connection connection = new Connection(newItem, base);
             leftItems.add(connection);
-            item.addParent(parent, ItemLocation.LEFT);
-            item.addConnection(parent, ItemLocation.LEFT, connectionTextMessage);
-
-            if (dragAble)
-                dragItem(item);
+            newItem.addParent(base, ItemLocation.LEFT);
+            newItem.addConnection(base, ItemLocation.LEFT, connectionTextMessage);
 
         }else if (location == ItemLocation.RIGHT){
-            this.addView(item);
+            this.addView(newItem);
 
-            item.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            //item.setX(parent.getX() + (parent.getMeasuredWidth() + distance));
-            item.setX(parent.getX() + (float) PARENT_SPACING);
+            if (base.getType() != ItemType.FAMILY) {
+                base.setPartner(newItem);
+                newItem.setPartner(base);
+            }
 
-            parent.addRightChild(item);
+            newItem.setX(base.getX() + (float) PARENT_SPACING);
+            newItem.setY(base.getY());
 
-//            if (parent.getRightChildItems().size() > 1){
-//                Item lastChildItem = parent.getRightChildByIndex(parent.getRightChildItems().size() - 2);
-//                lastChildItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//                for (Item rightItem : parent.getRightChildItems()){
-//                    rightItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//                    rightItem.setY(rightItem.getY() - (item.getMeasuredHeight()/2 + spacing));
-//                }
-//                item.setY(lastChildItem.getY() + lastChildItem.getMeasuredHeight() + spacing);
-//            }
-            item.setY(parent.getY());
-            item.setLevel(parent.getLevel());
+            int lv = base.getLevel();
+            newItem.setLevel(lv);
+            levels.get(lv).add(newItem);
+            spacingLevel(lv);
 
-            Connection connection = new Connection(item, parent);
+            Connection connection = new Connection(newItem, base);
             rightItems.add(connection);
-            item.addParent(parent, ItemLocation.RIGHT);
-            item.addConnection(parent, ItemLocation.RIGHT, connectionTextMessage);
-
-            if (dragAble)
-                dragItem(item);
+            newItem.addParent(base, ItemLocation.RIGHT);
+            newItem.addConnection(base, ItemLocation.RIGHT, connectionTextMessage);
 
         }else if (location == ItemLocation.BOTTOM){
+            this.addView(newItem);
 
-            this.addView(item);
+            newItem.setParent(base);
+            base.addChild(newItem);
 
-            item.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            //item.setY(parent.getY() + (parent.getMeasuredHeight() + distance));
-            item.setY(parent.getY() + LEVEL_SPACING);
+            newItem.setY(base.getY() + LEVEL_SPACING);
+            newItem.setX(base.getX());
 
-            parent.addBottomChild(item);
+            int lv = base.getLevel() - 1;
+            newItem.setLevel(lv);
+            levels.get(lv).add(newItem);
+            spacingLevel(lv);
 
-//            if (parent.getBottomChildItems().size() > 1){
-//                Item lastChildItem = parent.getBottomChildByIndex(parent.getBottomChildItems().size() - 2);
-//                lastChildItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//                for (Item bottomItem : parent.getBottomChildItems()){
-//                    bottomItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//                    bottomItem.setX(bottomItem.getX() - (item.getMeasuredWidth()/2 + spacing));
-//                }
-//                item.setX(lastChildItem.getX() + lastChildItem.getMeasuredWidth() + spacing);
-//            }else{
-//                item.setX(parent.getX());
-//            }
-            item.setX(parent.getX());
-            item.setLevel(parent.getLevel() - 1);
-            levelZeroItems.add(item);
-            spacingLevelZero();
-
-            Connection connection = new Connection(item, parent);
+            Connection connection = new Connection(newItem, base);
             bottomItems.add(connection);
-            item.addParent(parent, ItemLocation.BOTTOM);
-            item.addConnection(parent, ItemLocation.BOTTOM, connectionTextMessage);
-
-            if (dragAble)
-                dragItem(item);
+            newItem.addParent(base, ItemLocation.BOTTOM);
+            newItem.addConnection(base, ItemLocation.BOTTOM, connectionTextMessage);
         }
 
     }
 
     // My spacing
-    private void spacingLevelZero() {
-        int n = levelZeroItems.size();
+    private void spacingLevel(int lv) {
+        ArrayList<Item> currentLevel = levels.get(lv);
+        int n = currentLevel.size();
 
-        if (n == 1) {
+        if (n == 0 || n == 1) {
             return;
         }
 
+        int spacing;
         if (n % 2 == 0) {
-            levelZeroItems.get(n / 2 - 1).setX(centralPointX - (float) MIN_SPACING / 2);
-            levelZeroItems.get(n / 2).setX(centralPointX + (float) MIN_SPACING / 2);
+            if (currentLevel.get(n / 2 - 1).getType() == ItemType.FAMILY || currentLevel.get(n / 2).getType() == ItemType.FAMILY) {
+                spacing = MIN_SPACING / 4;
+            } else {
+                spacing = MIN_SPACING / 2;
+            }
+
+            currentLevel.get(n / 2 - 1).setX(centralPointX - (float) spacing);
+            currentLevel.get(n / 2).setX(centralPointX + (float) spacing);
             for (int i = n / 2 - 2; i >= 0; i--) {
-                levelZeroItems.get(i).setX(levelZeroItems.get(i + 1).getX() - (float) MIN_SPACING);
+                if (currentLevel.get(i).getType() == ItemType.FAMILY || currentLevel.get(i + 1).getType() == ItemType.FAMILY) {
+                    spacing = MIN_SPACING / 2;
+                } else {
+                    spacing = MIN_SPACING;
+                }
+                currentLevel.get(i).setX(currentLevel.get(i + 1).getX() - (float) spacing);
             }
             for (int i = n / 2 + 1; i < n; i++) {
-                levelZeroItems.get(i).setX(levelZeroItems.get(i - 1).getX() + (float) MIN_SPACING);
+                if (currentLevel.get(i).getType() == ItemType.FAMILY || currentLevel.get(i - 1).getType() == ItemType.FAMILY) {
+                    spacing = MIN_SPACING / 2;
+                } else {
+                    spacing = MIN_SPACING;
+                }
+                currentLevel.get(i).setX(currentLevel.get(i - 1).getX() + (float) spacing);
             }
         } else {
-            levelZeroItems.get(n / 2).setX(centralPointX);
+            currentLevel.get(n / 2).setX(centralPointX);
             for (int i = n / 2 - 1; i >= 0; i--) {
-                levelZeroItems.get(i).setX(levelZeroItems.get(i + 1).getX() - (float) MIN_SPACING);
+                if (currentLevel.get(i).getType() == ItemType.FAMILY || currentLevel.get(i + 1).getType() == ItemType.FAMILY) {
+                    spacing = MIN_SPACING / 2;
+                } else {
+                    spacing = MIN_SPACING;
+                }
+                currentLevel.get(i).setX(currentLevel.get(i + 1).getX() - (float) spacing);
             }
             for (int i = n / 2 + 1; i < n; i++) {
-                levelZeroItems.get(i).setX(levelZeroItems.get(i - 1).getX() + (float) MIN_SPACING);
+                if (currentLevel.get(i).getType() == ItemType.FAMILY || currentLevel.get(i - 1).getType() == ItemType.FAMILY) {
+                    spacing = MIN_SPACING / 2;
+                } else {
+                    spacing = MIN_SPACING;
+                }
+                currentLevel.get(i).setX(currentLevel.get(i - 1).getX() + (float) spacing);
+            }
+        }
+    }
+
+    public void spacingAllLevels() {
+        // Calculate tree width
+        int treeWidth = levels.get(0).size();
+        int widestLevel = 0;
+        for (int i = 1; i < levels.size(); i++) {
+            if (levels.get(i).size() > treeWidth) {
+                treeWidth = levels.get(i).size();
+                widestLevel = i;
             }
         }
 
+        // Set position for the first child at the lowest level
+        ArrayList<Item> levelZero = levels.get(0);
+        levelZero.get(0).setX(levels.get(widestLevel).get(1).getX());
+        levelZero.get(0).setSpaced(true);
+
+        // Start spacing
+        for (int i = 0; i < levels.size() - 1; i++) {
+            groupByParent(i);
+            repositionParents(i + 1);
+        }
+    }
+
+    private void groupByParent(int lv) {
+        ArrayList<Item> level = levels.get(lv);
+        ArrayList<Integer> group = new ArrayList<>(0);
+        int groupIdx = 0;
+        group.add(0);
+        Item groupParent = null;
+
+        for (int i = 0; i < level.size(); i++) {
+            if (level.get(i).isSpaced()) {
+                continue;
+            }
+            Item currentParent = level.get(i).GetParent();
+            if (currentParent != null) {
+                if (groupParent == null) {
+                    groupParent = currentParent;
+                    group.set(groupIdx, group.get(groupIdx) + 1);
+                    Item partner = level.get(i).getPartner();
+                    if (level.get(i - 1) == partner || level.get(i + 1) == partner) {
+                        group.set(groupIdx, group.get(groupIdx) + 1);
+                    }
+                } else if (currentParent == groupParent) {
+                    group.set(groupIdx, group.get(groupIdx) + 1);
+                    Item currentPartner = level.get(i).getPartner();
+                    if (level.get(i - 1) == currentPartner || level.get(i + 1) == currentPartner) {
+                        group.set(groupIdx, group.get(groupIdx) + 1);
+                    }
+                } else {
+                    groupParent = currentParent;
+                    groupIdx++;
+                    group.add(1);
+                }
+            }
+        }
+
+        // Count spaced node
+        int countSpaced = 0;
+        for (int i = 0; i < level.size(); i++) {
+            Item currentNode = level.get(i);
+            if (currentNode.isSpaced()) {
+                countSpaced++;
+            }
+        }
+
+        groupIdx = 0;
+        int groupAmount = countSpaced;
+        for (int i = 0; i < level.size(); i++) {
+            Item currentNode = level.get(i);
+            if (!currentNode.isSpaced()) {
+                if (i == groupAmount) {
+                    currentNode.setX(level.get(i - 1).getX() + (float) MIN_SPACING * 2);
+                    groupAmount += group.get(groupIdx);
+                    groupIdx++;
+                } else if (currentNode.GetParent() == null) {
+                    currentNode.setX(level.get(i - 1).getX() + (float) MIN_SPACING / 2);
+                } else {
+                    currentNode.setX(level.get(i - 1).getX() + (float) MIN_SPACING);
+                }
+                currentNode.setSpaced(true);
+            }
+        }
+    }
+
+    private void repositionParents(int lv) {
+        ArrayList<Item> level = levels.get(lv);
+        for (int i = 0; i < level.size(); i++) {
+            if (level.get(i).hasChildren()) {
+                level.get(i).repositionByChildren();
+                level.get(i).setSpaced(true);
+            }
+            if (level.get(i).getType() == ItemType.FAMILY) {
+                level.get(i - 1).setX(level.get(i).getX() - (float) MIN_SPACING / 2);
+                level.get(i + 1).setX(level.get(i).getX() + (float) MIN_SPACING / 2);
+                level.get(i - 1).setSpaced(true);
+                level.get(i + 1).setSpaced(true);
+            }
+        }
     }
 
     //Draw connections

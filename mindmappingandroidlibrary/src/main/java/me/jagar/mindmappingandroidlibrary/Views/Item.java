@@ -16,7 +16,11 @@ public class Item extends LinearLayout {
 
     int level;
     boolean isCentral = false;
-    boolean isFamily;
+    Item parent = null;
+    ArrayList<Item> children = new ArrayList<>(0);
+    boolean isSpaced = false;
+    Item partner = null;
+    int type;
 
     Context context;
     TextView title;
@@ -46,16 +50,61 @@ public class Item extends LinearLayout {
         return isCentral;
     }
 
-    public boolean isFamily() {
-        return isFamily;
+    public void setParent(Item parent) {
+        this.parent = parent;
+    }
+
+    public Item GetParent() {
+        return parent;
+    }
+
+    public void addChild(Item child) {
+        children.add(child);
+    }
+
+    public boolean hasChildren() {
+        return children.size() > 0;
+    }
+
+    public void repositionByChildren() {
+        if (children.size() == 0) {
+            return;
+        }
+
+        float x = 0;
+        for (Item i : children) {
+            x += i.getX();
+        }
+        x /= children.size();
+        this.setX(x);
+    }
+
+    public boolean isSpaced() {
+        return isSpaced;
+    }
+
+    public void setSpaced(boolean status) {
+        isSpaced = status;
+    }
+
+    public void setPartner(Item partner) {
+        this.partner = partner;
+    }
+
+    public Item getPartner() {
+        return partner;
+    }
+
+    public int getType() {
+        return type;
     }
     // My customization
 
-    public Item(Context context, String title, String content, boolean defaultStyle, boolean isFamily){
+    public Item(Context context, String title, String content, int type){
         super(context);
         this.context = context;
-        this.defaultStyle = defaultStyle;
-        this.isFamily = isFamily;
+        //this.defaultStyle = defaultStyle;
+        this.type = type;
         this.setTitle(title);
         this.setContent(content);
         this.addTextViews();

@@ -40,9 +40,12 @@
 
         <me.jagar.mindmappingandroidlibrary.Views.MindMappingView
             android:id="@+id/treeView"
-            android:layout_width="800dp"
-            android:layout_height="1300dp"
+            android:layout_width="1000dp"
+            android:layout_height="1000dp"
             android:background="@android:color/white" />
+<!--            android:layout_width="800dp"-->
+<!--            android:layout_height="1300dp"-->
+
 
     </me.jagar.mindmappingandroidlibrary.Zoom.ZoomLayout>
 
