@@ -2,11 +2,10 @@ package com.example.familytree.network
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
-import java.util.*
 
 @Parcelize
-data class Person(
-        val spouses: List<Person>?,
+data class Member(
+        val spouses: List<Member>?,
         val id: Int,
         val firstName: String,
         val lastName: String,

@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.familytree.network.FamilyTreeApi
-import com.example.familytree.network.Person
 import com.example.familytree.network.TreeMembers
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -16,7 +15,7 @@ class TreeMembersViewModel: ViewModel() {
     init {
         viewModelScope.launch {
             try {
-                treeMembers.value = FamilyTreeApi.retrofitService.getTreeMembers(1)
+                treeMembers.value = FamilyTreeApi.retrofitService.getTreeMembers(1).data
                 Log.e("TreeMembersViewModel", treeMembers.value!!.description)
             } catch (e: Exception) {
                 treeMembers.value = TreeMembers(0, "abc", "xyz", ArrayList())

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.familytree.network.ApiResponse
 import com.example.familytree.network.FamilyTreeApi
 import com.example.familytree.network.Tree
 import kotlinx.coroutines.launch
@@ -15,7 +16,7 @@ class MyTreesViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             try {
-                myTrees.value = FamilyTreeApi.retrofitService.getTrees()
+                myTrees.value = FamilyTreeApi.retrofitService.getTrees().data
                 Log.e("MyTreesViewModel", myTrees.value!![0].name)
             } catch (e: Exception) {
                 myTrees.value = listOf(

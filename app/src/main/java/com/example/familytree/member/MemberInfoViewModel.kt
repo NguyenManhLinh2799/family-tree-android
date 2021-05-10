@@ -5,20 +5,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.familytree.network.FamilyTreeApi
-import com.example.familytree.network.Person
+import com.example.familytree.network.Member
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class MemberInfoViewModel: ViewModel() {
-    var member = MutableLiveData<Person>()
+    var member = MutableLiveData<Member>()
 
     init {
         viewModelScope.launch {
             try {
-                member.value = FamilyTreeApi.retrofitService.getPerson(1)
+                member.value = FamilyTreeApi.retrofitService.getPerson(1).data
                 Log.e("MemberInfoViewModel", member.value!!.fullName)
             } catch (e: Exception) {
-                member.value = Person(
+                member.value = Member(
                         null,
                         0,
                         "abc",

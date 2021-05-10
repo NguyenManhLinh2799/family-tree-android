@@ -21,13 +21,13 @@ private val retrofit = Retrofit.Builder()
 interface FamilyTreeApiService {
 
     @GET("tree-management/tree")
-    suspend fun getTrees(): List<Tree>
+    suspend fun getTrees(): ApiResponse<List<Tree>>
 
     @GET("person-management/person/{personId}")
-    suspend fun getPerson(@Path("personId") id: Int): Person
+    suspend fun getPerson(@Path("personId") id: Int): ApiResponse<Member>
 
     @GET("tree-management/tree/{treeId}")
-    suspend fun getTreeMembers(@Path("treeId") id: Int): TreeMembers
+    suspend fun getTreeMembers(@Path("treeId") id: Int): ApiResponse<TreeMembers>
 }
 
 object FamilyTreeApi {

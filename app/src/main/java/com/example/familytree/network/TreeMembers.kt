@@ -8,6 +8,6 @@ data class TreeMembers(
         val id: Int,
         val name: String,
         val description: String,
-        val people: List<Person>): Parcelable {
+        val people: List<Member>): Parcelable {
 
         }

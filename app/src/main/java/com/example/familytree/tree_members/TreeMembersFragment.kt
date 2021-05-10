@@ -1,7 +1,6 @@
 package com.example.familytree.tree_members
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +8,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import com.example.familytree.R
-import com.example.familytree.network.Person
+import com.example.familytree.network.Member
 import me.jagar.mindmappingandroidlibrary.Views.Item
 import me.jagar.mindmappingandroidlibrary.Views.ItemLocation
 import me.jagar.mindmappingandroidlibrary.Views.ItemType
@@ -46,7 +44,7 @@ class TreeMembersFragment : Fragment() {
         })
     }
 
-    private fun updateNodes(members: List<Person>) {
+    private fun updateNodes(members: List<Member>) {
         // Remove all child views
         allNodes = emptyList()
         treeView.removeAllViews()

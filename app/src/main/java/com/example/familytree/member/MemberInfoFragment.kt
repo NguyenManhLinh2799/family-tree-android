@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.familytree.R
-import com.example.familytree.network.Person
 
 class MemberInfoFragment: Fragment() {
 
