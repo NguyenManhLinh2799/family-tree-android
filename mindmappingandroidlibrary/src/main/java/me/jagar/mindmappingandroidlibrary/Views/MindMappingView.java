@@ -11,7 +11,6 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,17 +18,20 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 import me.jagar.mindmappingandroidlibrary.Listeners.OnItemClicked;
 
 public class MindMappingView extends RelativeLayout {
 
-    private static final int LEVEL_SPACING = 300;
+    private static final int LEVEL_SPACING = 400;
     private static final int PARENT_SPACING = 200;
-    private static final int MIN_SPACING = 250;
-    private Item centralItem;
+    private static final int MIN_SPACING = 50;
     private float centralPointX;
-    private ArrayList<ArrayList<Item>> levels = new ArrayList<>();
+    private float centralPointY;
+    private Item root;
+    private int height;
 
     private Context context;
     private Activity activity;
@@ -64,72 +66,20 @@ public class MindMappingView extends RelativeLayout {
         mindMappingView = this;
     }
 
-
-
-    //Getters & Setters
-
-    public String getConnectionColor() {
-        return connectionColor;
-    }
-
-    public void setConnectionColor(String connectionColor) {
-        this.connectionColor = connectionColor;
-    }
-
-    public int getConnectionWidth() {
-        return connectionWidth;
-    }
-
-    public void setConnectionWidth(int connectionWidth) {
-        this.connectionWidth = connectionWidth;
-    }
-
-    public int getConnectionArrowSize() {
-        return connectionArrowSize;
-    }
-
-    public void setConnectionArrowSize(int connectionArrowSize) {
-        this.connectionArrowSize = connectionArrowSize;
-    }
-
-    public int getConnectionCircRadius() {
-        return connectionCircRadius;
-    }
-
-    public void setConnectionCircRadius(int connectionCircSize) {
-        this.connectionCircRadius = connectionCircSize;
-    }
-
-    public int getConnectionArgSize() {
-        return connectionArgSize;
-    }
-
-    public void setConnectionArgSize(int connectionArgSize) {
-        this.connectionArgSize = connectionArgSize;
-    }
-
-
     //Adding the root item
     @SuppressLint("ClickableViewAccessibility")
     public void addCentralItem(Item item){
-        boolean dragAble = false;
 
         item.setGravity(CENTER_IN_PARENT);
         this.setGravity(Gravity.CENTER);
+
+        boolean dragAble = false;
         if (dragAble){
             dragItem(item);
         }
 
-        item.setLevel(2);
-        item.setCentral(true);
-        centralItem = item;
         centralPointX = item.getX();
-        
-        for (int i = 0; i < 5; i++) {
-            ArrayList<Item> lv = new ArrayList<>();
-            levels.add(lv);
-        }
-        levels.get(2).add(item);
+        centralPointY = item.getY();
         
         this.addView(item);
     }
@@ -173,257 +123,316 @@ public class MindMappingView extends RelativeLayout {
 
     //Adding an item that has the parent already on the view
     public void addItem(Item newItem, Item base, int location){
-        ConnectionTextMessage connectionTextMessage = null;
 
-        if (newItem.getType() == ItemType.FAMILY) {
+        if (newItem.type == ItemType.FAMILY) {
             newItem.setZ(-10);
         }
 
         if (location == ItemLocation.TOP){
             this.addView(newItem);
 
-            newItem.addChild(base);
-            base.setParent(newItem);
+            root = newItem;
+            newItem.Children.add(base);
+            base.Parent = newItem;
 
-            newItem.setY(base.getY() - LEVEL_SPACING);
-            newItem.setX(base.getX());
-
-            int lv = base.getLevel() + 1;
-            newItem.setLevel(lv);
-            levels.get(lv).add(newItem);
-            spacingLevel(lv);
-
-            Connection connection = new Connection(newItem, base, connectionTextMessage);
+            Connection connection = new Connection(newItem, base, null);
             topItems.add(connection);
             newItem.addParent(base, ItemLocation.TOP);
-            newItem.addConnection(base, ItemLocation.TOP, connectionTextMessage);
+            newItem.addConnection(base, ItemLocation.TOP, null);
 
-        }else if (location == ItemLocation.LEFT){
+        } else if (location == ItemLocation.LEFT){
             this.addView(newItem);
 
-            if (base.getType() != ItemType.FAMILY) {
-                base.setPartner(newItem);
-                newItem.setPartner(base);
-            }
-
-            newItem.setX(base.getX() - (float) PARENT_SPACING);
-            newItem.setY(base.getY());
-
-            int lv = base.getLevel();
-            newItem.setLevel(lv);
-            int parentIndex = levels.get(lv).size() - 1;
-            for (int i = 0; i < levels.get(lv).size(); i++) {
-                if (levels.get(lv).get(i) == base) {
-                    parentIndex = i;
-                    break;
+            if (newItem.type == ItemType.FAMILY) {
+                newItem.Wife = base;
+                base.Family = newItem;
+            } else if (base.type == ItemType.FAMILY) {
+                newItem.Family = base;
+                if (base.Wife != null) {
+                    newItem.Partner = base.Wife;
+                    base.Wife.Partner = newItem;
                 }
+                base.Husband = newItem;
+            } else {
+                newItem.Partner = base;
             }
-            levels.get(lv).add(parentIndex, newItem);
-            spacingLevel(lv);
 
             Connection connection = new Connection(newItem, base);
             leftItems.add(connection);
             newItem.addParent(base, ItemLocation.LEFT);
-            newItem.addConnection(base, ItemLocation.LEFT, connectionTextMessage);
+            newItem.addConnection(base, ItemLocation.LEFT, null);
 
-        }else if (location == ItemLocation.RIGHT){
+        } else if (location == ItemLocation.RIGHT){
             this.addView(newItem);
 
-            if (base.getType() != ItemType.FAMILY) {
-                base.setPartner(newItem);
-                newItem.setPartner(base);
+            if (newItem.type == ItemType.FAMILY) {
+                newItem.Husband = base;
+                base.Family = newItem;
+            } else if (base.type == ItemType.FAMILY) {
+                newItem.Family = base;
+                if (base.Husband != null) {
+                    newItem.Partner = base.Husband;
+                    base.Husband.Partner = newItem;
+                }
+                base.Wife = newItem;
+            } else {
+                newItem.Partner = base;
             }
-
-            newItem.setX(base.getX() + (float) PARENT_SPACING);
-            newItem.setY(base.getY());
-
-            int lv = base.getLevel();
-            newItem.setLevel(lv);
-            levels.get(lv).add(newItem);
-            spacingLevel(lv);
 
             Connection connection = new Connection(newItem, base);
             rightItems.add(connection);
             newItem.addParent(base, ItemLocation.RIGHT);
-            newItem.addConnection(base, ItemLocation.RIGHT, connectionTextMessage);
+            newItem.addConnection(base, ItemLocation.RIGHT, null);
 
-        }else if (location == ItemLocation.BOTTOM){
+        } else if (location == ItemLocation.BOTTOM){
             this.addView(newItem);
 
-            newItem.setParent(base);
-            base.addChild(newItem);
-
-            newItem.setY(base.getY() + LEVEL_SPACING);
-            newItem.setX(base.getX());
-
-            int lv = base.getLevel() - 1;
-            newItem.setLevel(lv);
-            levels.get(lv).add(newItem);
-            spacingLevel(lv);
+            newItem.Parent = base;
+            base.Children.add(newItem);
 
             Connection connection = new Connection(newItem, base);
             bottomItems.add(connection);
             newItem.addParent(base, ItemLocation.BOTTOM);
-            newItem.addConnection(base, ItemLocation.BOTTOM, connectionTextMessage);
+            newItem.addConnection(base, ItemLocation.BOTTOM, null);
         }
-
     }
 
-    // My spacing
-    private void spacingLevel(int lv) {
-        ArrayList<Item> currentLevel = levels.get(lv);
-        int n = currentLevel.size();
+    // Reingold-Tilford algorithm
+    public void ReingoldTilford() {
 
-        if (n == 0 || n == 1) {
-            return;
+        completeTree(root);
+        initializeNodes(root, 0);
+        calculateInitialX(root);
+        calculateFinalPositions(root, 0);
+        this.height = getTreeHeight(root);
+        calculateCoordinates(root);
+        spacingFamily(root);
+
+        root.Husband.setX(root.getX() - (float) PARENT_SPACING / 2);
+        root.Husband.setY(root.getY());
+        root.Wife.setX(root.getX() + (float) PARENT_SPACING / 2);
+        root.Wife.setY(root.getY());
+    }
+
+    private void completeTree(Item node) {
+
+        for (int i = 0; i < node.Children.size(); i++) {
+            Item child = node.Children.get(i);
+            if (child.Partner != null) {
+                if (child.type == ItemType.MALE) {
+                    node.Children.add(node.Children.indexOf(child) + 1, child.Partner);
+                } else if (child.type == ItemType.FEMALE) {
+                    node.Children.add(node.Children.indexOf(child), child.Partner);
+                }
+                child.Partner.Parent = node;
+                i++;
+            }
+            if (child.Family != null) {
+                if (child.type == ItemType.MALE) {
+                    node.Children.add(node.Children.indexOf(child) + 1, child.Family);
+                } else if (child.type == ItemType.FEMALE) {
+                    node.Children.add(node.Children.indexOf(child), child.Family);
+                }
+                child.Family.Parent = node;
+                i++;
+            }
         }
 
-        int spacing;
-        if (n % 2 == 0) {
-            if (currentLevel.get(n / 2 - 1).getType() == ItemType.FAMILY || currentLevel.get(n / 2).getType() == ItemType.FAMILY) {
-                spacing = MIN_SPACING / 4;
-            } else {
-                spacing = MIN_SPACING / 2;
-            }
+        for (Item child : node.Children) {
+            completeTree(child);
+        }
+    }
 
-            currentLevel.get(n / 2 - 1).setX(centralPointX - (float) spacing);
-            currentLevel.get(n / 2).setX(centralPointX + (float) spacing);
-            for (int i = n / 2 - 2; i >= 0; i--) {
-                if (currentLevel.get(i).getType() == ItemType.FAMILY || currentLevel.get(i + 1).getType() == ItemType.FAMILY) {
-                    spacing = MIN_SPACING / 2;
-                } else {
-                    spacing = MIN_SPACING;
-                }
-                currentLevel.get(i).setX(currentLevel.get(i + 1).getX() - (float) spacing);
+    private void preOrder(Item root) {
+        if (root.type == ItemType.FAMILY) {
+            Log.e("MindMappingView", "family (" + root.X + ", " + root.Y + ")");
+        } else {
+            Log.e("MindMappingView", root.getTitle().getText().toString() + " (" + root.X + ", " + root.Y + ")");
+        }
+
+        for (int i = 0; i < root.Children.size(); i++) {
+            preOrder(root.Children.get(i));
+        }
+    }
+
+    private void postOrder(Item root) {
+        for (int i = 0; i < root.Children.size(); i++) {
+            postOrder(root.Children.get(i));
+        }
+
+        if (root.type == ItemType.FAMILY) {
+            Log.e("MindMappingView", "family (" + root.X + ", " + root.Y + ")");
+        } else {
+            Log.e("MindMappingView", root.getTitle().getText().toString() + " (" + root.X + ", " + root.Y + ")");
+        }
+    }
+
+    private void initializeNodes(Item node, int depth) {
+        node.X = -1;
+        node.Y = depth;
+        node.Mod = 0;
+
+        for (Item child : node.Children) {
+            initializeNodes(child, depth + 1);
+        }
+    }
+
+    private void calculateInitialX(Item node) {
+        for (int i = 0; i < node.Children.size(); i++) {
+            calculateInitialX(node.Children.get(i));
+        }
+
+        if (node.isLeaf()) {
+            if (!node.isLeftMost()) {
+                node.X = node.getPreviousSibling().X + 1;
+            } else {
+                node.X = 0;
             }
-            for (int i = n / 2 + 1; i < n; i++) {
-                if (currentLevel.get(i).getType() == ItemType.FAMILY || currentLevel.get(i - 1).getType() == ItemType.FAMILY) {
-                    spacing = MIN_SPACING / 2;
-                } else {
-                    spacing = MIN_SPACING;
-                }
-                currentLevel.get(i).setX(currentLevel.get(i - 1).getX() + (float) spacing);
+        } else if (node.Children.size() == 1) {
+            if (node.isLeftMost()) {
+                node.X = node.Children.get(0).X;
+            } else {
+                node.X = node.getPreviousSibling().X + 1;
+                node.Mod = node.X - node.Children.get(0).X;
             }
         } else {
-            currentLevel.get(n / 2).setX(centralPointX);
-            for (int i = n / 2 - 1; i >= 0; i--) {
-                if (currentLevel.get(i).getType() == ItemType.FAMILY || currentLevel.get(i + 1).getType() == ItemType.FAMILY) {
-                    spacing = MIN_SPACING / 2;
-                } else {
-                    spacing = MIN_SPACING;
-                }
-                currentLevel.get(i).setX(currentLevel.get(i + 1).getX() - (float) spacing);
+            Item leftMost = node.getLeftMostChild();
+            Item rightMost = node.getRightMostChild();
+            float mid = (leftMost.X + rightMost.X) / 2;
+            if (node.isLeftMost()) {
+                node.X = mid;
+            } else {
+                node.X = node.getPreviousSibling().X + 1;
+                node.Mod = node.X - mid;
             }
-            for (int i = n / 2 + 1; i < n; i++) {
-                if (currentLevel.get(i).getType() == ItemType.FAMILY || currentLevel.get(i - 1).getType() == ItemType.FAMILY) {
-                    spacing = MIN_SPACING / 2;
-                } else {
-                    spacing = MIN_SPACING;
-                }
-                currentLevel.get(i).setX(currentLevel.get(i - 1).getX() + (float) spacing);
-            }
+        }
+
+        if (node.Children.size() > 0 && !node.isLeftMost()) {
+            checkForConflicts(node);
         }
     }
 
-    public void spacingAllLevels() {
-        // Calculate tree width
-        int treeWidth = levels.get(0).size();
-        int widestLevel = 0;
-        for (int i = 1; i < levels.size(); i++) {
-            if (levels.get(i).size() > treeWidth) {
-                treeWidth = levels.get(i).size();
-                widestLevel = i;
+    private void checkForConflicts(Item node) {
+        float minDistance = 1f;
+        float shiftValue = 0;
+
+        HashMap<Integer, Float> nodeContour = new HashMap<>();
+        getLeftContour(node, 0, nodeContour);
+
+        Item sibling = node.getLeftMostSibling();
+        while (sibling != null && sibling != node) {
+            HashMap<Integer, Float> siblingContour = new HashMap<>();
+            getRightContour(node, 0, siblingContour);
+            for (int level = node.Y + 1; level <= Math.min(Collections.max(siblingContour.keySet()), Collections.max(siblingContour.keySet())); level++) {
+                float distance = nodeContour.get(level) - siblingContour.get(level);
+                if (distance + shiftValue < minDistance) {
+                    shiftValue = minDistance - distance;
+                }
             }
-        }
-
-        // Set position for the first child at the lowest level
-        ArrayList<Item> levelZero = levels.get(0);
-        levelZero.get(0).setX(levels.get(widestLevel).get(1).getX());
-        levelZero.get(0).setSpaced(true);
-
-        // Start spacing
-        for (int i = 0; i < levels.size() - 1; i++) {
-            groupByParent(i);
-            repositionParents(i + 1);
+            if (shiftValue > 0) {
+                node.X += shiftValue;
+                node.Mod += shiftValue;
+                centerNodesBetween(sibling, node);
+                shiftValue = 0;
+            }
+            sibling = sibling.getNextSibling();
         }
     }
 
-    private void groupByParent(int lv) {
-        ArrayList<Item> level = levels.get(lv);
-        ArrayList<Integer> group = new ArrayList<>(0);
-        int groupIdx = 0;
-        group.add(0);
-        Item groupParent = null;
+    private void centerNodesBetween(Item leftNode, Item rightNode) {
+        int leftIndex = leftNode.Parent.Children.indexOf(leftNode);
+        int rightIndex = leftNode.Parent.Children.indexOf(rightNode);
 
-        for (int i = 0; i < level.size(); i++) {
-            if (level.get(i).isSpaced()) {
-                continue;
+        int countNodesBetween = (rightIndex - leftIndex) - 1;
+        if (countNodesBetween > 0) {
+            float distanceBetweenNodes = (rightNode.X - leftNode.X) / (countNodesBetween + 1);
+            int count = 1;
+            for (int i = leftIndex + 1; i < rightIndex; i++) {
+                Item middleNode = leftNode.Parent.Children.get(i);
+                float desiredX = leftNode.X + (distanceBetweenNodes * count);
+                float offset = desiredX - middleNode.X;
+                middleNode.X += offset;
+                middleNode.Mod += offset;
+                count++;
             }
-            Item currentParent = level.get(i).GetParent();
-            if (currentParent != null) {
-                if (groupParent == null) {
-                    groupParent = currentParent;
-                    group.set(groupIdx, group.get(groupIdx) + 1);
-                    Item partner = level.get(i).getPartner();
-                    if (level.get(i - 1) == partner || level.get(i + 1) == partner) {
-                        group.set(groupIdx, group.get(groupIdx) + 1);
-                    }
-                } else if (currentParent == groupParent) {
-                    group.set(groupIdx, group.get(groupIdx) + 1);
-                    Item currentPartner = level.get(i).getPartner();
-                    if (level.get(i - 1) == currentPartner || level.get(i + 1) == currentPartner) {
-                        group.set(groupIdx, group.get(groupIdx) + 1);
-                    }
-                } else {
-                    groupParent = currentParent;
-                    groupIdx++;
-                    group.add(1);
-                }
-            }
-        }
-
-        // Count spaced node
-        int countSpaced = 0;
-        for (int i = 0; i < level.size(); i++) {
-            Item currentNode = level.get(i);
-            if (currentNode.isSpaced()) {
-                countSpaced++;
-            }
-        }
-
-        groupIdx = 0;
-        int groupAmount = countSpaced;
-        for (int i = 0; i < level.size(); i++) {
-            Item currentNode = level.get(i);
-            if (!currentNode.isSpaced()) {
-                if (i == groupAmount) {
-                    currentNode.setX(level.get(i - 1).getX() + (float) MIN_SPACING * 2);
-                    groupAmount += group.get(groupIdx);
-                    groupIdx++;
-                } else if (currentNode.GetParent() == null) {
-                    currentNode.setX(level.get(i - 1).getX() + (float) MIN_SPACING / 2);
-                } else {
-                    currentNode.setX(level.get(i - 1).getX() + (float) MIN_SPACING);
-                }
-                currentNode.setSpaced(true);
-            }
+            checkForConflicts(leftNode);
         }
     }
 
-    private void repositionParents(int lv) {
-        ArrayList<Item> level = levels.get(lv);
-        for (int i = 0; i < level.size(); i++) {
-            if (level.get(i).hasChildren()) {
-                level.get(i).repositionByChildren();
-                level.get(i).setSpaced(true);
-            }
-            if (level.get(i).getType() == ItemType.FAMILY) {
-                level.get(i - 1).setX(level.get(i).getX() - (float) MIN_SPACING / 2);
-                level.get(i + 1).setX(level.get(i).getX() + (float) MIN_SPACING / 2);
-                level.get(i - 1).setSpaced(true);
-                level.get(i + 1).setSpaced(true);
+    private void getLeftContour(Item node, float modSum, HashMap<Integer, Float> values) {
+        if (!values.containsKey(node.Y)) {
+            values.put(node.Y, node.X + modSum);
+        } else {
+            values.put(node.Y, Math.min(values.get(node.Y), node.X + modSum));
+        }
+        modSum += node.Mod;
+        for (Item child : node.Children) {
+            getLeftContour(child, modSum, values);
+        }
+    }
+
+    private void getRightContour(Item node, float modSum, HashMap<Integer, Float> values) {
+        if (!values.containsKey(node.Y)) {
+            values.put(node.Y, node.X + modSum);
+        } else {
+            values.put(node.Y, Math.max(values.get(node.Y), node.X + modSum));
+        }
+        modSum += node.Mod;
+        for (Item child : node.Children) {
+            getLeftContour(child, modSum, values);
+        }
+    }
+
+    private void calculateFinalPositions(Item node, float modSum) {
+        node.X += modSum;
+        modSum += node.Mod;
+        for (Item child : node.Children) {
+            calculateFinalPositions(child, modSum);
+        }
+    }
+
+    private void calculateCoordinates(Item node) {
+        float distanceFromCentralY = Math.abs(node.Y - this.height / 2);
+        if (node.Y < this.height / 2) {
+            node.setY(centralPointY - distanceFromCentralY * LEVEL_SPACING);
+        } else {
+            node.setY(centralPointY + distanceFromCentralY * LEVEL_SPACING);
+        }
+
+        float distanceFromCentralX = Math.abs(node.X - root.X);
+        if (node.X < root.X) {
+            node.setX(centralPointX - distanceFromCentralX * MIN_SPACING);
+        } else {
+            node.setX(centralPointX + distanceFromCentralX * MIN_SPACING);
+        }
+
+        for (Item child : node.Children) {
+            calculateCoordinates(child);
+        }
+    }
+
+    private void spacingFamily(Item node) {
+        if (node.type == ItemType.FAMILY) {
+            node.Husband.setX(node.getX() - (float) PARENT_SPACING / 2);
+            node.Husband.setY(node.getY());
+            node.Wife.setX(node.getX() + (float) PARENT_SPACING / 2);
+            node.Wife.setY(node.getY());
+        }
+
+        for (Item child : node.Children) {
+            spacingFamily(child);
+        }
+    }
+
+    private int getTreeHeight(Item node) {
+        int max = 0;
+        for (Item child : node.Children) {
+            int childHeight = getTreeHeight(child);
+            if (childHeight > max) {
+                max = childHeight;
             }
         }
+        return 1 + max;
     }
 
     //Draw connections
@@ -983,9 +992,4 @@ public class MindMappingView extends RelativeLayout {
     public void  setOnItemClicked(OnItemClicked onItemClicked){
         this.onItemClicked = onItemClicked;
     }
-
-
-
-
-
 }

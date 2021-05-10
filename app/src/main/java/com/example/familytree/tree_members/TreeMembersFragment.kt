@@ -106,7 +106,7 @@ class TreeMembersFragment : Fragment() {
         treeView.addItem(uncleSonWife, family7, ItemLocation.RIGHT)
         treeView.addItem(nephew, family7, ItemLocation.BOTTOM)
 
-        treeView.spacingAllLevels()
+        treeView.ReingoldTilford()
 
         allNodes.forEach {
             setStyle(it)

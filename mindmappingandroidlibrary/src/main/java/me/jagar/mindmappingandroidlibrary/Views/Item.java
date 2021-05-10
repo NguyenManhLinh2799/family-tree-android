@@ -14,96 +14,88 @@ import java.util.HashMap;
 
 public class Item extends LinearLayout {
 
-    int level;
-    boolean isCentral = false;
-    Item parent = null;
-    ArrayList<Item> children = new ArrayList<>(0);
-    boolean isSpaced = false;
-    Item partner = null;
-    int type;
+    public float X;
+    public int Y;
+    public float Mod;
+
+    public Item Parent = null;
+    public ArrayList<Item> Children = new ArrayList<>(0);
+    public Item Family = null;
+    public Item Partner = null;
+    public int type;
+
+    // If type == FAMILY then it will have husband and wife
+    public Item Husband = null;
+    public Item Wife = null;
 
     Context context;
     TextView title;
     TextView content;
     boolean defaultStyle;
-    ArrayList<Item> topChildItems = new ArrayList<>();
-    ArrayList<Item> bottomChildItems = new ArrayList<>();
-    ArrayList<Item> rightChildItems = new ArrayList<>();
-    ArrayList<Item> leftChildItems = new ArrayList<>();
     HashMap<Connection, Integer> connections = new HashMap<>();
     HashMap<Item, Integer>  parents = new HashMap<>();
 
     // My customization
-    public int getLevel() {
-        return level;
+    public boolean isLeaf() {
+        return this.Children.size() == 0;
     }
 
-    public void setLevel(int lv) {
-        level = lv;
-    }
-
-    public void setCentral(boolean bool) {
-        isCentral = bool;
-    }
-
-    public boolean isCentral() {
-        return isCentral;
-    }
-
-    public void setParent(Item parent) {
-        this.parent = parent;
-    }
-
-    public Item GetParent() {
-        return parent;
-    }
-
-    public void addChild(Item child) {
-        children.add(child);
-    }
-
-    public boolean hasChildren() {
-        return children.size() > 0;
-    }
-
-    public void repositionByChildren() {
-        if (children.size() == 0) {
-            return;
+    public boolean isLeftMost() {
+        if (this.Parent == null) {
+            return true;
         }
+        return this.Parent.Children.get(0) == this;
+    }
 
-        float x = 0;
-        for (Item i : children) {
-            x += i.getX();
+    public boolean isRightMost() {
+        if (this.Parent == null) {
+            return true;
         }
-        x /= children.size();
-        this.setX(x);
+        return this.Parent.Children.get(this.Parent.Children.size() - 1) == this;
     }
 
-    public boolean isSpaced() {
-        return isSpaced;
+    public Item getPreviousSibling() {
+        if (this.Parent == null || this.isLeftMost()) {
+            return null;
+        }
+        return this.Parent.Children.get(this.Parent.Children.indexOf(this) - 1);
     }
 
-    public void setSpaced(boolean status) {
-        isSpaced = status;
+    public Item getNextSibling() {
+        if (this.Parent == null || this.isRightMost()) {
+            return null;
+        }
+        return this.Parent.Children.get(this.Parent.Children.indexOf(this) + 1);
     }
 
-    public void setPartner(Item partner) {
-        this.partner = partner;
+    public Item getLeftMostSibling() {
+        if (this.Parent == null) {
+            return null;
+        }
+        if (this.isLeftMost()) {
+            return this;
+        }
+        return this.Parent.Children.get(0);
     }
 
-    public Item getPartner() {
-        return partner;
+    public Item getLeftMostChild() {
+        if (this.Children.size() == 0) {
+            return null;
+        }
+        return this.Children.get(0);
     }
 
-    public int getType() {
-        return type;
+    public Item getRightMostChild() {
+        if (this.Children.size() == 0) {
+            return null;
+        }
+        return this.Children.get(this.Children.size() - 1);
     }
     // My customization
 
     public Item(Context context, String title, String content, int type){
         super(context);
         this.context = context;
-        //this.defaultStyle = defaultStyle;
         this.type = type;
         this.setTitle(title);
         this.setContent(content);
@@ -113,7 +105,6 @@ public class Item extends LinearLayout {
             this.title.setVisibility(GONE);
         if (content == null)
             this.content.setVisibility(GONE);
-
     }
 
     public Item(Context context) {
@@ -128,7 +119,6 @@ public class Item extends LinearLayout {
     public Item(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
-
 
     public void setTitle(String title){
         this.title = new TextView(context);
@@ -145,45 +135,6 @@ public class Item extends LinearLayout {
         drawable.setStroke(size, color);
     }
 
-    public void addTopChild(Item item){
-        topChildItems.add(item);
-    }
-    public ArrayList<Item> getTopChildItems(){
-        return topChildItems;
-    }
-    public Item getTopChildByIndex(int index){
-        return topChildItems.get(index);
-    }
-
-    public void addBottomChild(Item item){
-        bottomChildItems.add(item);
-    }
-    public ArrayList<Item> getBottomChildItems(){
-        return bottomChildItems;
-    }
-    public Item getBottomChildByIndex(int index){
-        return bottomChildItems.get(index);
-    }
-
-    public void addRightChild(Item item){
-        rightChildItems.add(item);
-    }
-    public ArrayList<Item> getRightChildItems(){
-        return rightChildItems;
-    }
-    public Item getRightChildByIndex(int index){
-        return rightChildItems.get(index);
-    }
-
-    public void addLeftChild(Item item){
-        leftChildItems.add(item);
-    }
-    public ArrayList<Item> getLeftChildItems(){
-        return leftChildItems;
-    }
-    public Item getLeftChildByIndex(int index){
-        return leftChildItems.get(index);
-    }
     public TextView getTitle(){
         return this.title;
     }
@@ -220,16 +171,9 @@ public class Item extends LinearLayout {
         parents.put(parent, location);
     }
 
-    public HashMap<Item, Integer> getParents(){
-        return parents;
-    }
-
     public void addConnection(Item parent, int location, ConnectionTextMessage connectionTextMessage){
         Connection connection = new Connection(this, parent, connectionTextMessage);
         connections.put(connection, location);
-    }
-    public HashMap<Connection, Integer> getAllConnections(){
-        return connections;
     }
 
     public Connection getConnectionByParent(Item parent){
@@ -240,5 +184,4 @@ public class Item extends LinearLayout {
         }
         return null;
     }
-
 }
