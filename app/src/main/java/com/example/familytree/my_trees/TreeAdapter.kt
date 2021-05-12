@@ -1,15 +1,14 @@
 package com.example.familytree.my_trees
 
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
-import androidx.lifecycle.MutableLiveData
+import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.familytree.my_trees.MyTreesFragmentDirections
 import com.example.familytree.R
 import com.example.familytree.network.Tree
 
@@ -27,6 +26,7 @@ class TreeAdapter : ListAdapter<Tree, TreeAdapter.TreeViewHolder>(DiffCallback) 
     class TreeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView = itemView.findViewById(R.id.treeName)
         val description: TextView = itemView.findViewById(R.id.treeDescription)
+        val moreBtn: ImageView = itemView.findViewById(R.id.moreBtn)
 
         fun bind(tree: Tree?) {
             name.text = tree?.name
@@ -34,6 +34,7 @@ class TreeAdapter : ListAdapter<Tree, TreeAdapter.TreeViewHolder>(DiffCallback) 
             itemView.setOnClickListener { view: View ->
                 view.findNavController().navigate(MyTreesFragmentDirections.actionMyTreesFragmentToTreeMembersFragment())
             }
+            setUpMoreBtn()
         }
 
         companion object {
@@ -42,6 +43,24 @@ class TreeAdapter : ListAdapter<Tree, TreeAdapter.TreeViewHolder>(DiffCallback) 
                 val view = layoutInflater.inflate(R.layout.list_item_my_trees, parent, false)
 
                 return TreeViewHolder(view)
+            }
+        }
+
+        private fun setUpMoreBtn() {
+            moreBtn.setOnClickListener {
+                val popupMenu = PopupMenu(it.context, it, Gravity.END)
+                val inflater = popupMenu.menuInflater
+                inflater.inflate(R.menu.my_trees_list_item_menu, popupMenu.menu)
+
+                popupMenu.setOnMenuItemClickListener { item: MenuItem? ->
+                    when (item!!.itemId) {
+                        R.id.deleteTree -> {
+                            Toast.makeText(it.context, "${this.name.text} deleted", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    true
+                }
+                popupMenu.show()
             }
         }
     }

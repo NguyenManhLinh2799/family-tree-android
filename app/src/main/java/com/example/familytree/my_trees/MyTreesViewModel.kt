@@ -28,4 +28,16 @@ class MyTreesViewModel : ViewModel() {
             }
         }
     }
+
+    fun addTree(name: String, description: String) {
+        viewModelScope.launch {
+            FamilyTreeApi.retrofitService.addTree(Tree(null, name, description))
+        }
+    }
+
+    fun deleteTree(id: Int) {
+        viewModelScope.launch {
+            FamilyTreeApi.retrofitService.deleteTree(id)
+        }
+    }
 }

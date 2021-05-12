@@ -4,8 +4,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.*
 
 private const val BASE_URL = "https://family-tree.azurewebsites.net/api/v1/"
 
@@ -20,12 +19,20 @@ private val retrofit = Retrofit.Builder()
 
 interface FamilyTreeApiService {
 
+    // Family tree
     @GET("tree-management/tree")
     suspend fun getTrees(): ApiResponse<List<Tree>>
+    @Headers("Content-Type: application/json")
+    @POST("tree-management/tree")
+    suspend fun addTree(@Body newTree: Tree)
+    @DELETE("tree-management/tree/{treeId}")
+    suspend fun deleteTree(@Path("treeId") id: Int)
 
+    // Member
     @GET("person-management/person/{personId}")
     suspend fun getPerson(@Path("personId") id: Int): ApiResponse<Member>
 
+    // Tree members
     @GET("tree-management/tree/{treeId}")
     suspend fun getTreeMembers(@Path("treeId") id: Int): ApiResponse<TreeMembers>
 }
