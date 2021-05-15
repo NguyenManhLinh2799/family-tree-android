@@ -2,7 +2,6 @@ package com.example.familytree.my_trees
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.text.Editable
 import android.view.*
 import android.widget.*
 import androidx.navigation.findNavController
@@ -10,7 +9,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.familytree.R
-import com.example.familytree.network.Tree
+import com.example.familytree.domain.Tree
+import com.example.familytree.network.NetworkTree
 
 class TreeAdapter(private val onItemClick: OnItemClick) : ListAdapter<Tree, TreeAdapter.TreeViewHolder>(DiffCallback) {
 

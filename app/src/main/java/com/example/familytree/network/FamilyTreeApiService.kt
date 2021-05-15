@@ -2,6 +2,7 @@ package com.example.familytree.network
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
@@ -21,18 +22,18 @@ interface FamilyTreeApiService {
 
     // Family tree
     @GET("tree-management/tree")
-    suspend fun getTrees(): ApiResponse<List<Tree>>
+    suspend fun getTrees(): NetworkTreeContainer
 
     @Headers("Content-Type: application/json")
     @POST("tree-management/tree")
-    suspend fun addTree(@Body newTree: Tree)
+    suspend fun addTree(@Body newTree: NetworkTree)
 
     @DELETE("tree-management/tree/{treeId}")
     suspend fun deleteTree(@Path("treeId") id: Int?)
 
     @Headers("Content-Type: application/json")
     @PUT("tree-management/tree/{treeId}")
-    suspend fun editTree(@Path("treeId") id: Int?, @Body editedTree: Tree)
+    suspend fun editTree(@Path("treeId") id: Int?, @Body editedTree: NetworkTree)
 
 
     // Member
