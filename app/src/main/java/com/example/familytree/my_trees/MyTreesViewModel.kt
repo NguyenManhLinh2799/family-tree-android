@@ -35,9 +35,15 @@ class MyTreesViewModel : ViewModel() {
         }
     }
 
-    fun deleteTree(id: Int) {
+    fun deleteTree(id: Int?) {
         viewModelScope.launch {
             FamilyTreeApi.retrofitService.deleteTree(id)
+        }
+    }
+
+    fun editTree(id: Int?, name: String, description: String) {
+        viewModelScope.launch {
+            FamilyTreeApi.retrofitService.editTree(id ,Tree(null, name, description))
         }
     }
 }

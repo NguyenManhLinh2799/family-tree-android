@@ -22,11 +22,18 @@ interface FamilyTreeApiService {
     // Family tree
     @GET("tree-management/tree")
     suspend fun getTrees(): ApiResponse<List<Tree>>
+
     @Headers("Content-Type: application/json")
     @POST("tree-management/tree")
     suspend fun addTree(@Body newTree: Tree)
+
     @DELETE("tree-management/tree/{treeId}")
-    suspend fun deleteTree(@Path("treeId") id: Int)
+    suspend fun deleteTree(@Path("treeId") id: Int?)
+
+    @Headers("Content-Type: application/json")
+    @PUT("tree-management/tree/{treeId}")
+    suspend fun editTree(@Path("treeId") id: Int?, @Body editedTree: Tree)
+
 
     // Member
     @GET("person-management/person/{personId}")

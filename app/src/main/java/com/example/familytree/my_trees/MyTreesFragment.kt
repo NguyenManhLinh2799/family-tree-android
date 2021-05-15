@@ -25,6 +25,16 @@ class MyTreesFragment: Fragment() {
         ViewModelProviders.of(this).get(MyTreesViewModel::class.java)
     }
 
+    private val onItemClick = object : TreeAdapter.OnItemClick {
+        override fun onDelete(id: Int?) {
+            myTreesViewModel.deleteTree(id)
+        }
+
+        override fun onEdit(id: Int?, name: String, description: String) {
+            myTreesViewModel.editTree(id, name, description)
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(
@@ -38,7 +48,7 @@ class MyTreesFragment: Fragment() {
 
         binding.myTreesViewModel = myTreesViewModel
 
-        val treeAdapter = TreeAdapter()
+        val treeAdapter = TreeAdapter(onItemClick)
         binding.myTrees.adapter = treeAdapter
         binding.lifecycleOwner = viewLifecycleOwner
 
@@ -54,20 +64,13 @@ class MyTreesFragment: Fragment() {
     private fun showAddTreeDialog() {
         val dialogBuilder = AlertDialog.Builder(context)
             .setTitle("Add a new family tree")
-            .setView(R.layout.dialog_add_tree)
+            .setView(R.layout.dialog_tree_form)
             .setPositiveButton("Add") { dialog, which ->
                 val d = Dialog::class.java.cast(dialog)
                 val name = d.findViewById<EditText>(R.id.dialogTreeName)?.text.toString()
                 val description = d.findViewById<EditText>(R.id.dialogTreeDescription)?.text.toString()
                 Toast.makeText(context, "$name added", Toast.LENGTH_SHORT).show()
                 myTreesViewModel.addTree(name, description)
-
-                // Refresh fragment
-                val ft = fragmentManager!!.beginTransaction()
-                if (Build.VERSION.SDK_INT >= 26) {
-                    ft.setReorderingAllowed(false)
-                }
-                ft.detach(this).attach(this).commit()
             }
             .setNegativeButton("Cancel") { dialog, which -> dialog.cancel() }
 

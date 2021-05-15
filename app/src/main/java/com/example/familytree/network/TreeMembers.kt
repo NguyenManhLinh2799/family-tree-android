@@ -7,7 +7,7 @@ import kotlinx.android.parcel.Parcelize
 data class TreeMembers(
         val id: Int,
         val name: String,
-        val description: String,
+        val description: String?,
         val people: List<Member>): Parcelable {
 
         }
