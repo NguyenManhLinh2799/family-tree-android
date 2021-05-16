@@ -1,8 +1,9 @@
 package com.example.familytree.network
 
+import com.example.familytree.network.auth.NetworkAuthContainer
+import com.example.familytree.network.auth.RegisterRequest
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
@@ -19,6 +20,10 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface FamilyTreeApiService {
+
+    // Auth
+    @POST("authentication/register")
+    suspend fun register(@Body registerRequestBody: RegisterRequest): NetworkAuthContainer
 
     // Family tree
     @GET("tree-management/tree")

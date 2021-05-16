@@ -48,7 +48,6 @@ class MyTreesFragment: Fragment() {
 
         val treeAdapter = TreeAdapter(onItemClick)
         binding.myTrees.adapter = treeAdapter
-        binding.lifecycleOwner = viewLifecycleOwner
 
         myTreesViewModel.myTrees.observe(viewLifecycleOwner, {
             treeAdapter.submitList(it as MutableList<Tree>?)
