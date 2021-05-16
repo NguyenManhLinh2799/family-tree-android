@@ -26,4 +26,11 @@
     <string name="update">Update</string>
     <string name="view">View</string>
     <string name="edit">Edit</string>
+    <string name="create_a_new_account">Create a new account</string>
+    <string name="middle_name">Mid name</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="register">Register</string>
+    <string name="login">Login</string>
 </resources>

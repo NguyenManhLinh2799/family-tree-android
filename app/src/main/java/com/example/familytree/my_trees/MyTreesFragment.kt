@@ -39,16 +39,12 @@ class MyTreesFragment: Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(
-                inflater, R.layout.fragment_my_trees, container, false
-        )
+        binding = FragmentMyTreesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.myTreesViewModel = myTreesViewModel
 
         val treeAdapter = TreeAdapter(onItemClick)
         binding.myTrees.adapter = treeAdapter
