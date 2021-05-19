@@ -27,7 +27,7 @@ public class MindMappingView extends RelativeLayout {
 
     private static final int LEVEL_SPACING = 400;
     private static final int PARENT_SPACING = 200;
-    private static final int MIN_SPACING = 50;
+    private static final int MIN_SPACING = 200;
     private float centralPointX;
     private float centralPointY;
     private Item root;
@@ -70,10 +70,12 @@ public class MindMappingView extends RelativeLayout {
     @SuppressLint("ClickableViewAccessibility")
     public void addCentralItem(Item item){
 
+        root = item;
+
         item.setGravity(CENTER_IN_PARENT);
         this.setGravity(Gravity.CENTER);
 
-        boolean dragAble = false;
+        boolean dragAble = true;
         if (dragAble){
             dragItem(item);
         }
@@ -83,6 +85,11 @@ public class MindMappingView extends RelativeLayout {
         
         this.addView(item);
     }
+
+    public void setRoot(Item item) {
+        this.root = item;
+    }
+
     /*Make any item drag able, This will make issues with
     a simple call of OnClickListener on the Item objects so you set it off to call the normal onclicklistener
     the custom OnItemClicked*/
@@ -194,6 +201,11 @@ public class MindMappingView extends RelativeLayout {
             bottomItems.add(connection);
             newItem.addParent(base, ItemLocation.BOTTOM);
             newItem.addConnection(base, ItemLocation.BOTTOM, null);
+        }
+
+        boolean dragAble = true;
+        if (dragAble){
+            dragItem(newItem);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.example.familytree.tree_members
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +27,9 @@ class TreeMembersFragment : Fragment() {
         ViewModelProviders.of(this).get(TreeMembersViewModel::class.java)
     }
 
+    private var added = ArrayList<Item>(0)
+    private var notYetAdded = ArrayList<Member>(0)
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_tree_members, container, false)
     }
@@ -47,9 +51,163 @@ class TreeMembersFragment : Fragment() {
     private fun updateNodes(members: List<Member>) {
         // Remove all child views
         allNodes = emptyList()
+        added.clear()
+        notYetAdded.clear()
         treeView.removeAllViews()
 
         // And update
+        //fakeData()
+        addAllMembers(members)
+        allNodes = added
+
+        treeView.ReingoldTilford()
+        
+        allNodes.forEach {
+            setStyle(it)
+        }
+    }
+
+    private fun addAllMembers(members: List<Member>) {
+        notYetAdded = members as ArrayList<Member>
+        // Find the root member
+        var rootMem: Member? = null
+        for (mem in notYetAdded) {
+            if (mem.parent1Id == 0 && mem.parent2Id == 0) {
+                if (mem.spouses?.isNotEmpty() == true) {
+                    if (mem.spouses[0].parent1Id == 0 && mem.spouses[0].parent2Id == 0) {
+                        rootMem = mem;
+                        break
+                    }
+                } else {
+                    rootMem = mem;
+                    break
+                }
+            }
+        }
+
+        // Create central item
+        if (rootMem != null) {
+            val rootItem = Item(context, rootMem.fullName, null,
+            when (rootMem.isMale) {
+                true -> ItemType.MALE
+                else -> ItemType.FEMALE
+            })
+            treeView.addCentralItem(rootItem)
+            added.add(rootItem)
+            notYetAdded.remove(rootMem)
+
+            // Find and add partner (if any)
+            var familyItem: Item? = null
+            if (rootMem.spouses?.isNotEmpty() == true) {
+                for (mem in notYetAdded) {
+                    if (mem.id == rootMem.spouses!![0].id) {
+                        familyItem = Item(context, "", null, ItemType.FAMILY)
+                        if (mem.isMale) {
+                            val partnerItem = Item(context, mem.fullName, null, ItemType.MALE)
+                            treeView.addItem(familyItem, rootItem, ItemLocation.LEFT)
+                            treeView.addItem(partnerItem, familyItem, ItemLocation.LEFT)
+                            added.add(partnerItem)
+                        } else {
+                            val partnerItem = Item(context, mem.fullName, null, ItemType.FEMALE)
+                            treeView.addItem(familyItem, rootItem, ItemLocation.RIGHT)
+                            treeView.addItem(partnerItem, familyItem, ItemLocation.RIGHT)
+                            added.add(partnerItem)
+                        }
+                        treeView.setRoot(familyItem)
+                        added.add(familyItem)
+                        notYetAdded.remove(mem)
+                        break
+                    }
+                }
+            }
+
+            // Find add children
+            val childrenMem = ArrayList<Member>(0)
+            for (mem in notYetAdded) {
+                if (rootMem.isMale) {
+                    if (mem.parent1Id == rootMem.id) {
+                        childrenMem.add(mem)
+                    }
+                } else {
+                    if (mem.parent2Id == rootMem.id) {
+                        childrenMem.add(mem)
+                    }
+                }
+            }
+            for (childMem in childrenMem) {
+                val childItem = Item(context, childMem.fullName, null,
+                when (childMem.isMale) {
+                    true -> ItemType.MALE
+                    else -> ItemType.FEMALE
+                })
+                if (familyItem != null) {
+                    treeView.addItem(childItem, familyItem, ItemLocation.BOTTOM)
+                } else {
+                    treeView.addItem(childItem, rootItem, ItemLocation.BOTTOM)
+                }
+                // Recursive
+                add(childMem, childItem)
+            }
+        }
+    }
+
+    private fun add(member: Member, item: Item) {
+        added.add(item)
+        notYetAdded.remove(member)
+
+        // Find and add partner (if any)
+        var familyItem: Item? = null
+        if (member.spouses?.isNotEmpty() == true) {
+            for (mem in notYetAdded) {
+                if (mem.id == mem.spouses!![0].id) {
+                    familyItem = Item(context, "", null, ItemType.FAMILY)
+                    if (mem.isMale) {
+                        val partnerItem = Item(context, mem.fullName, null, ItemType.MALE)
+                        treeView.addItem(familyItem, item, ItemLocation.LEFT)
+                        treeView.addItem(partnerItem, familyItem, ItemLocation.LEFT)
+                        added.add(partnerItem)
+                    } else {
+                        val partnerItem = Item(context, mem.fullName, null, ItemType.FEMALE)
+                        treeView.addItem(familyItem, item, ItemLocation.RIGHT)
+                        treeView.addItem(partnerItem, familyItem, ItemLocation.LEFT)
+                        added.add(partnerItem)
+                    }
+                    added.add(familyItem)
+                    notYetAdded.remove(mem)
+                    break
+                }
+            }
+        }
+
+        val childrenMem = ArrayList<Member>(0)
+        for (mem in notYetAdded) {
+            if (member.isMale) {
+                if (mem.parent1Id == member.id) {
+                    childrenMem.add(mem)
+                }
+            } else {
+                if (mem.parent2Id == member.id) {
+                    childrenMem.add(mem)
+                }
+            }
+        }
+        for (childMem in childrenMem) {
+            val childItem = Item(context, childMem.fullName, null,
+                when (childMem.isMale) {
+                    true -> ItemType.MALE
+                    else -> ItemType.FEMALE
+                })
+            if (familyItem != null) {
+                treeView.addItem(childItem, familyItem, ItemLocation.BOTTOM)
+            } else {
+                treeView.addItem(childItem, item, ItemLocation.BOTTOM)
+            }
+            // Recursive
+            add(childMem, childItem)
+        }
+    }
+
+    private fun fakeData() {
         val me = Item(context, "Tôi", null, ItemType.MALE)
         val family1 = Item(context, "", null, ItemType.FAMILY)
         val wife = Item(context, "Vợ", null, ItemType.FEMALE)
@@ -76,8 +234,8 @@ class TreeMembersFragment : Fragment() {
         val nephew = Item(context, "Cháu họ", null, ItemType.MALE)
 
         allNodes = listOf(me, family1, wife, daughter, family2, sonInLaw, grandSon, father, family3, mother,
-        sister, family4, brotherInLaw, sisterSon, family5, grandFather, grandMother, uncle, family6, uncleWife,
-        uncleSon, family7, uncleSonWife, nephew)
+            sister, family4, brotherInLaw, sisterSon, family5, grandFather, grandMother, uncle, family6, uncleWife,
+            uncleSon, family7, uncleSonWife, nephew)
 
         treeView.addCentralItem(me)
         treeView.addItem(family1, me, ItemLocation.RIGHT)
@@ -103,12 +261,6 @@ class TreeMembersFragment : Fragment() {
         treeView.addItem(family7, uncleSon, ItemLocation.RIGHT)
         treeView.addItem(uncleSonWife, family7, ItemLocation.RIGHT)
         treeView.addItem(nephew, family7, ItemLocation.BOTTOM)
-
-        treeView.ReingoldTilford()
-
-        allNodes.forEach {
-            setStyle(it)
-        }
     }
 
     private fun setStyle(item: Item) {
@@ -135,13 +287,13 @@ class TreeMembersFragment : Fragment() {
 
         item.setPadding(5, 5, 5, 5)
 
-        item.setOnClickListener {
-            memberMenuBar.visibility = when (memberMenuBar.visibility) {
-                View.INVISIBLE -> View.VISIBLE
-                View.VISIBLE -> View.INVISIBLE
-                else -> View.VISIBLE
-            }
-        }
+//        item.setOnClickListener {
+//            memberMenuBar.visibility = when (memberMenuBar.visibility) {
+//                View.INVISIBLE -> View.VISIBLE
+//                View.VISIBLE -> View.INVISIBLE
+//                else -> View.VISIBLE
+//            }
+//        }
     }
 
     private fun setFamilyStyle(family: Item) {

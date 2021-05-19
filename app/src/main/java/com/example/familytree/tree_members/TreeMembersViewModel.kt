@@ -15,8 +15,11 @@ class TreeMembersViewModel: ViewModel() {
     init {
         viewModelScope.launch {
             try {
-                treeMembers.value = FamilyTreeApi.retrofitService.getTreeMembers(1).data
-                Log.e("TreeMembersViewModel", treeMembers.value!!.name)
+                treeMembers.value = FamilyTreeApi.retrofitService.getTreeMembers(13).data
+                //Log.e("TreeMembersViewModel", treeMembers.value!!.name)
+                for (member in treeMembers.value!!.people) {
+                    Log.e("TreeMembersViewModel", member.fullName)
+                }
             } catch (e: Exception) {
                 treeMembers.value = TreeMembers(0, "abc", "xyz", ArrayList())
             }
