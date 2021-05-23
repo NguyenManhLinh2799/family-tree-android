@@ -14,3 +14,10 @@ data class RegisterRequest(
         val midName: String,
         val getRefreshToken: Boolean
 ) : Parcelable
+
+@Parcelize
+data class LoginRequest(
+    val usernameOrEmail: String,
+    val password: String,
+    val getRefreshToken: Boolean
+) : Parcelable

@@ -44,11 +44,12 @@ class TreeMembersFragment : Fragment() {
 
         // Observe members
         treeMembersViewModel.treeMembers.observe(viewLifecycleOwner, {
-            updateNodes(it.people)
+            updateAllNodes(it.people)
         })
     }
 
-    private fun updateNodes(members: List<Member>) {
+    private fun updateAllNodes(members: List<Member>) {
+
         // Remove all child views
         allNodes = emptyList()
         added.clear()
@@ -72,14 +73,14 @@ class TreeMembersFragment : Fragment() {
         // Find the root member
         var rootMem: Member? = null
         for (mem in notYetAdded) {
-            if (mem.parent1Id == 0 && mem.parent2Id == 0) {
+            if (mem.parent1Id == null && mem.parent2Id == null) {
                 if (mem.spouses?.isNotEmpty() == true) {
-                    if (mem.spouses[0].parent1Id == 0 && mem.spouses[0].parent2Id == 0) {
-                        rootMem = mem;
+                    if (mem.spouses[0].parent1Id == null && mem.spouses[0].parent2Id == null) {
+                        rootMem = mem
                         break
                     }
                 } else {
-                    rootMem = mem;
+                    rootMem = mem
                     break
                 }
             }
@@ -99,6 +100,7 @@ class TreeMembersFragment : Fragment() {
             // Find and add partner (if any)
             var familyItem: Item? = null
             if (rootMem.spouses?.isNotEmpty() == true) {
+                Log.e("TreeMembersFragment", "not empty")
                 for (mem in notYetAdded) {
                     if (mem.id == rootMem.spouses!![0].id) {
                         familyItem = Item(context, "", null, ItemType.FAMILY)
@@ -121,7 +123,7 @@ class TreeMembersFragment : Fragment() {
                 }
             }
 
-            // Find add children
+            // Find and add children
             val childrenMem = ArrayList<Member>(0)
             for (mem in notYetAdded) {
                 if (rootMem.isMale) {
@@ -135,6 +137,10 @@ class TreeMembersFragment : Fragment() {
                 }
             }
             for (childMem in childrenMem) {
+                Log.e("TreeMembersFragment", childMem.fullName)
+            }
+            for (childMem in childrenMem) {
+
                 val childItem = Item(context, childMem.fullName, null,
                 when (childMem.isMale) {
                     true -> ItemType.MALE
@@ -158,8 +164,9 @@ class TreeMembersFragment : Fragment() {
         // Find and add partner (if any)
         var familyItem: Item? = null
         if (member.spouses?.isNotEmpty() == true) {
+            Log.e("TreeMembersFragment", "not empty")
             for (mem in notYetAdded) {
-                if (mem.id == mem.spouses!![0].id) {
+                if (mem.id == member.spouses[0].id) {
                     familyItem = Item(context, "", null, ItemType.FAMILY)
                     if (mem.isMale) {
                         val partnerItem = Item(context, mem.fullName, null, ItemType.MALE)
@@ -169,7 +176,7 @@ class TreeMembersFragment : Fragment() {
                     } else {
                         val partnerItem = Item(context, mem.fullName, null, ItemType.FEMALE)
                         treeView.addItem(familyItem, item, ItemLocation.RIGHT)
-                        treeView.addItem(partnerItem, familyItem, ItemLocation.LEFT)
+                        treeView.addItem(partnerItem, familyItem, ItemLocation.RIGHT)
                         added.add(partnerItem)
                     }
                     added.add(familyItem)

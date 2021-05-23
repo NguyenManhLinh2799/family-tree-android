@@ -23,7 +23,6 @@ class MyTreesFragment: Fragment() {
     private lateinit var binding: FragmentMyTreesBinding
 
     private val myTreesViewModel: MyTreesViewModel by lazy {
-        //ViewModelProviders.of(this).get(MyTreesViewModel::class.java)
         ViewModelProvider(this, MyTreesViewModel.Factory(requireNotNull(context))).get(MyTreesViewModel::class.java)
     }
 

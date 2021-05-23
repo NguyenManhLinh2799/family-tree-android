@@ -18,8 +18,8 @@ data class Member(
         val userId: Int?) : Parcelable {
 
             val fullName
-            //get() = "$firstName $lastName"
-            get() = "$firstName"
+            get() = "$firstName $lastName"
+            //get() = "$firstName"
 
             val sex
             get() = when (gender) {

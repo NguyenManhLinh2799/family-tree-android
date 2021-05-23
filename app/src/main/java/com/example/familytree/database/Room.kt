@@ -22,9 +22,19 @@ interface TreeDao {
     fun delete(id: Int?)
 }
 
-@Database(entities = [DatabaseTree::class], version = 1)
+@Dao
+interface AuthDataDao {
+    @Query("select * from databaseauthdata")
+    fun getAuthData(): DatabaseAuthData
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(authData: DatabaseAuthData)
+}
+
+@Database(entities = [DatabaseTree::class, DatabaseAuthData::class], version = 2)
 abstract class FamilyTreeDatabase: RoomDatabase() {
     abstract val treeDao: TreeDao
+    abstract val authDataDao: AuthDataDao
 }
 
 private lateinit var INSTANCE: FamilyTreeDatabase
@@ -32,7 +42,9 @@ private lateinit var INSTANCE: FamilyTreeDatabase
 fun getDatabase(context: Context): FamilyTreeDatabase {
     synchronized(FamilyTreeDatabase::class.java) {
         if (!::INSTANCE.isInitialized) {
-            INSTANCE = Room.databaseBuilder(context, FamilyTreeDatabase::class.java, "familytree").build()
+            INSTANCE = Room.databaseBuilder(context, FamilyTreeDatabase::class.java, "familytree")
+                .fallbackToDestructiveMigration()
+                .build()
         }
     }
     return INSTANCE

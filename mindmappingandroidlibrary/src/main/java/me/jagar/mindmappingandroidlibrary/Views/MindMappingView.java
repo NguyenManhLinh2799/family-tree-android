@@ -27,7 +27,7 @@ public class MindMappingView extends RelativeLayout {
 
     private static final int LEVEL_SPACING = 400;
     private static final int PARENT_SPACING = 200;
-    private static final int MIN_SPACING = 200;
+    private static final int MIN_SPACING = 50;
     private float centralPointX;
     private float centralPointY;
     private Item root;

@@ -33,14 +33,17 @@
         app:layout_constraintTop_toBottomOf="@+id/textView">
 
         <EditText
+            android:id="@+id/authUsernameOrEmail"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
             android:background="@color/white"
-            android:hint="@string/username"
+            android:hint="@string/username_or_email"
             android:padding="10dp" />
 
         <EditText
+            android:id="@+id/authPassword"
+            android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"

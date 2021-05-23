@@ -1,5 +1,6 @@
 package com.example.familytree.network
 
+import com.example.familytree.network.auth.LoginRequest
 import com.example.familytree.network.auth.NetworkAuthContainer
 import com.example.familytree.network.auth.RegisterRequest
 import com.squareup.moshi.Moshi
@@ -24,6 +25,9 @@ interface FamilyTreeApiService {
     // Auth
     @POST("authentication/register")
     suspend fun register(@Body registerRequestBody: RegisterRequest): NetworkAuthContainer
+
+    @POST("authentication/login")
+    suspend fun login(@Body loginRequestBody: LoginRequest): NetworkAuthContainer
 
     // Family tree
     @GET("tree-management/tree")
