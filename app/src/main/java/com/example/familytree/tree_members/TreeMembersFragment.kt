@@ -9,38 +9,67 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import com.example.familytree.R
+import com.example.familytree.databinding.FragmentTreeMembersBinding
+import com.example.familytree.my_trees.MyTreesViewModel
 import com.example.familytree.network.Member
 import me.jagar.mindmappingandroidlibrary.Views.Item
 import me.jagar.mindmappingandroidlibrary.Views.ItemLocation
 import me.jagar.mindmappingandroidlibrary.Views.ItemType
 import me.jagar.mindmappingandroidlibrary.Views.MindMappingView
+import kotlin.properties.Delegates
 
 class TreeMembersFragment : Fragment() {
+
+    private lateinit var binding: FragmentTreeMembersBinding
 
     private lateinit var treeView: MindMappingView
     private lateinit var memberMenuBar: LinearLayout
     private lateinit var allNodes: List<Item>
-    private val treeMembersViewModel: TreeMembersViewModel by lazy {
-        ViewModelProviders.of(this).get(TreeMembersViewModel::class.java)
-    }
+
+    private var treeID: Int? = null
+
+//    private var treeMembersViewModel: TreeMembersViewModel by lazy {
+//        ViewModelProvider(this,
+//            TreeMembersViewModel.Factory(
+//                requireNotNull(context),
+//                requireNotNull(TreeMembersFragmentArgs.fromBundle(arguments!!).treeID)
+//            ))
+//            .get(TreeMembersViewModel::class.java)
+//    }
+
+    private lateinit var treeMembersViewModel: TreeMembersViewModel
 
     private var added = ArrayList<Item>(0)
     private var notYetAdded = ArrayList<Member>(0)
 
+    private var focusedNode: Item? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_tree_members, container, false)
+        binding = FragmentTreeMembersBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Menu bar
-        setupMenuBar(view)
+        if (this.treeID == null) {
+            this.treeID = TreeMembersFragmentArgs.fromBundle(arguments!!).treeID
+            treeMembersViewModel = ViewModelProvider(this,
+                TreeMembersViewModel.Factory(
+                    requireNotNull(context),
+                    requireNotNull(this.treeID)
+                ))
+                .get(TreeMembersViewModel::class.java)
+        }
 
-        treeView = view.findViewById(R.id.treeView)
+        // Menu bar
+        setupMenuBar()
+
+        treeView = binding.treeView
 
         // Observe members
         treeMembersViewModel.treeMembers.observe(viewLifecycleOwner, {
@@ -88,7 +117,7 @@ class TreeMembersFragment : Fragment() {
 
         // Create central item
         if (rootMem != null) {
-            val rootItem = Item(context, rootMem.fullName, null,
+            val rootItem = Item(context, rootMem.id, rootMem.fullName, null,
             when (rootMem.isMale) {
                 true -> ItemType.MALE
                 else -> ItemType.FEMALE
@@ -100,17 +129,16 @@ class TreeMembersFragment : Fragment() {
             // Find and add partner (if any)
             var familyItem: Item? = null
             if (rootMem.spouses?.isNotEmpty() == true) {
-                Log.e("TreeMembersFragment", "not empty")
                 for (mem in notYetAdded) {
                     if (mem.id == rootMem.spouses!![0].id) {
-                        familyItem = Item(context, "", null, ItemType.FAMILY)
+                        familyItem = Item(context, 0, "", null, ItemType.FAMILY)
                         if (mem.isMale) {
-                            val partnerItem = Item(context, mem.fullName, null, ItemType.MALE)
+                            val partnerItem = Item(context, mem.id, mem.fullName, null, ItemType.MALE)
                             treeView.addItem(familyItem, rootItem, ItemLocation.LEFT)
                             treeView.addItem(partnerItem, familyItem, ItemLocation.LEFT)
                             added.add(partnerItem)
                         } else {
-                            val partnerItem = Item(context, mem.fullName, null, ItemType.FEMALE)
+                            val partnerItem = Item(context, mem.id, mem.fullName, null, ItemType.FEMALE)
                             treeView.addItem(familyItem, rootItem, ItemLocation.RIGHT)
                             treeView.addItem(partnerItem, familyItem, ItemLocation.RIGHT)
                             added.add(partnerItem)
@@ -137,11 +165,8 @@ class TreeMembersFragment : Fragment() {
                 }
             }
             for (childMem in childrenMem) {
-                Log.e("TreeMembersFragment", childMem.fullName)
-            }
-            for (childMem in childrenMem) {
 
-                val childItem = Item(context, childMem.fullName, null,
+                val childItem = Item(context, childMem.id, childMem.fullName, null,
                 when (childMem.isMale) {
                     true -> ItemType.MALE
                     else -> ItemType.FEMALE
@@ -164,17 +189,16 @@ class TreeMembersFragment : Fragment() {
         // Find and add partner (if any)
         var familyItem: Item? = null
         if (member.spouses?.isNotEmpty() == true) {
-            Log.e("TreeMembersFragment", "not empty")
             for (mem in notYetAdded) {
                 if (mem.id == member.spouses[0].id) {
-                    familyItem = Item(context, "", null, ItemType.FAMILY)
+                    familyItem = Item(context, 0, "", null, ItemType.FAMILY)
                     if (mem.isMale) {
-                        val partnerItem = Item(context, mem.fullName, null, ItemType.MALE)
+                        val partnerItem = Item(context, mem.id, mem.fullName, null, ItemType.MALE)
                         treeView.addItem(familyItem, item, ItemLocation.LEFT)
                         treeView.addItem(partnerItem, familyItem, ItemLocation.LEFT)
                         added.add(partnerItem)
                     } else {
-                        val partnerItem = Item(context, mem.fullName, null, ItemType.FEMALE)
+                        val partnerItem = Item(context, mem.id, mem.fullName, null, ItemType.FEMALE)
                         treeView.addItem(familyItem, item, ItemLocation.RIGHT)
                         treeView.addItem(partnerItem, familyItem, ItemLocation.RIGHT)
                         added.add(partnerItem)
@@ -199,7 +223,7 @@ class TreeMembersFragment : Fragment() {
             }
         }
         for (childMem in childrenMem) {
-            val childItem = Item(context, childMem.fullName, null,
+            val childItem = Item(context, childMem.id, childMem.fullName, null,
                 when (childMem.isMale) {
                     true -> ItemType.MALE
                     else -> ItemType.FEMALE
@@ -215,30 +239,30 @@ class TreeMembersFragment : Fragment() {
     }
 
     private fun fakeData() {
-        val me = Item(context, "Tôi", null, ItemType.MALE)
-        val family1 = Item(context, "", null, ItemType.FAMILY)
-        val wife = Item(context, "Vợ", null, ItemType.FEMALE)
-        val daughter = Item(context, "Con gái", null, ItemType.FEMALE)
-        val family2 = Item(context, "", null, ItemType.FAMILY)
-        val sonInLaw = Item(context, "Con rể", null, ItemType.MALE)
-        val grandSon = Item(context, "Cháu trai", null, ItemType.MALE)
-        val father = Item(context, "Ba", null, ItemType.MALE)
-        val family3 = Item(context, "", null, ItemType.FAMILY)
-        val mother = Item(context, "Mẹ", null, ItemType.FEMALE)
-        val sister = Item(context, "Chị", null, ItemType.FEMALE)
-        val family4 = Item(context, "", null, ItemType.FAMILY)
-        val brotherInLaw = Item(context, "Anh rể", null, ItemType.MALE)
-        val sisterSon = Item(context, "Con trai chị", null, ItemType.MALE)
-        val family5 = Item(context, "", null, ItemType.FAMILY)
-        val grandFather = Item(context, "Ông nội", null, ItemType.MALE)
-        val grandMother = Item(context, "Bà nội", null, ItemType.FEMALE)
-        val uncle = Item(context, "Bác trai", null, ItemType.MALE)
-        val family6 = Item(context, "", null, ItemType.FAMILY)
-        val uncleWife = Item(context, "Vợ bác", null, ItemType.FEMALE)
-        val uncleSon = Item(context, "Anh họ", null, ItemType.MALE)
-        val family7 = Item(context, "", null, ItemType.FAMILY)
-        val uncleSonWife = Item(context, "Vợ anh họ", null, ItemType.FEMALE)
-        val nephew = Item(context, "Cháu họ", null, ItemType.MALE)
+        val me = Item(context, 0, "Tôi", null, ItemType.MALE)
+        val family1 = Item(context, 0, "", null, ItemType.FAMILY)
+        val wife = Item(context, 0, "Vợ", null, ItemType.FEMALE)
+        val daughter = Item(context, 0, "Con gái", null, ItemType.FEMALE)
+        val family2 = Item(context, 0, "", null, ItemType.FAMILY)
+        val sonInLaw = Item(context, 0, "Con rể", null, ItemType.MALE)
+        val grandSon = Item(context, 0, "Cháu trai", null, ItemType.MALE)
+        val father = Item(context, 0, "Ba", null, ItemType.MALE)
+        val family3 = Item(context, 0, "", null, ItemType.FAMILY)
+        val mother = Item(context, 0, "Mẹ", null, ItemType.FEMALE)
+        val sister = Item(context, 0, "Chị", null, ItemType.FEMALE)
+        val family4 = Item(context, 0, "", null, ItemType.FAMILY)
+        val brotherInLaw = Item(context, 0, "Anh rể", null, ItemType.MALE)
+        val sisterSon = Item(context, 0, "Con trai chị", null, ItemType.MALE)
+        val family5 = Item(context, 0, "", null, ItemType.FAMILY)
+        val grandFather = Item(context, 0, "Ông nội", null, ItemType.MALE)
+        val grandMother = Item(context, 0, "Bà nội", null, ItemType.FEMALE)
+        val uncle = Item(context, 0, "Bác trai", null, ItemType.MALE)
+        val family6 = Item(context, 0, "", null, ItemType.FAMILY)
+        val uncleWife = Item(context, 0, "Vợ bác", null, ItemType.FEMALE)
+        val uncleSon = Item(context, 0, "Anh họ", null, ItemType.MALE)
+        val family7 = Item(context, 0, "", null, ItemType.FAMILY)
+        val uncleSonWife = Item(context, 0, "Vợ anh họ", null, ItemType.FEMALE)
+        val nephew = Item(context, 0, "Cháu họ", null, ItemType.MALE)
 
         allNodes = listOf(me, family1, wife, daughter, family2, sonInLaw, grandSon, father, family3, mother,
             sister, family4, brotherInLaw, sisterSon, family5, grandFather, grandMother, uncle, family6, uncleWife,
@@ -294,13 +318,14 @@ class TreeMembersFragment : Fragment() {
 
         item.setPadding(5, 5, 5, 5)
 
-//        item.setOnClickListener {
-//            memberMenuBar.visibility = when (memberMenuBar.visibility) {
-//                View.INVISIBLE -> View.VISIBLE
-//                View.VISIBLE -> View.INVISIBLE
-//                else -> View.VISIBLE
-//            }
-//        }
+        item.setOnClickListener {
+            focusedNode = item
+            memberMenuBar.visibility = when (memberMenuBar.visibility) {
+                View.INVISIBLE -> View.VISIBLE
+                View.VISIBLE -> View.INVISIBLE
+                else -> View.VISIBLE
+            }
+        }
     }
 
     private fun setFamilyStyle(family: Item) {
@@ -312,26 +337,28 @@ class TreeMembersFragment : Fragment() {
         family.layoutParams = params
     }
 
-    private fun setupMenuBar(view: View) {
-        memberMenuBar = view.findViewById(R.id.memberMenuBar)
+    private fun setupMenuBar() {
+        memberMenuBar = binding.memberMenuBar
         memberMenuBar.visibility = View.INVISIBLE
 
         // Navigate to member info
-        val memberInfoBtn = view.findViewById<LinearLayout>(R.id.memberInfoBtn)
+        val memberInfoBtn = binding.memberInfoBtn
         memberInfoBtn.setOnClickListener {
-            it.findNavController().navigate(TreeMembersFragmentDirections.actionTreeMembersFragmentToMemberInfoFragment())
+            it.findNavController().navigate(
+                TreeMembersFragmentDirections.actionTreeMembersFragmentToMemberInfoFragment(focusedNode!!.id)
+            )
         }
 
         // Navigate to add member
-        val addMemberBtn = view.findViewById<LinearLayout>(R.id.addMemberBtn)
-        addMemberBtn.setOnClickListener {
-            it.findNavController().navigate(TreeMembersFragmentDirections.actionTreeMembersFragmentToAddMemberFragment())
-        }
+        val addMemberBtn = binding.addMemberBtn
+//        addMemberBtn.setOnClickListener {
+//            it.findNavController().navigate(TreeMembersFragmentDirections.actionTreeMembersFragmentToEditMemberFragment(focusedNode!!.id))
+//        }
 
         // Navigate to edit member
-        val editMemberBtn = view.findViewById<LinearLayout>(R.id.editMemberBtn)
+        val editMemberBtn = binding.editMemberBtn
         editMemberBtn.setOnClickListener {
-            it.findNavController().navigate(TreeMembersFragmentDirections.actionTreeMembersFragmentToAddMemberFragment())
+            it.findNavController().navigate(TreeMembersFragmentDirections.actionTreeMembersFragmentToEditMemberFragment(focusedNode!!.id))
         }
     }
 }

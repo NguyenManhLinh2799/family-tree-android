@@ -7,8 +7,6 @@ import kotlinx.android.parcel.RawValue
 
 @Parcelize
 data class ApiResponse<T>(
-        val data: @RawValue T,
-        val message: String,
-        val errors: String?) : Parcelable {
-
-        }
+    val data: @RawValue T,
+    val message: String,
+    val errors: String?) : Parcelable

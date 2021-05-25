@@ -1,11 +1,18 @@
 package com.example.familytree.domain
 
-import com.example.familytree.network.auth.NetworkUser
+data class Contributor(
+    val id: String,
+    val username: String,
+    val avatarUrl: String?
+)
 
 data class Tree(
     val id: Int?,
     val name: String,
-    val description: String?
+    val description: String?,
+    val publicMode: Boolean?,
+    val owner: Contributor?,
+    val editors: List<Contributor>?
 )
 
 data class User(

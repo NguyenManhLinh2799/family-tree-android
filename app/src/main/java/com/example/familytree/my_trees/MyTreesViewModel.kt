@@ -7,8 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.familytree.database.getDatabase
+import com.example.familytree.domain.AuthData
+import com.example.familytree.domain.Tree
 import com.example.familytree.network.FamilyTreeApi
 import com.example.familytree.network.NetworkTree
+import com.example.familytree.network.asDomainModel
 import com.example.familytree.repository.FamilyTreeRepository
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
@@ -17,34 +20,30 @@ class MyTreesViewModel(context: Context) : ViewModel() {
 
     private val database = getDatabase(context)
     private val familyTreeRepository = FamilyTreeRepository(database)
+
+    var myTrees = MutableLiveData<List<Tree>>()
+
     init {
         viewModelScope.launch {
-            familyTreeRepository.refreshTrees()
+            try {
+                myTrees.value = familyTreeRepository.getAllTrees().asDomainModel()
+                Log.e("MyTreesViewModel", myTrees.value!!.size.toString())
+            } catch (e: Exception) {
+                myTrees.value = listOf(
+                        Tree(1, "Tree1", "", null, null, null),
+                        Tree(2, "Tree2", "", null, null, null),
+                        Tree(3, "Tree3", "", null, null, null),
+                        Tree(4, "Tree4", "", null, null, null),
+                        Tree(5, "Tree5", "", null, null, null)
+                )
+            }
         }
     }
-    val myTrees = familyTreeRepository.trees
-
-//    var myTrees = MutableLiveData<List<NetworkTree>>()
-//
-//    init {
-//        viewModelScope.launch {
-//            try {
-//                myTrees.value = FamilyTreeApi.retrofitService.getTrees().data
-//                Log.e("MyTreesViewModel", myTrees.value!![0].name)
-//            } catch (e: Exception) {
-//                myTrees.value = listOf(
-//                        NetworkTree(1, "Tree1", ""),
-//                        NetworkTree(2, "Tree2", ""),
-//                        NetworkTree(3, "Tree3", ""),
-//                        NetworkTree(4, "Tree4", ""),
-//                        NetworkTree(5, "Tree5", ""))
-//            }
-//        }
-//    }
 
     fun addTree(name: String, description: String) {
         viewModelScope.launch {
             familyTreeRepository.addTree(name, description)
+            myTrees.value = familyTreeRepository.getAllTrees().asDomainModel()
         }
     }
 
@@ -57,6 +56,7 @@ class MyTreesViewModel(context: Context) : ViewModel() {
     fun editTree(id: Int?, name: String, description: String) {
         viewModelScope.launch {
             familyTreeRepository.upadateTree(id, name, description)
+            myTrees.value = familyTreeRepository.getAllTrees().asDomainModel()
         }
     }
 

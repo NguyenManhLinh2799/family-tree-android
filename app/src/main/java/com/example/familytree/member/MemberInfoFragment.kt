@@ -6,28 +6,42 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.example.familytree.R
+import com.example.familytree.databinding.FragmentMemberInfoBinding
+import com.example.familytree.tree_members.TreeMembersFragmentArgs
+import com.example.familytree.tree_members.TreeMembersViewModel
 
 class MemberInfoFragment: Fragment() {
 
+    private lateinit var binding: FragmentMemberInfoBinding
+
     private val memberInfoViewModel: MemberInfoViewModel by lazy {
-        ViewModelProviders.of(this).get(MemberInfoViewModel::class.java)
+        ViewModelProvider(this,
+            MemberInfoViewModel.Factory(
+                requireNotNull(context),
+                requireNotNull(MemberInfoFragmentArgs.fromBundle(arguments!!).memberID)
+            ))
+            .get(MemberInfoViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_member_info, container, false)
+        binding = FragmentMemberInfoBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val fullName = view.findViewById<TextView>(R.id.fullName)
-        val dob = view.findViewById<TextView>(R.id.dateOfBirth)
-        val sex = view.findViewById<TextView>(R.id.sex)
+        val fullName = binding.fullName
+        val dob = binding.dateOfBirth
+        val dod = binding.dateOfDeath
+        val sex = binding.sex
         memberInfoViewModel.member.observe(viewLifecycleOwner, {
             fullName.text = it.fullName
             dob.text = it.dateOfBirth
+            dod.text = it.dateOfDeath
             sex.text = it.sex
         })
     }

@@ -34,6 +34,7 @@
         app:layout_constraintEnd_toEndOf="@+id/imageView" />
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
@@ -48,70 +49,88 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal">
+
             <EditText
+                android:id="@+id/firstName"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:hint="@string/first_name"
-                android:layout_weight="3"/>
+                android:layout_weight="2"
+                android:hint="@string/first_name" />
+
             <EditText
+                android:id="@+id/lastName"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:hint="@string/last_name"
-                android:layout_weight="2"/>
+                android:layout_weight="2"
+                android:hint="@string/last_name" />
         </LinearLayout>
 
         <RadioGroup
             android:layout_width="200dp"
             android:layout_height="50dp"
-            android:orientation="horizontal"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
             <RadioButton
+                android:id="@+id/male"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:text="@string/male"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:text="@string/male" />
+
             <RadioButton
+                android:id="@+id/female"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:text="@string/female"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:text="@string/female" />
         </RadioGroup>
 
         <EditText
+            android:id="@+id/dateOfBirth"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="@string/date_of_birth"/>
+            android:hint="@string/date_of_birth" />
+
+        <EditText
+            android:id="@+id/dateOfDeath"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="@string/date_of_death" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="@string/date_of_death"/>
+            android:hint="@string/phone_number" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="@string/phone_number"/>
+            android:hint="@string/email" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="@string/email"/>
+            android:hint="@string/facebook" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="@string/facebook"/>
+            android:hint="@string/address" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="@string/address"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="@string/career"/>
+            android:hint="@string/career" />
 
     </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

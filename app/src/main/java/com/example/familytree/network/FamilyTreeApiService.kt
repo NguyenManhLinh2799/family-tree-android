@@ -5,6 +5,7 @@ import com.example.familytree.network.auth.NetworkAuthContainer
 import com.example.familytree.network.auth.RegisterRequest
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
@@ -27,31 +28,33 @@ interface FamilyTreeApiService {
     suspend fun register(@Body registerRequestBody: RegisterRequest): NetworkAuthContainer
 
     @POST("authentication/login")
-    suspend fun login(@Body loginRequestBody: LoginRequest): NetworkAuthContainer
+    suspend fun login(@Body loginRequestBody: LoginRequest): Response<NetworkAuthContainer>
+
 
     // Family tree
-    @GET("tree-management/tree")
-    suspend fun getTrees(): NetworkTreeContainer
+    @GET("tree-management/trees/list")
+    suspend fun getTrees(@Header("Authorization") token: String): NetworkTreeContainer
 
     @Headers("Content-Type: application/json")
     @POST("tree-management/tree")
-    suspend fun addTree(@Body newTree: NetworkTree)
+    suspend fun addTree(@Header("Authorization") token: String, @Body newTree: NetworkTree)
 
     @DELETE("tree-management/tree/{treeId}")
-    suspend fun deleteTree(@Path("treeId") id: Int?)
+    suspend fun deleteTree(@Path("treeId") id: Int?, @Header("Authorization") token: String)
 
     @Headers("Content-Type: application/json")
     @PUT("tree-management/tree/{treeId}")
-    suspend fun editTree(@Path("treeId") id: Int?, @Body editedTree: NetworkTree)
+    suspend fun editTree(@Path("treeId") id: Int?, @Header("Authorization") token: String, @Body editedTree: NetworkTree)
 
 
     // Member
     @GET("person-management/person/{personId}")
-    suspend fun getPerson(@Path("personId") id: Int): ApiResponse<Member>
+    suspend fun getPerson(@Path("personId") id: Int, @Header("Authorization") token: String): ApiResponse<Member>
+
 
     // Tree members
     @GET("tree-management/tree/{treeId}")
-    suspend fun getTreeMembers(@Path("treeId") id: Int): ApiResponse<TreeMembers>
+    suspend fun getTreeMembers(@Path("treeId") id: Int?, @Header("Authorization") token: String): ApiResponse<TreeMembers>
 }
 
 object FamilyTreeApi {

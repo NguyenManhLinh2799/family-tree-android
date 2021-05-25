@@ -27,7 +27,6 @@
         android:id="@+id/fullName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
         android:textColor="@android:color/black"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="@+id/imageView"
@@ -63,7 +62,6 @@
                 android:layout_weight="9"
                 android:gravity="center_vertical"
                 android:paddingStart="20dp"
-                android:text="@string/app_name"
                 android:textSize="20sp" />
         </LinearLayout>
 
@@ -85,7 +83,6 @@
                 android:layout_weight="9"
                 android:gravity="center_vertical"
                 android:paddingStart="20dp"
-                android:text="@string/app_name"
                 android:textSize="20sp" />
         </LinearLayout>
 
@@ -107,7 +104,6 @@
                 android:layout_weight="9"
                 android:gravity="center_vertical"
                 android:paddingStart="20dp"
-                android:text="@string/app_name"
                 android:textSize="20sp" />
         </LinearLayout>
 
@@ -128,7 +124,6 @@
                 android:layout_weight="9"
                 android:gravity="center_vertical"
                 android:paddingStart="20dp"
-                android:text="@string/app_name"
                 android:textSize="20sp" />
         </LinearLayout>
 
@@ -149,7 +144,6 @@
                 android:layout_weight="9"
                 android:gravity="center_vertical"
                 android:paddingStart="20dp"
-                android:text="@string/app_name"
                 android:textSize="20sp" />
         </LinearLayout>
 
@@ -170,7 +164,6 @@
                 android:layout_weight="9"
                 android:gravity="center_vertical"
                 android:paddingStart="20dp"
-                android:text="@string/app_name"
                 android:textSize="20sp" />
         </LinearLayout>
 
@@ -191,7 +184,6 @@
                 android:layout_weight="9"
                 android:gravity="center_vertical"
                 android:paddingStart="20dp"
-                android:text="@string/app_name"
                 android:textSize="20sp" />
         </LinearLayout>
 
@@ -212,7 +204,6 @@
                 android:layout_weight="9"
                 android:gravity="center_vertical"
                 android:paddingStart="20dp"
-                android:text="@string/app_name"
                 android:textSize="20sp" />
         </LinearLayout>
 

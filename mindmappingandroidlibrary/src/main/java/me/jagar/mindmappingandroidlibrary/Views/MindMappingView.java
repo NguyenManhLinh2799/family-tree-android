@@ -26,8 +26,8 @@ import me.jagar.mindmappingandroidlibrary.Listeners.OnItemClicked;
 public class MindMappingView extends RelativeLayout {
 
     private static final int LEVEL_SPACING = 400;
-    private static final int PARENT_SPACING = 200;
-    private static final int MIN_SPACING = 50;
+    private static final int PARENT_SPACING = 300;
+    private static final int MIN_SPACING = 100;
     private float centralPointX;
     private float centralPointY;
     private Item root;
@@ -75,7 +75,7 @@ public class MindMappingView extends RelativeLayout {
         item.setGravity(CENTER_IN_PARENT);
         this.setGravity(Gravity.CENTER);
 
-        boolean dragAble = true;
+        boolean dragAble = false;
         if (dragAble){
             dragItem(item);
         }
@@ -203,7 +203,7 @@ public class MindMappingView extends RelativeLayout {
             newItem.addConnection(base, ItemLocation.BOTTOM, null);
         }
 
-        boolean dragAble = true;
+        boolean dragAble = false;
         if (dragAble){
             dragItem(newItem);
         }
@@ -211,6 +211,9 @@ public class MindMappingView extends RelativeLayout {
 
     // Reingold-Tilford algorithm
     public void ReingoldTilford() {
+        if (root == null) {
+            return;
+        }
 
         completeTree(root);
         initializeNodes(root, 0);

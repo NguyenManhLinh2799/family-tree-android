@@ -14,6 +14,8 @@ import java.util.HashMap;
 
 public class Item extends LinearLayout {
 
+    public int id;
+
     public float X;
     public int Y;
     public float Mod;
@@ -93,8 +95,9 @@ public class Item extends LinearLayout {
     }
     // My customization
 
-    public Item(Context context, String title, String content, int type){
+    public Item(Context context, int id, String title, String content, int type){
         super(context);
+        this.id = id;
         this.context = context;
         this.type = type;
         this.setTitle(title);

@@ -2,9 +2,7 @@ package com.example.familytree.auth
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.familytree.database.getDatabase
 import com.example.familytree.my_trees.MyTreesViewModel
 import com.example.familytree.network.FamilyTreeApi
@@ -17,30 +15,25 @@ class LoginViewModel(context: Context): ViewModel() {
 
     lateinit var accessToken: String
     lateinit var refreshToken: String
+    var loginState = MutableLiveData(0) // 0: not yet login, 1: success, -1: failed
 
     private val database = getDatabase(context)
     private val familyTreeRepository = FamilyTreeRepository(database)
 
-    fun login(
-        usernameOrEmail: String,
-        password: String
-    ) {
+    fun login(usernameOrEmail: String, password: String) {
         viewModelScope.launch {
-//            val response = FamilyTreeApi.retrofitService.login(LoginRequest(
-//                usernameOrEmail,
-//                password,
-//                true
-//            ))
-//            accessToken = response.data.accessToken
-//            refreshToken = response.data.refreshToken
-//            Log.e("LoginViewModel", "accessToken: $accessToken")
-//            Log.e("LoginViewModel", "refreshToken: $refreshToken")
+            val success = familyTreeRepository.login(usernameOrEmail, password)
 
-            familyTreeRepository.login(usernameOrEmail, password)
-            val authData = familyTreeRepository.getAuthData()
-            Log.e("LoginViewModel", "userID: ${authData.userID}")
-            Log.e("LoginViewModel", "accessToken: ${authData.accessToken}")
-            Log.e("LoginViewModel", "refreshToken: ${authData.refreshToken}")
+            if (success) {
+                loginState.value = 1
+
+                val authData = familyTreeRepository.getAuthData()
+                Log.e("LoginViewModel", "userID: ${authData.userID}")
+                Log.e("LoginViewModel", "accessToken: ${authData.accessToken}")
+                Log.e("LoginViewModel", "refreshToken: ${authData.refreshToken}")
+            } else {
+                loginState.value = -1
+            }
         }
     }
 

@@ -8,14 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.example.familytree.R
 import com.example.familytree.databinding.FragmentMyTreesBinding
 import com.example.familytree.domain.Tree
-import com.example.familytree.network.NetworkTree
 
 
 class MyTreesFragment: Fragment() {
@@ -61,14 +58,14 @@ class MyTreesFragment: Fragment() {
         val dialogBuilder = AlertDialog.Builder(context)
             .setTitle("Add a new family tree")
             .setView(R.layout.dialog_tree_form)
-            .setPositiveButton("Add") { dialog, which ->
-                val d = Dialog::class.java.cast(dialog)
-                val name = d.findViewById<EditText>(R.id.dialogTreeName)?.text.toString()
-                val description = d.findViewById<EditText>(R.id.dialogTreeDescription)?.text.toString()
+            .setPositiveButton("Add") { dialogInterface, which ->
+                val dialog = Dialog::class.java.cast(dialogInterface)
+                val name = dialog.findViewById<EditText>(R.id.dialogTreeName)?.text.toString()
+                val description = dialog.findViewById<EditText>(R.id.dialogTreeDescription)?.text.toString()
                 Toast.makeText(context, "$name added", Toast.LENGTH_SHORT).show()
                 myTreesViewModel.addTree(name, description)
             }
-            .setNegativeButton("Cancel") { dialog, which -> dialog.cancel() }
+            .setNegativeButton("Cancel") { dialogInterface, which -> dialogInterface.cancel() }
 
         val dialog = dialogBuilder.create()
         dialog.show()

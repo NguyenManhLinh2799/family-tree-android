@@ -2,6 +2,7 @@ package com.example.familytree.my_trees
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.navigation.findNavController
@@ -32,7 +33,10 @@ class TreeAdapter(private val onItemClick: OnItemClick) : ListAdapter<Tree, Tree
             name.text = tree?.name
             description.text = tree?.description
             itemView.setOnClickListener { view: View ->
-                view.findNavController().navigate(MyTreesFragmentDirections.actionMyTreesFragmentToTreeMembersFragment())
+                Log.e("TreeAdapter", tree!!.id.toString())
+                view.findNavController().navigate(
+                    MyTreesFragmentDirections.actionMyTreesFragmentToTreeMembersFragment(tree.id!!)
+                )
             }
             setUpMoreBtn(tree?.id, onItemClick)
         }
