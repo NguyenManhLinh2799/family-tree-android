@@ -37,4 +37,6 @@
     <string name="logout">Logout</string>
     <string name="username_or_email">Username or email</string>
     <string name="save">Save</string>
+    <string name="note">Note</string>
+    <string name="relationship">Relationship</string>
 </resources>

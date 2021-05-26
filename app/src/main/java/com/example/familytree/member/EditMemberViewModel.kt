@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.familytree.database.getDatabase
-import com.example.familytree.network.Member
+import com.example.familytree.network.member.Member
 import com.example.familytree.repository.FamilyTreeRepository
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -23,8 +23,7 @@ class EditMemberViewModel(context: Context, memberID: Int) : ViewModel() {
     init {
         viewModelScope.launch {
             try {
-                member.value = familyTreeRepository.getMember(memberID).data
-                Log.e("MemberInfoViewModel", member.value!!.fullName)
+                member.value = familyTreeRepository.getMember(memberID).data!!
             } catch (e: Exception) {
                 member.value = Member(
                     null,
@@ -40,6 +39,12 @@ class EditMemberViewModel(context: Context, memberID: Int) : ViewModel() {
                     null,
                     null)
             }
+        }
+    }
+
+    fun editMember(editedMember: Member) {
+        viewModelScope.launch {
+            familyTreeRepository.editMember(editedMember)
         }
     }
 

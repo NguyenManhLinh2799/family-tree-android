@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 
-class MemberInfoViewModel(context: Context, memberID: Int) : ViewModel() {
+class AddMemberViewModel(context: Context, memberID: Int) : ViewModel() {
 
     private val database = getDatabase(context)
     private val familyTreeRepository = FamilyTreeRepository(database)
@@ -21,9 +21,11 @@ class MemberInfoViewModel(context: Context, memberID: Int) : ViewModel() {
     var member = MutableLiveData<Member>()
 
     init {
+        Log.e("AddMemberViewModel", memberID.toString())
         viewModelScope.launch {
             try {
                 member.value = familyTreeRepository.getMember(memberID).data!!
+                Log.e("AddMemberViewModel", member.value!!.fullName)
             } catch (e: Exception) {
                 member.value = Member(
                     null,
@@ -42,11 +44,29 @@ class MemberInfoViewModel(context: Context, memberID: Int) : ViewModel() {
         }
     }
 
+    fun addChildMember(newChildMember: Member) {
+        val fatherId: Int?
+        val motherId: Int?
+        if (member.value?.isMale == true) {
+            fatherId = member.value?.id
+            motherId = member.value?.spouses?.get(0)?.id
+        } else {
+            motherId = member.value?.id
+            fatherId = member.value?.spouses?.get(0)?.id
+        }
+
+        viewModelScope.launch {
+            familyTreeRepository.addChildMember(
+                fatherId, motherId, newChildMember
+            )
+        }
+    }
+
     class Factory(val context: Context, val memberID: Int) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(MemberInfoViewModel::class.java)) {
+            if (modelClass.isAssignableFrom(AddMemberViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return MemberInfoViewModel(context, memberID) as T
+                return AddMemberViewModel(context, memberID) as T
             }
             throw IllegalArgumentException("Unable to construct viewmodel")
         }

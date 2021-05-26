@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.example.familytree.DateHelper
 import com.example.familytree.R
 import com.example.familytree.databinding.FragmentMemberInfoBinding
 import com.example.familytree.tree_members.TreeMembersFragmentArgs
@@ -40,8 +41,10 @@ class MemberInfoFragment: Fragment() {
         val sex = binding.sex
         memberInfoViewModel.member.observe(viewLifecycleOwner, {
             fullName.text = it.fullName
-            dob.text = it.dateOfBirth
-            dod.text = it.dateOfDeath
+            dob.text = DateHelper.isoToDate(it.dateOfBirth)
+            dod.text = DateHelper.isoToDate(it.dateOfDeath)
+            //dob.text = it.dateOfBirth
+            //dod.text = it.dateOfDeath
             sex.text = it.sex
         })
     }

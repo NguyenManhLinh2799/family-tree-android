@@ -1,4 +1,4 @@
-package com.example.familytree.network
+package com.example.familytree.network.member
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
@@ -6,7 +6,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class Member(
     val spouses: List<Member>?,
-    val id: Int,
+    val id: Int?,
     val firstName: String?,
     val lastName: String?,
     val dateOfBirth: String?,
@@ -15,7 +15,7 @@ data class Member(
     val parent2Id: Int?,
     val gender: Int?,
     val note: String?,
-    val userId: Int?,
+    val userId: String?,
     val imageUrl: String?) : Parcelable {
 
     val fullName

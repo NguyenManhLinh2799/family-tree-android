@@ -3,6 +3,8 @@ package com.example.familytree.network
 import com.example.familytree.network.auth.LoginRequest
 import com.example.familytree.network.auth.NetworkAuthContainer
 import com.example.familytree.network.auth.RegisterRequest
+import com.example.familytree.network.member.AddChildMemberRequest
+import com.example.familytree.network.member.Member
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Response
@@ -50,6 +52,12 @@ interface FamilyTreeApiService {
     // Member
     @GET("person-management/person/{personId}")
     suspend fun getPerson(@Path("personId") id: Int, @Header("Authorization") token: String): ApiResponse<Member>
+
+    @POST("person-management/person/child")
+    suspend fun addChild(@Header("Authorization") token: String, @Body newChildMember: AddChildMemberRequest)
+
+    @PUT("person-management/person/{personId}")
+    suspend fun editPerson(@Path("personId") id: Int, @Header("Authorization") token: String, @Body editedMember: Member)
 
 
     // Tree members

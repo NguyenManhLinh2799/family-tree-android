@@ -23,6 +23,10 @@ class TreeMembersViewModel(context: Context, treeID: Int): ViewModel() {
     var treeMembers = MutableLiveData<TreeMembers>()
 
     init {
+        loadTreeMembers(treeID)
+    }
+
+    fun loadTreeMembers(treeID: Int) {
         viewModelScope.launch {
             try {
                 treeMembers.value = familyTreeRepository.getTreeMembers(treeID).data
