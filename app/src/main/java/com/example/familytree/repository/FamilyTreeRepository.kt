@@ -78,16 +78,26 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
         return@withContext FamilyTreeApi.retrofitService.getPerson(id, "Bearer ${authData.accessToken}")
     }
 
+    suspend fun addParentMember(id: Int, parentMember: Member) {
+        withContext(Dispatchers.IO) {
+            val authData = database.authDataDao.getAuthData()
+            FamilyTreeApi.retrofitService.addParent(id, "Bearer ${authData.accessToken}", parentMember)
+        }
+    }
+
+    suspend fun addPartnerMember(id: Int, partnerMember: Member) {
+        withContext(Dispatchers.IO) {
+            val authData = database.authDataDao.getAuthData()
+            FamilyTreeApi.retrofitService.addSpouse(id, "Bearer ${authData.accessToken}", partnerMember)
+        }
+    }
+
     suspend fun addChildMember(fatherId: Int?, motherId: Int?, childInfo: Member) {
         withContext(Dispatchers.IO) {
             val authData = database.authDataDao.getAuthData()
             FamilyTreeApi.retrofitService.addChild(
                 "Bearer ${authData.accessToken}",
                 AddChildMemberRequest(fatherId, motherId, childInfo))
-            Log.e("AddChild", fatherId.toString())
-            Log.e("AddChild", motherId.toString())
-            Log.e("AddChild", childInfo.fullName)
-            Log.e("AddChild", childInfo.sex)
         }
     }
 

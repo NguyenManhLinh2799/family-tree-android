@@ -21,7 +21,6 @@ class AddMemberViewModel(context: Context, memberID: Int) : ViewModel() {
     var member = MutableLiveData<Member>()
 
     init {
-        Log.e("AddMemberViewModel", memberID.toString())
         viewModelScope.launch {
             try {
                 member.value = familyTreeRepository.getMember(memberID).data!!
@@ -41,6 +40,18 @@ class AddMemberViewModel(context: Context, memberID: Int) : ViewModel() {
                     null,
                     null)
             }
+        }
+    }
+
+    fun addParentMember(parentMember: Member) {
+        viewModelScope.launch {
+            familyTreeRepository.addParentMember(member.value?.id!!, parentMember)
+        }
+    }
+
+    fun addPartnerMember(partnerMember: Member) {
+        viewModelScope.launch {
+            familyTreeRepository.addPartnerMember(member.value?.id!!, partnerMember)
         }
     }
 

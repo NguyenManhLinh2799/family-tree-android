@@ -53,6 +53,12 @@ interface FamilyTreeApiService {
     @GET("person-management/person/{personId}")
     suspend fun getPerson(@Path("personId") id: Int, @Header("Authorization") token: String): ApiResponse<Member>
 
+    @POST("person-management/person/{personId}/parent")
+    suspend fun addParent(@Path("personId") id: Int, @Header("Authorization") token: String, @Body parentMember: Member)
+
+    @POST("person-management/person/{personId}/spouse")
+    suspend fun addSpouse(@Path("personId") id: Int, @Header("Authorization") token: String, @Body spouseMember: Member)
+
     @POST("person-management/person/child")
     suspend fun addChild(@Header("Authorization") token: String, @Body newChildMember: AddChildMemberRequest)
 

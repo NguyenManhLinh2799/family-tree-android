@@ -294,6 +294,11 @@ class TreeMembersFragment : Fragment() {
     }
 
     private fun setStyle(item: Item) {
+        val params = item.layoutParams
+        params.height = 228
+        params.width = 200
+        item.layoutParams = params
+
         if (item.type == ItemType.FAMILY) {
             return setFamilyStyle(item)
         }
@@ -328,12 +333,12 @@ class TreeMembersFragment : Fragment() {
     }
 
     private fun setFamilyStyle(family: Item) {
-        family.setBackgroundResource(R.drawable.ic_familynode)
+        family.setBackgroundResource(R.drawable.ic_family)
 
-        val params = family.layoutParams
-        params.height = 228
-        //params.width = 183
-        family.layoutParams = params
+//        val params = family.layoutParams
+//        params.height = 228
+//        params.width = 183
+//        family.layoutParams = params
     }
 
     private fun setupMenuBar() {

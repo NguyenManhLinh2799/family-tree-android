@@ -1,4 +1,10 @@
 <resources>
+    <string-array name="relationship_type">
+        <item>Parent</item>
+        <item>Partner</item>
+        <item>Child</item>
+    </string-array>
+
     <string name="app_name">Family Tree</string>
     <string name="my_trees">My Trees</string>
     <string name="shared_with_me">Shared with me</string>
