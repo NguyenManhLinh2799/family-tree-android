@@ -29,7 +29,7 @@ class TreeMembersViewModel(context: Context, treeID: Int): ViewModel() {
     fun loadTreeMembers(treeID: Int) {
         viewModelScope.launch {
             try {
-                treeMembers.value = familyTreeRepository.getTreeMembers(treeID).data
+                treeMembers.value = familyTreeRepository.getTreeMembers(treeID).data!!
             } catch (e: Exception) {
                 treeMembers.value = TreeMembers(0, "abc", "xyz", true, emptyList())
             }

@@ -13,7 +13,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/avatar"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="false"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginTop="25dp"
@@ -24,14 +26,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/addImage"
+        android:id="@+id/addAvatar"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:padding="10dp"
         android:background="@drawable/bg_avatar_no_stroke"
         android:src="@drawable/ic_camera"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
-        app:layout_constraintEnd_toEndOf="@+id/imageView" />
+        app:layout_constraintBottom_toBottomOf="@+id/avatar"
+        app:layout_constraintEnd_toEndOf="@+id/avatar" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -125,6 +127,7 @@
         </LinearLayout>
 
         <EditText
+            android:id="@+id/note"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hint="@string/note" />

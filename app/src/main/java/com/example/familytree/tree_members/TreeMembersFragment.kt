@@ -1,6 +1,8 @@
 package com.example.familytree.tree_members
 
+import android.graphics.Paint
 import android.os.Bundle
+import android.text.Layout
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -8,9 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import coil.load
 import com.example.familytree.R
 import com.example.familytree.databinding.FragmentTreeMembersBinding
 import com.example.familytree.network.member.Member
@@ -77,6 +81,7 @@ class TreeMembersFragment : Fragment() {
     }
 
     private fun updateAllNodes(members: List<Member>) {
+        Log.e("TreeMembersFragment", "updateAllNodes")
 
         // Remove all child views
         allNodes = emptyList()
@@ -116,11 +121,11 @@ class TreeMembersFragment : Fragment() {
 
         // Create central item
         if (rootMem != null) {
-            val rootItem = Item(context, rootMem.id!!, rootMem.fullName, null,
+            val rootItem = Item(context, rootMem.id!!, rootMem.fullName, rootMem.getLifeTime(),
             when (rootMem.isMale) {
                 true -> ItemType.MALE
                 else -> ItemType.FEMALE
-            })
+            }, rootMem.imageUrl)
             treeView.addCentralItem(rootItem)
             added.add(rootItem)
             notYetAdded.remove(rootMem)
@@ -130,14 +135,14 @@ class TreeMembersFragment : Fragment() {
             if (rootMem.spouses?.isNotEmpty() == true) {
                 for (mem in notYetAdded) {
                     if (mem.id == rootMem.spouses!![0].id) {
-                        familyItem = Item(context, 0, "", null, ItemType.FAMILY)
+                        familyItem = Item(context, 0, "", null, ItemType.FAMILY, null)
                         if (mem.isMale) {
-                            val partnerItem = Item(context, mem.id!!, mem.fullName, null, ItemType.MALE)
+                            val partnerItem = Item(context, mem.id!!, mem.fullName, mem.getLifeTime(), ItemType.MALE, mem.imageUrl)
                             treeView.addItem(familyItem, rootItem, ItemLocation.LEFT)
                             treeView.addItem(partnerItem, familyItem, ItemLocation.LEFT)
                             added.add(partnerItem)
                         } else {
-                            val partnerItem = Item(context, mem.id!!, mem.fullName, null, ItemType.FEMALE)
+                            val partnerItem = Item(context, mem.id!!, mem.fullName, mem.getLifeTime(), ItemType.FEMALE, mem.imageUrl)
                             treeView.addItem(familyItem, rootItem, ItemLocation.RIGHT)
                             treeView.addItem(partnerItem, familyItem, ItemLocation.RIGHT)
                             added.add(partnerItem)
@@ -165,11 +170,11 @@ class TreeMembersFragment : Fragment() {
             }
             for (childMem in childrenMem) {
 
-                val childItem = Item(context, childMem.id!!, childMem.fullName, null,
+                val childItem = Item(context, childMem.id!!, childMem.fullName, childMem.getLifeTime(),
                 when (childMem.isMale) {
                     true -> ItemType.MALE
                     else -> ItemType.FEMALE
-                })
+                }, childMem.imageUrl)
                 if (familyItem != null) {
                     treeView.addItem(childItem, familyItem, ItemLocation.BOTTOM)
                 } else {
@@ -190,14 +195,14 @@ class TreeMembersFragment : Fragment() {
         if (member.spouses?.isNotEmpty() == true) {
             for (mem in notYetAdded) {
                 if (mem.id == member.spouses[0].id) {
-                    familyItem = Item(context, 0, "", null, ItemType.FAMILY)
+                    familyItem = Item(context, 0, "", null, ItemType.FAMILY, null)
                     if (mem.isMale) {
-                        val partnerItem = Item(context, mem.id!!, mem.fullName, null, ItemType.MALE)
+                        val partnerItem = Item(context, mem.id!!, mem.fullName, mem.getLifeTime(), ItemType.MALE, mem.imageUrl)
                         treeView.addItem(familyItem, item, ItemLocation.LEFT)
                         treeView.addItem(partnerItem, familyItem, ItemLocation.LEFT)
                         added.add(partnerItem)
                     } else {
-                        val partnerItem = Item(context, mem.id!!, mem.fullName, null, ItemType.FEMALE)
+                        val partnerItem = Item(context, mem.id!!, mem.fullName, mem.getLifeTime(), ItemType.FEMALE, mem.imageUrl)
                         treeView.addItem(familyItem, item, ItemLocation.RIGHT)
                         treeView.addItem(partnerItem, familyItem, ItemLocation.RIGHT)
                         added.add(partnerItem)
@@ -222,11 +227,11 @@ class TreeMembersFragment : Fragment() {
             }
         }
         for (childMem in childrenMem) {
-            val childItem = Item(context, childMem.id!!, childMem.fullName, null,
+            val childItem = Item(context, childMem.id!!, childMem.fullName, childMem.getLifeTime(),
                 when (childMem.isMale) {
                     true -> ItemType.MALE
                     else -> ItemType.FEMALE
-                })
+                }, childMem.imageUrl)
             if (familyItem != null) {
                 treeView.addItem(childItem, familyItem, ItemLocation.BOTTOM)
             } else {
@@ -238,30 +243,30 @@ class TreeMembersFragment : Fragment() {
     }
 
     private fun fakeData() {
-        val me = Item(context, 0, "Tôi", null, ItemType.MALE)
-        val family1 = Item(context, 0, "", null, ItemType.FAMILY)
-        val wife = Item(context, 0, "Vợ", null, ItemType.FEMALE)
-        val daughter = Item(context, 0, "Con gái", null, ItemType.FEMALE)
-        val family2 = Item(context, 0, "", null, ItemType.FAMILY)
-        val sonInLaw = Item(context, 0, "Con rể", null, ItemType.MALE)
-        val grandSon = Item(context, 0, "Cháu trai", null, ItemType.MALE)
-        val father = Item(context, 0, "Ba", null, ItemType.MALE)
-        val family3 = Item(context, 0, "", null, ItemType.FAMILY)
-        val mother = Item(context, 0, "Mẹ", null, ItemType.FEMALE)
-        val sister = Item(context, 0, "Chị", null, ItemType.FEMALE)
-        val family4 = Item(context, 0, "", null, ItemType.FAMILY)
-        val brotherInLaw = Item(context, 0, "Anh rể", null, ItemType.MALE)
-        val sisterSon = Item(context, 0, "Con trai chị", null, ItemType.MALE)
-        val family5 = Item(context, 0, "", null, ItemType.FAMILY)
-        val grandFather = Item(context, 0, "Ông nội", null, ItemType.MALE)
-        val grandMother = Item(context, 0, "Bà nội", null, ItemType.FEMALE)
-        val uncle = Item(context, 0, "Bác trai", null, ItemType.MALE)
-        val family6 = Item(context, 0, "", null, ItemType.FAMILY)
-        val uncleWife = Item(context, 0, "Vợ bác", null, ItemType.FEMALE)
-        val uncleSon = Item(context, 0, "Anh họ", null, ItemType.MALE)
-        val family7 = Item(context, 0, "", null, ItemType.FAMILY)
-        val uncleSonWife = Item(context, 0, "Vợ anh họ", null, ItemType.FEMALE)
-        val nephew = Item(context, 0, "Cháu họ", null, ItemType.MALE)
+        val me = Item(context, 0, "Tôi", null, ItemType.MALE, null)
+        val family1 = Item(context, 0, "", null, ItemType.FAMILY, null)
+        val wife = Item(context, 0, "Vợ", null, ItemType.FEMALE, null)
+        val daughter = Item(context, 0, "Con gái", null, ItemType.FEMALE, null)
+        val family2 = Item(context, 0, "", null, ItemType.FAMILY, null)
+        val sonInLaw = Item(context, 0, "Con rể", null, ItemType.MALE, null)
+        val grandSon = Item(context, 0, "Cháu trai", null, ItemType.MALE, null)
+        val father = Item(context, 0, "Ba", null, ItemType.MALE, null)
+        val family3 = Item(context, 0, "", null, ItemType.FAMILY, null)
+        val mother = Item(context, 0, "Mẹ", null, ItemType.FEMALE, null)
+        val sister = Item(context, 0, "Chị", null, ItemType.FEMALE, null)
+        val family4 = Item(context, 0, "", null, ItemType.FAMILY, null)
+        val brotherInLaw = Item(context, 0, "Anh rể", null, ItemType.MALE, null)
+        val sisterSon = Item(context, 0, "Con trai chị", null, ItemType.MALE, null)
+        val family5 = Item(context, 0, "", null, ItemType.FAMILY, null)
+        val grandFather = Item(context, 0, "Ông nội", null, ItemType.MALE, null)
+        val grandMother = Item(context, 0, "Bà nội", null, ItemType.FEMALE, null)
+        val uncle = Item(context, 0, "Bác trai", null, ItemType.MALE, null)
+        val family6 = Item(context, 0, "", null, ItemType.FAMILY, null)
+        val uncleWife = Item(context, 0, "Vợ bác", null, ItemType.FEMALE, null)
+        val uncleSon = Item(context, 0, "Anh họ", null, ItemType.MALE, null)
+        val family7 = Item(context, 0, "", null, ItemType.FAMILY, null)
+        val uncleSonWife = Item(context, 0, "Vợ anh họ", null, ItemType.FEMALE, null)
+        val nephew = Item(context, 0, "Cháu họ", null, ItemType.MALE, null)
 
         allNodes = listOf(me, family1, wife, daughter, family2, sonInLaw, grandSon, father, family3, mother,
             sister, family4, brotherInLaw, sisterSon, family5, grandFather, grandMother, uncle, family6, uncleWife,
@@ -294,34 +299,63 @@ class TreeMembersFragment : Fragment() {
     }
 
     private fun setStyle(item: Item) {
+
+        // Set width and height
         val params = item.layoutParams
-        params.height = 228
+        params.height = 250
         params.width = 200
         item.layoutParams = params
 
+        // If this is family item
         if (item.type == ItemType.FAMILY) {
             return setFamilyStyle(item)
         }
 
+        // Background
         item.setBackgroundResource(when (item.type) {
             ItemType.MALE -> R.drawable.bg_male
             else -> R.drawable.bg_female
         })
 
+        // Image
         val image = ImageView(context)
-        image.setImageResource(when (item.type) {
-            ItemType.MALE -> R.drawable.ic_male
-            else -> R.drawable.ic_female
-        })
-        image.setPadding(0, 0, 0, 20)
+        if (item.imgUrl != null) {
+            image.load(item.imgUrl)
+        } else {
+//            image.setImageResource(when (item.type) {
+//                ItemType.MALE -> R.drawable.ic_male
+//                else -> R.drawable.ic_female
+//            })
+        }
+        image.y = 0f
+        image.z = -10f
         item.addView(image, 0)
+        val imgParams = image.layoutParams as RelativeLayout.LayoutParams
+        imgParams.width = 150
+        imgParams.height = 150
+        imgParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE)
+        image.layoutParams = imgParams
 
-        item.gravity = Gravity.CENTER
-        item.title.gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
-        item.removeView(item.content)
+        // Title
+        item.title.y = 150f
+        item.title.z = 10f
+        item.title.textAlignment = View.TEXT_ALIGNMENT_CENTER
+        item.addView(item.title, 1)
+        val titleParams = item.title.layoutParams as RelativeLayout.LayoutParams
+        titleParams.width = RelativeLayout.LayoutParams.MATCH_PARENT
+        item.title.layoutParams = titleParams
+
+        // Content
+        item.content.y = 190f
+        item.content.z = 20f
+        item.content.textAlignment = View.TEXT_ALIGNMENT_CENTER
+        item.content.textSize = 10f
+        item.addView(item.content, 2)
+        val contentParams = item.content.layoutParams as RelativeLayout.LayoutParams
+        contentParams.width = RelativeLayout.LayoutParams.MATCH_PARENT
+        item.content.layoutParams = contentParams
 
         item.setPadding(5, 5, 5, 5)
-
         item.setOnClickListener {
             focusedNode = item
             memberMenuBar.visibility = when (memberMenuBar.visibility) {
@@ -335,10 +369,10 @@ class TreeMembersFragment : Fragment() {
     private fun setFamilyStyle(family: Item) {
         family.setBackgroundResource(R.drawable.ic_family)
 
-//        val params = family.layoutParams
-//        params.height = 228
-//        params.width = 183
-//        family.layoutParams = params
+        val params = family.layoutParams
+        params.height = 300
+        params.width = 200
+        family.layoutParams = params
     }
 
     private fun setupMenuBar() {

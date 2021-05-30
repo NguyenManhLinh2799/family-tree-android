@@ -1,6 +1,7 @@
 package com.example.familytree.network.member
 
 import android.os.Parcelable
+import com.example.familytree.DateHelper
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -16,11 +17,10 @@ data class Member(
     val gender: Int?,
     val note: String?,
     val userId: String?,
-    val imageUrl: String?) : Parcelable {
+    var imageUrl: String?) : Parcelable {
 
     val fullName
         get() = "$firstName $lastName"
-    //get() = "$firstName"
 
     val sex
         get() = when (gender) {
@@ -33,4 +33,16 @@ data class Member(
             0 -> true
             else -> false
         }
+
+    fun getLifeTime(): String {
+        var dob = DateHelper.isoToDate(dateOfBirth)
+        if (dob == "") {
+            dob = "?"
+        }
+        var dod = DateHelper.isoToDate(dateOfDeath)
+        if (dod == "") {
+            dod = "?"
+        }
+        return "$dob - $dod"
+    }
 }

@@ -79,4 +79,10 @@ dependencies {
 
     // Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:$version_room"
+
+    // Crop image
+    api "com.theartofdev.edmodo:android-image-cropper:2.8.+"
+
+    // Coil for loading image
+    implementation("io.coil-kt:coil:1.2.1")
 }

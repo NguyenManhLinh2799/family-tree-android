@@ -1,6 +1,7 @@
 package com.example.familytree.member
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -42,8 +43,14 @@ class EditMemberViewModel(context: Context, memberID: Int) : ViewModel() {
         }
     }
 
-    fun editMember(editedMember: Member) {
+    fun editMember(editedMember: Member, imgUri: Uri?) {
         viewModelScope.launch {
+            if (imgUri != null) {
+                val imgUrl = familyTreeRepository.uploadImage(imgUri).data
+                Log.e("EditMemberViewModel", imgUrl)
+                editedMember.imageUrl = imgUrl!!
+            }
+
             familyTreeRepository.editMember(editedMember)
         }
     }

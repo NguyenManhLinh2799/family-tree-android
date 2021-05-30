@@ -7,13 +7,15 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Item extends LinearLayout {
+public class Item extends RelativeLayout {
 
+    public String imgUrl = null;
     public int id;
 
     public float X;
@@ -95,14 +97,16 @@ public class Item extends LinearLayout {
     }
     // My customization
 
-    public Item(Context context, int id, String title, String content, int type){
+    public Item(Context context, int id, String title, String content, int type, String imgUrl){
         super(context);
+
+        this.imgUrl = imgUrl;
         this.id = id;
         this.context = context;
         this.type = type;
         this.setTitle(title);
         this.setContent(content);
-        this.addTextViews();
+        //this.addTextViews();
 
         if (title == null)
             this.title.setVisibility(GONE);
@@ -131,7 +135,7 @@ public class Item extends LinearLayout {
     public void setContent(String content){
         this.content = new TextView(context);
         this.getContent().setText(content);
-        this.getContent().setTypeface(Typeface.DEFAULT);
+        this.getContent().setTypeface(Typeface.DEFAULT_BOLD);
     }
     public void setBorder(int color, int size){
         GradientDrawable drawable = (GradientDrawable)this.getBackground();
@@ -146,28 +150,26 @@ public class Item extends LinearLayout {
     }
 
     private void addTextViews(){
-        this.setOrientation(LinearLayout.VERTICAL);
+        //this.setOrientation(LinearLayout.VERTICAL);
         this.addView(title);
         this.addView(content);
 
         if (defaultStyle)
             setDefaultStyle();
-
     }
 
     //If the item default style is true
     private void setDefaultStyle(){
-        GradientDrawable shape = new GradientDrawable();
-        shape.setColor(Color.GRAY);
-        shape.setCornerRadius(100);
-        this.setBackground(shape);
-        this.setBorder(Color.BLACK, 5);
-        this.setGravity(Gravity.CENTER);
-        this.title.setGravity(Gravity.CENTER);
-        this.content.setGravity(Gravity.CENTER);
-
-        this.setPadding(50, 20, 50, 20);
-
+//        GradientDrawable shape = new GradientDrawable();
+//        shape.setColor(Color.GRAY);
+//        shape.setCornerRadius(100);
+//        this.setBackground(shape);
+//        this.setBorder(Color.BLACK, 5);
+//        this.setGravity(Gravity.CENTER);
+//        this.title.setGravity(Gravity.CENTER);
+//        this.content.setGravity(Gravity.CENTER);
+//
+//        this.setPadding(50, 20, 50, 20);
     }
 
     public void addParent(Item parent, int location){

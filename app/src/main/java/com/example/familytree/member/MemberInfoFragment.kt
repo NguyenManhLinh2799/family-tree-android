@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import coil.load
 import com.example.familytree.DateHelper
 import com.example.familytree.R
 import com.example.familytree.databinding.FragmentMemberInfoBinding
@@ -35,17 +36,23 @@ class MemberInfoFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val avatar = binding.avatar
         val fullName = binding.fullName
+        val sex = binding.sex
         val dob = binding.dateOfBirth
         val dod = binding.dateOfDeath
-        val sex = binding.sex
+        val note = binding.note
+
         memberInfoViewModel.member.observe(viewLifecycleOwner, {
+            if (it.imageUrl != null) {
+                avatar.load(it.imageUrl)
+            }
+
             fullName.text = it.fullName
+            sex.text = it.sex
             dob.text = DateHelper.isoToDate(it.dateOfBirth)
             dod.text = DateHelper.isoToDate(it.dateOfDeath)
-            //dob.text = it.dateOfBirth
-            //dod.text = it.dateOfDeath
-            sex.text = it.sex
+            note.text = it.note
         })
     }
 }

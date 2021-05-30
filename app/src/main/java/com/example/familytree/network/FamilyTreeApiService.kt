@@ -7,6 +7,7 @@ import com.example.familytree.network.member.AddChildMemberRequest
 import com.example.familytree.network.member.Member
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -69,6 +70,12 @@ interface FamilyTreeApiService {
     // Tree members
     @GET("tree-management/tree/{treeId}")
     suspend fun getTreeMembers(@Path("treeId") id: Int?, @Header("Authorization") token: String): ApiResponse<TreeMembers>
+
+    // Upload image
+    @Multipart
+    @POST("file-upload/image")
+    suspend fun uploadImage(@Header("Authorization") token: String, @Part file: MultipartBody.Part): ApiResponse<String>
+
 }
 
 object FamilyTreeApi {

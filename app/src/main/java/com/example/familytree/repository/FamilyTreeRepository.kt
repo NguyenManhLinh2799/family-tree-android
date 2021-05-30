@@ -1,5 +1,6 @@
 package com.example.familytree.repository
 
+import android.net.Uri
 import android.util.Log
 import com.example.familytree.database.FamilyTreeDatabase
 import com.example.familytree.domain.AuthData
@@ -10,6 +11,10 @@ import com.example.familytree.network.auth.LoginRequest
 import com.example.familytree.network.member.AddChildMemberRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 
 class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
 
@@ -106,5 +111,16 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
             val authData = database.authDataDao.getAuthData()
             FamilyTreeApi.retrofitService.editPerson(editedMember.id!!, "Bearer ${authData.accessToken}", editedMember)
         }
+    }
+
+    // Image
+    suspend fun uploadImage(imgUri: Uri) = withContext(Dispatchers.IO) {
+        val imgFile = File(imgUri.path)
+        val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), imgFile)
+        val body = MultipartBody.Part.createFormData("file", imgFile.name, requestFile)
+
+        val authData = database.authDataDao.getAuthData()
+
+        return@withContext FamilyTreeApi.retrofitService.uploadImage("Bearer ${authData.accessToken}", body)
     }
 }
