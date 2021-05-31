@@ -1,6 +1,7 @@
 package com.example.familytree.member
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,12 +20,12 @@ class AddMemberViewModel(context: Context, memberID: Int) : ViewModel() {
     private val familyTreeRepository = FamilyTreeRepository(database)
 
     var member = MutableLiveData<Member>()
+    var navigateToTreeMembers = MutableLiveData<Boolean?>()
 
     init {
         viewModelScope.launch {
             try {
                 member.value = familyTreeRepository.getMember(memberID).data!!
-                Log.e("AddMemberViewModel", member.value!!.fullName)
             } catch (e: Exception) {
                 member.value = Member(
                     null,
@@ -43,19 +44,31 @@ class AddMemberViewModel(context: Context, memberID: Int) : ViewModel() {
         }
     }
 
-    fun addParentMember(parentMember: Member) {
+    fun addParentMember(parentMember: Member, imgUri: Uri?) {
         viewModelScope.launch {
+            if (imgUri != null) {
+                val imgUrl = familyTreeRepository.uploadImage(imgUri).data
+                parentMember.imageUrl = imgUrl
+            }
+
             familyTreeRepository.addParentMember(member.value?.id!!, parentMember)
+            navigateToTreeMembers.value = true
         }
     }
 
-    fun addPartnerMember(partnerMember: Member) {
+    fun addPartnerMember(partnerMember: Member, imgUri: Uri?) {
         viewModelScope.launch {
+            if (imgUri != null) {
+                val imgUrl = familyTreeRepository.uploadImage(imgUri).data
+                partnerMember.imageUrl = imgUrl
+            }
+
             familyTreeRepository.addPartnerMember(member.value?.id!!, partnerMember)
+            navigateToTreeMembers.value = true
         }
     }
 
-    fun addChildMember(newChildMember: Member) {
+    fun addChildMember(newChildMember: Member, imgUri: Uri?) {
         val fatherId: Int?
         val motherId: Int?
         if (member.value?.isMale == true) {
@@ -67,10 +80,20 @@ class AddMemberViewModel(context: Context, memberID: Int) : ViewModel() {
         }
 
         viewModelScope.launch {
+            if (imgUri != null) {
+                val imgUrl = familyTreeRepository.uploadImage(imgUri).data
+                newChildMember.imageUrl = imgUrl
+            }
+
             familyTreeRepository.addChildMember(
                 fatherId, motherId, newChildMember
             )
+            navigateToTreeMembers.value = true
         }
+    }
+
+    fun doneNavigating() {
+        this.navigateToTreeMembers.value = null
     }
 
     class Factory(val context: Context, val memberID: Int) : ViewModelProvider.Factory {

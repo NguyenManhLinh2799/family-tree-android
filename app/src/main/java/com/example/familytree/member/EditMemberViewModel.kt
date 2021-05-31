@@ -47,8 +47,7 @@ class EditMemberViewModel(context: Context, memberID: Int) : ViewModel() {
         viewModelScope.launch {
             if (imgUri != null) {
                 val imgUrl = familyTreeRepository.uploadImage(imgUri).data
-                Log.e("EditMemberViewModel", imgUrl)
-                editedMember.imageUrl = imgUrl!!
+                editedMember.imageUrl = imgUrl
             }
 
             familyTreeRepository.editMember(editedMember)

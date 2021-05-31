@@ -49,6 +49,7 @@ class MemberInfoFragment: Fragment() {
             }
 
             fullName.text = it.fullName
+            activity!!.title = "${it.fullName}'s info"
             sex.text = it.sex
             dob.text = DateHelper.isoToDate(it.dateOfBirth)
             dod.text = DateHelper.isoToDate(it.dateOfDeath)

@@ -36,6 +36,13 @@ class TreeMembersViewModel(context: Context, treeID: Int): ViewModel() {
         }
     }
 
+    fun deleteMember(memberID: Int) {
+        viewModelScope.launch {
+            familyTreeRepository.deleteMember(memberID)
+            loadTreeMembers(treeMembers.value!!.id)
+        }
+    }
+
     class Factory(val context: Context, val treeID: Int) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(TreeMembersViewModel::class.java)) {

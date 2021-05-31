@@ -156,7 +156,6 @@ class EditMemberFragment: Fragment() {
             if (resultCode == Activity.RESULT_OK) {
                 this.croppedImgUri = result.uri
                 avatar.setImageURI(croppedImgUri)
-                Log.e("EditMemberFragment", croppedImgUri.toString())
             }
         }
     }

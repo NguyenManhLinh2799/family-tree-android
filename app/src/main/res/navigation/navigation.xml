@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/my_trees_fragment"
         android:name="com.example.familytree.my_trees.MyTreesFragment"
-        android:label="MyTreesFragment"
+        android:label="My Trees"
         tools:layout="@layout/fragment_my_trees">
         <action
             android:id="@+id/action_my_trees_fragment_to_tree_members_fragment"
@@ -34,7 +34,7 @@
     <fragment
         android:id="@+id/member_info_fragment"
         android:name="com.example.familytree.member.MemberInfoFragment"
-        android:label="MemberInfoFragment" >
+        android:label="Member Info">
         <argument
             android:name="memberID"
             app:argType="integer" />
@@ -42,7 +42,7 @@
     <fragment
         android:id="@+id/edit_member_fragment"
         android:name="com.example.familytree.member.EditMemberFragment"
-        android:label="EditMemberFragment" >
+        android:label="Edit member">
         <argument
             android:name="memberID"
             app:argType="integer" />
@@ -50,9 +50,17 @@
     <fragment
         android:id="@+id/add_member_fragment"
         android:name="com.example.familytree.member.AddMemberFragment"
-        android:label="AddMemberFragment" >
+        android:label="Add a new member">
         <argument
             android:name="memberID"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_add_member_fragment_to_tree_members_fragment"
+            app:destination="@id/tree_members_fragment"
+            app:popUpTo="@id/tree_members_fragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="treeID"
             app:argType="integer" />
     </fragment>
 </navigation>

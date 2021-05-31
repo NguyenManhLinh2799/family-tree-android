@@ -43,8 +43,6 @@
             android:layout_width="1500dp"
             android:layout_height="1500dp"
             android:background="@android:color/white" />
-<!--            android:layout_width="800dp"-->
-<!--            android:layout_height="1300dp"-->
 
 
     </me.jagar.mindmappingandroidlibrary.Zoom.ZoomLayout>
@@ -80,6 +78,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/deleteMemberBtn"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

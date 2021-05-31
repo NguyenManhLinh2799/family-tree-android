@@ -27,7 +27,6 @@ class MyTreesViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             try {
                 myTrees.value = familyTreeRepository.getAllTrees().asDomainModel()
-                Log.e("MyTreesViewModel", myTrees.value!!.size.toString())
             } catch (e: Exception) {
                 myTrees.value = listOf(
                         Tree(1, "Tree1", "", null, null, null),

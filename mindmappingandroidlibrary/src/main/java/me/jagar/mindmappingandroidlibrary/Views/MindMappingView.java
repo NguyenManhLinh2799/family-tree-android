@@ -9,6 +9,7 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -32,6 +33,8 @@ public class MindMappingView extends RelativeLayout {
     private float centralPointY;
     private Item root;
     private int height;
+
+    private ArrayList<Path> allPaths = new ArrayList<>();
 
     private Context context;
     private Activity activity;
@@ -116,7 +119,6 @@ public class MindMappingView extends RelativeLayout {
                                     .setDuration(0)
                                     .start();
                             invalidate();
-
                         break;
                     default:
                         item.setPressed(false);
@@ -125,7 +127,6 @@ public class MindMappingView extends RelativeLayout {
                 return true;
             }
         });
-
     }
 
     //Adding an item that has the parent already on the view
@@ -293,8 +294,11 @@ public class MindMappingView extends RelativeLayout {
     }
 
     private void calculateInitialX(Item node) {
-        for (int i = 0; i < node.Children.size(); i++) {
-            calculateInitialX(node.Children.get(i));
+//        for (int i = 0; i < node.Children.size(); i++) {
+//            calculateInitialX(node.Children.get(i));
+//        }
+        for (Item child : node.Children) {
+            calculateInitialX(child);
         }
 
         if (node.isLeaf()) {
@@ -337,20 +341,27 @@ public class MindMappingView extends RelativeLayout {
         Item sibling = node.getLeftMostSibling();
         while (sibling != null && sibling != node) {
             HashMap<Integer, Float> siblingContour = new HashMap<>();
-            getRightContour(node, 0, siblingContour);
-            for (int level = node.Y + 1; level <= Math.min(Collections.max(siblingContour.keySet()), Collections.max(siblingContour.keySet())); level++) {
+            getRightContour(sibling, 0, siblingContour);
+            for (int level = node.Y + 1; level <= Math.min(Collections.max(siblingContour.keySet()), Collections.max(nodeContour.keySet())); level++) {
                 float distance = nodeContour.get(level) - siblingContour.get(level);
                 if (distance + shiftValue < minDistance) {
-                    shiftValue = minDistance - distance;
+                    //shiftValue = minDistance - distance;
+                    shiftValue = Math.max(minDistance - distance, shiftValue);
                 }
             }
             if (shiftValue > 0) {
-                node.X += shiftValue;
-                node.Mod += shiftValue;
+                //node.X += shiftValue;
+                //node.Mod += shiftValue;
                 centerNodesBetween(sibling, node);
-                shiftValue = 0;
+                //shiftValue = 0;
             }
             sibling = sibling.getNextSibling();
+        }
+
+        if (shiftValue > 0) {
+            node.X += shiftValue;
+            node.Mod += shiftValue;
+            shiftValue = 0;
         }
     }
 
@@ -394,7 +405,7 @@ public class MindMappingView extends RelativeLayout {
         }
         modSum += node.Mod;
         for (Item child : node.Children) {
-            getLeftContour(child, modSum, values);
+            getRightContour(child, modSum, values);
         }
     }
 
@@ -455,11 +466,23 @@ public class MindMappingView extends RelativeLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
         drawTopLines(canvas);
         drawLeftLines(canvas);
         drawRightLines(canvas);
         drawBottomLines(canvas);
-        drawCustomConnection(canvas);
+        //drawCustomConnection(canvas);
+    }
+
+    public void clearAllPaths() {
+        for (Path path : allPaths) {
+            path.reset();
+        }
+        allPaths.clear();
+        topItems.clear();
+        leftItems.clear();
+        rightItems.clear();
+        bottomItems.clear();
     }
 
     //Draw connections (default)
@@ -581,6 +604,7 @@ public class MindMappingView extends RelativeLayout {
         path.lineTo(x2, y2);
 
         canvas.drawPath(path, paint);
+        allPaths.add(path);
 
         Paint paint2  = new Paint();
         paint2.setAntiAlias(true);
@@ -601,6 +625,7 @@ public class MindMappingView extends RelativeLayout {
         path2.lineTo(point1.x, point1.y);
         path2.close();
         canvas.drawPath(path2, paint2);
+        allPaths.add(path2);
 
         canvas.drawCircle(x1, y1-radius, radius, paint2);
 
@@ -670,6 +695,7 @@ public class MindMappingView extends RelativeLayout {
         path.lineTo(x2, y2);
 
         canvas.drawPath(path, paint);
+        allPaths.add(path);
 
         Paint paint2  = new Paint();
         paint2.setAntiAlias(true);
@@ -698,6 +724,7 @@ public class MindMappingView extends RelativeLayout {
         path2.close();
 
         canvas.drawPath(path2, paint2);
+        allPaths.add(path2);
 
         canvas.drawCircle(x1-radius, y1, radius, paint2);
 
@@ -768,6 +795,7 @@ public class MindMappingView extends RelativeLayout {
         path.lineTo(x2, y2);
 
         canvas.drawPath(path, paint);
+        allPaths.add(path);
 
         Paint paint2  = new Paint();
         paint2.setAntiAlias(true);
@@ -796,6 +824,7 @@ public class MindMappingView extends RelativeLayout {
         path2.close();
 
         canvas.drawPath(path2, paint2);
+        allPaths.add(path2);
 
         canvas.drawCircle(x1+radius, y1, radius, paint2);
 
@@ -868,6 +897,7 @@ public class MindMappingView extends RelativeLayout {
         path.lineTo(x2, yMid);
         path.lineTo(x2, y2);
         canvas.drawPath(path, paint);
+        allPaths.add(path);
 
         Paint paint2  = new Paint();
         paint2.setAntiAlias(true);
@@ -888,6 +918,7 @@ public class MindMappingView extends RelativeLayout {
         path2.lineTo(point1.x, point1.y);
         path2.close();
         canvas.drawPath(path2, paint2);
+        allPaths.add(path2);
 
         canvas.drawCircle(x1, y1+radius, radius, paint2);
 
@@ -913,11 +944,10 @@ public class MindMappingView extends RelativeLayout {
         customConnections.add(customConnection);
 
     }
+
     public void drawCustomConnection(Canvas canvas){
 
         for (CustomConnection customConnection : customConnections){
-
-
 
             Item item1 = customConnection.getItem1();
             int position1 = customConnection.getPosition1();
@@ -928,53 +958,32 @@ public class MindMappingView extends RelativeLayout {
             int custom_circRadius2 = customConnection.getCircRadius2();
             int custom_circRadius1 = customConnection.getCircRadius1();
 
-
-
-
-
             Point start_point = new Point(0,0), end_point = new Point(0,0);
             if (position1 == ItemLocation.RIGHT){
                 start_point = new Point((int) item1.getX()+item1.getWidth()+custom_circRadius1, (int) item1.getY()+item1.getHeight()/2);
-
             }
             else if (position1 == ItemLocation.TOP){
                 start_point = new Point((int) item1.getX()+item1.getWidth()/2, (int) item1.getY()-custom_circRadius1);
-
             }
             else if (position1 == ItemLocation.LEFT){
                 start_point = new Point((int) item1.getX()-custom_circRadius1, (int) item1.getY()+item1.getHeight()/2);
-
             }
             else if (position1 == ItemLocation.BOTTOM){
                 start_point = new Point((int) item1.getX()+item1.getWidth()/2, (int) item1.getY()+item1.getHeight()+custom_circRadius1);
-
             }
 
             if (position2 == ItemLocation.RIGHT){
-
                 end_point = new Point((int) item2.getX()+item2.getWidth()+custom_circRadius2, (int) item2.getY()+item2.getHeight()/2);
-
-
             }
             else if (position2 == ItemLocation.TOP){
-
-
                 end_point = new Point((int) item2.getX()+item2.getWidth()/2, (int) item2.getY()-custom_circRadius2);
-
             }
             else if (position2 == ItemLocation.LEFT){
-
-
                 end_point = new Point((int) item2.getX()-custom_circRadius2, (int) item2.getY()+item2.getHeight()/2);
-
             }
             else if (position2 == ItemLocation.BOTTOM){
-
-
                 end_point = new Point((int) item2.getX()+item2.getWidth()/2, (int) item2.getY()+item2.getHeight()+custom_circRadius2);
-
             }
-
 
             Paint paint  = new Paint();
             paint.setAntiAlias(true);
@@ -991,7 +1000,6 @@ public class MindMappingView extends RelativeLayout {
             path.close();
             canvas.drawLine(start_point.x, start_point.y, end_point.x, end_point.y, paint);
 
-
             paint.setStyle(Paint.Style.FILL);
             canvas.drawCircle(start_point.x, start_point.y, custom_circRadius1, paint);
             canvas.drawCircle(end_point.x, end_point.y, custom_circRadius2, paint);
@@ -999,7 +1007,6 @@ public class MindMappingView extends RelativeLayout {
         }
 
         invalidate();
-
     }
 
     //Setting the listener for the view's items

@@ -113,6 +113,13 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
         }
     }
 
+    suspend fun deleteMember(id: Int) {
+        withContext(Dispatchers.IO) {
+            val authData = database.authDataDao.getAuthData()
+            FamilyTreeApi.retrofitService.deletePerson(id, "Bearer ${authData.accessToken}")
+        }
+    }
+
     // Image
     suspend fun uploadImage(imgUri: Uri) = withContext(Dispatchers.IO) {
         val imgFile = File(imgUri.path)

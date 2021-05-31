@@ -66,6 +66,8 @@ interface FamilyTreeApiService {
     @PUT("person-management/person/{personId}")
     suspend fun editPerson(@Path("personId") id: Int, @Header("Authorization") token: String, @Body editedMember: Member)
 
+    @DELETE("person-management/person/{personId}")
+    suspend fun deletePerson(@Path("personId") id: Int, @Header("Authorization") token: String)
 
     // Tree members
     @GET("tree-management/tree/{treeId}")
