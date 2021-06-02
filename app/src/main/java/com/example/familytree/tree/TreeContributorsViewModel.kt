@@ -8,46 +8,44 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.familytree.database.getDatabase
 import com.example.familytree.domain.ContributorList
-import com.example.familytree.network.TreeMembers
+import com.example.familytree.domain.User
 import com.example.familytree.repository.FamilyTreeRepository
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.lang.IllegalArgumentException
 
-class TreeMembersViewModel(context: Context, treeID: Int): ViewModel() {
+class TreeContributorsViewModel(context: Context, treeID: Int): ViewModel() {
 
     private val database = getDatabase(context)
     private val familyTreeRepository = FamilyTreeRepository(database)
 
-    var treeMembers = MutableLiveData<TreeMembers>()
     var contributorList = MutableLiveData<ContributorList>()
+    var editorList = MutableLiveData<List<User>>() // Temp
 
     init {
-        loadTreeMembers(treeID)
+        loadContributors(treeID)
     }
 
-    fun loadTreeMembers(treeID: Int) {
+    fun loadContributors(treeID: Int) {
         viewModelScope.launch {
-            try {
-                treeMembers.value = familyTreeRepository.getTreeMembers(treeID).data!!
-            } catch (e: Exception) {
-                treeMembers.value = TreeMembers(0, "abc", "xyz", true, emptyList())
-            }
+            contributorList.value = familyTreeRepository.getContributors(treeID)
+            Log.e("TreeMembersViewModel", contributorList.value!!.owner.userName)
+            editorList.value = listOf(
+                contributorList.value!!.owner,
+                contributorList.value!!.owner,
+                contributorList.value!!.owner,
+            )
         }
     }
 
-    fun deleteMember(memberID: Int) {
-        viewModelScope.launch {
-            familyTreeRepository.deleteMember(memberID)
-            loadTreeMembers(treeMembers.value!!.id)
-        }
+    fun removeContributor(id: String?) {
+
     }
 
     class Factory(val context: Context, val treeID: Int) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(TreeMembersViewModel::class.java)) {
+            if (modelClass.isAssignableFrom(TreeContributorsViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return TreeMembersViewModel(context, treeID) as T
+                return TreeContributorsViewModel(context, treeID) as T
             }
             throw IllegalArgumentException("Unable to construct viewmodel")
         }

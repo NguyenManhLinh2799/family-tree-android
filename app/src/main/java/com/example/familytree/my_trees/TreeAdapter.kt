@@ -11,9 +11,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.familytree.R
 import com.example.familytree.domain.Tree
-import com.example.familytree.network.NetworkTree
 
-class TreeAdapter(private val onItemClick: OnItemClick) : ListAdapter<Tree, TreeAdapter.TreeViewHolder>(DiffCallback) {
+class TreeAdapter(private val onItemClick: OnTreeItemClick) : ListAdapter<Tree, TreeAdapter.TreeViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TreeViewHolder {
         return TreeViewHolder.from(parent)
@@ -29,13 +28,12 @@ class TreeAdapter(private val onItemClick: OnItemClick) : ListAdapter<Tree, Tree
         val description: TextView = itemView.findViewById(R.id.treeDescription)
         val moreBtn: ImageView = itemView.findViewById(R.id.moreBtn)
 
-        fun bind(tree: Tree?, onItemClick: OnItemClick) {
+        fun bind(tree: Tree?, onItemClick: OnTreeItemClick) {
             name.text = tree?.name
             description.text = tree?.description
-            itemView.setOnClickListener { view: View ->
+            itemView.setOnClickListener {
                 Log.e("TreeAdapter", tree!!.id.toString())
-                view.findNavController().navigate(
-                    //MyTreesFragmentDirections.actionMyTreesFragmentToTreeMembersFragment(tree.id!!)
+                it.findNavController().navigate(
                     MyTreesFragmentDirections.actionMyTreesFragmentToTreeFragment(tree.id!!)
                 )
             }
@@ -51,7 +49,7 @@ class TreeAdapter(private val onItemClick: OnItemClick) : ListAdapter<Tree, Tree
             }
         }
 
-        private fun setUpMoreBtn(id: Int?, onItemClicked: OnItemClick) {
+        private fun setUpMoreBtn(id: Int?, onItemClicked: OnTreeItemClick) {
             moreBtn.setOnClickListener {
                 val popupMenu = PopupMenu(it.context, it, Gravity.END)
                 val inflater = popupMenu.menuInflater
@@ -73,7 +71,7 @@ class TreeAdapter(private val onItemClick: OnItemClick) : ListAdapter<Tree, Tree
             }
         }
 
-        private fun showEditTreeDialog(id: Int?, onItemClick: OnItemClick) {
+        private fun showEditTreeDialog(id: Int?, onItemClick: OnTreeItemClick) {
             val dialogBuilder = AlertDialog.Builder(itemView.context)
                     .setTitle("Edit family tree")
                     .setView(R.layout.dialog_tree_form)
@@ -94,7 +92,7 @@ class TreeAdapter(private val onItemClick: OnItemClick) : ListAdapter<Tree, Tree
         }
     }
 
-    interface OnItemClick {
+    interface OnTreeItemClick {
         fun onDelete(id: Int?)
         fun onEdit(id: Int?, name: String, description: String)
     }

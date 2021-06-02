@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/treeImage"
+        android:id="@+id/contributorAvatar"
         android:layout_width="65dp"
         android:layout_height="65dp"
         android:layout_marginStart="24dp"
@@ -16,40 +16,40 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/ic_my_trees"
+        android:src="@drawable/ic_user"
         android:background="@drawable/bg_avatar_no_stroke"
         android:padding="15dp"/>
 
     <TextView
-        android:id="@+id/treeName"
+        android:id="@+id/contributorUsername"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="35dp"
-        android:text="@string/family_tree_name"
+        android:text="@string/username"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/moreBtn"
-        app:layout_constraintStart_toEndOf="@+id/treeImage"
+        app:layout_constraintEnd_toStartOf="@+id/removeContributorBtn"
+        app:layout_constraintStart_toEndOf="@+id/contributorAvatar"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/treeDescription"
+        android:id="@+id/contributorEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/description"
-        app:layout_constraintEnd_toEndOf="@+id/treeName"
-        app:layout_constraintStart_toStartOf="@+id/treeName"
-        app:layout_constraintTop_toBottomOf="@+id/treeName" />
+        android:text="@string/email"
+        app:layout_constraintEnd_toEndOf="@+id/contributorUsername"
+        app:layout_constraintStart_toStartOf="@+id/contributorUsername"
+        app:layout_constraintTop_toBottomOf="@+id/contributorUsername" />
 
     <ImageView
-        android:id="@+id/moreBtn"
-        android:layout_width="15dp"
+        android:id="@+id/removeContributorBtn"
+        android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_more"
+        android:src="@drawable/ic_remove"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -10,7 +10,6 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import com.example.familytree.R
 import com.example.familytree.databinding.FragmentMyTreesBinding
 import com.example.familytree.domain.Tree
@@ -24,7 +23,7 @@ class MyTreesFragment: Fragment() {
         ViewModelProvider(this, MyTreesViewModel.Factory(requireNotNull(context))).get(MyTreesViewModel::class.java)
     }
 
-    private val onItemClick = object : TreeAdapter.OnItemClick {
+    private val onItemClick = object : TreeAdapter.OnTreeItemClick {
         override fun onDelete(id: Int?) {
             myTreesViewModel.deleteTree(id)
         }

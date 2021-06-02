@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.example.familytree.R
 import com.example.familytree.databinding.FragmentTreeContributorsBinding
 
@@ -14,11 +15,11 @@ class TreeContributorsFragment : Fragment() {
 
     private lateinit var binding: FragmentTreeContributorsBinding
     private var treeID: Int? = null
+    private lateinit var treeContributorsViewModel: TreeContributorsViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            treeID = it.getInt(TREE_ID)
+    private val onItemClick = object : ContributorAdapter.OnContributorItemClick {
+        override fun onRemove(id: String?) {
+            treeContributorsViewModel.removeContributor(id)
         }
     }
 
@@ -31,7 +32,34 @@ class TreeContributorsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.textView.text = treeID.toString()
+        if (this.treeID == null) {
+            arguments?.let {
+                this.treeID = it.getInt(TREE_ID)
+                treeContributorsViewModel = ViewModelProvider(this,
+                TreeContributorsViewModel.Factory(
+                    requireNotNull(context),
+                    requireNotNull(this.treeID)
+                )).get(TreeContributorsViewModel::class.java)
+            }
+        } else {
+            treeContributorsViewModel.loadContributors(this.treeID!!)
+        }
+
+        val ownerUsername = binding.ownerUsername
+        val ownerEmail = binding.ownerEmail
+        treeContributorsViewModel.contributorList.observe(viewLifecycleOwner, {
+            ownerUsername.text = it.owner.userName
+            ownerEmail.text = it.owner.email
+        })
+
+        val contributorAdapter = ContributorAdapter(onItemClick)
+        binding.contributors.adapter = contributorAdapter
+//        treeContributorsViewModel.contributorList.observe(viewLifecycleOwner, {
+//            contributorAdapter.submitList(it.editors)
+//        })
+        treeContributorsViewModel.editorList.observe(viewLifecycleOwner, {
+            contributorAdapter.submitList(it)
+        })
     }
 
     companion object {
