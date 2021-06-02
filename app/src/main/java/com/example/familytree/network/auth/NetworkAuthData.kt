@@ -2,6 +2,7 @@ package com.example.familytree.network.auth
 
 import com.example.familytree.database.DatabaseAuthData
 import com.example.familytree.domain.AuthData
+import com.example.familytree.domain.User
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -24,7 +25,35 @@ data class NetworkUser(
     val status: Int,
     val createdDate: String,
     val updatedDate: String?
-)
+) {
+    fun asDomainModel(): User {
+        return User(
+            id, userName, email, loginProvider, firstName, midName, lastName, avatarUrl, address, phone, gender, dateOfBirth, status, createdDate, updatedDate
+        )
+    }
+}
+
+fun List<NetworkUser>.asDomainModel(): List<User> {
+    return map {
+        User(
+            id = it.id,
+            userName = it.userName,
+            email = it.email,
+            loginProvider = it.loginProvider,
+            firstName = it.firstName,
+            midName = it.midName,
+            lastName = it.lastName,
+            avatarUrl = it.avatarUrl,
+            address = it.address,
+            phone = it.phone,
+            gender = it.gender,
+            dateOfBirth = it.dateOfBirth,
+            status = it.status,
+            createdDate = it.createdDate,
+            updatedDate = it.updatedDate
+        )
+    }
+}
 
 @JsonClass(generateAdapter = true)
 data class NetworkAuthData(

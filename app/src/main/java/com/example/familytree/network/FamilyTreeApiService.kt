@@ -36,7 +36,7 @@ interface FamilyTreeApiService {
 
     // Family tree
     @GET("tree-management/trees/list")
-    suspend fun getTrees(@Header("Authorization") token: String): NetworkTreeContainer
+    suspend fun getTrees(@Header("Authorization") token: String): NetworkTreeListContainer
 
     @Headers("Content-Type: application/json")
     @POST("tree-management/tree")
@@ -72,6 +72,9 @@ interface FamilyTreeApiService {
     // Tree members
     @GET("tree-management/tree/{treeId}")
     suspend fun getTreeMembers(@Path("treeId") id: Int?, @Header("Authorization") token: String): ApiResponse<TreeMembers>
+
+    @GET("tree-management/tree/{treeId}/editors")
+    suspend fun getEditors(@Path("treeId") id: Int?, @Header("Authorization") token: String): NetworkContributorListContainer
 
     // Upload image
     @Multipart

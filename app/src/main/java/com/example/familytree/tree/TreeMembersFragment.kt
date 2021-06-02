@@ -1,20 +1,16 @@
-package com.example.familytree.tree_members
+package com.example.familytree.tree
 
 import android.graphics.Color
-import android.graphics.Paint
 import android.os.Bundle
-import android.text.Layout
-import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import coil.load
 import com.example.familytree.R
 import com.example.familytree.databinding.FragmentTreeMembersBinding
@@ -23,31 +19,42 @@ import me.jagar.mindmappingandroidlibrary.Views.Item
 import me.jagar.mindmappingandroidlibrary.Views.ItemLocation
 import me.jagar.mindmappingandroidlibrary.Views.ItemType
 import me.jagar.mindmappingandroidlibrary.Views.MindMappingView
-import me.jagar.mindmappingandroidlibrary.Zoom.ZoomLayout
+
+private const val TREE_ID = "treeID"
 
 class TreeMembersFragment : Fragment() {
 
-    private lateinit var binding: FragmentTreeMembersBinding
+    // Init in view pager
+    companion object {
+        @JvmStatic
+        fun newInstance(treeID: Int) = TreeMembersFragment().apply {
+            arguments = Bundle().apply {
+                putInt(TREE_ID, treeID)
+            }
+        }
+    }
 
+    // Views
+    private lateinit var binding: FragmentTreeMembersBinding
     private lateinit var treeView: MindMappingView
     private lateinit var memberMenuBar: LinearLayout
     private lateinit var allNodes: List<Item>
 
+    // References
     private var treeID: Int? = null
+    private lateinit var treeFragment: TreeFragment
 
-//    private var treeMembersViewModel: TreeMembersViewModel by lazy {
-//        ViewModelProvider(this,
-//            TreeMembersViewModel.Factory(
-//                requireNotNull(context),
-//                requireNotNull(TreeMembersFragmentArgs.fromBundle(arguments!!).treeID)
-//            ))
-//            .get(TreeMembersViewModel::class.java)
-//    }
-
+    // View model
     private lateinit var treeMembersViewModel: TreeMembersViewModel
+
+    // For the algorithm
     private var added = ArrayList<Item>(0)
     private var notYetAdded = ArrayList<Member>(0)
-    private var focusedNode: Item? = null
+
+    // The node being focused
+    private var focusedMember: Item? = null
+
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentTreeMembersBinding.inflate(inflater, container, false)
@@ -57,15 +64,20 @@ class TreeMembersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Get parent fragment
+        treeFragment = parentFragment as TreeFragment
+
         // View model
         if (this.treeID == null) {
-            this.treeID = TreeMembersFragmentArgs.fromBundle(arguments!!).treeID
-            treeMembersViewModel = ViewModelProvider(this,
-                TreeMembersViewModel.Factory(
-                    requireNotNull(context),
-                    requireNotNull(this.treeID)
-                ))
-                .get(TreeMembersViewModel::class.java)
+            arguments?.let {
+                this.treeID = it.getInt(TREE_ID)
+                treeMembersViewModel = ViewModelProvider(this,
+                    TreeMembersViewModel.Factory(
+                        requireNotNull(context),
+                        requireNotNull(this.treeID)
+                    ))
+                    .get(TreeMembersViewModel::class.java)
+            }
         } else {
             treeMembersViewModel.loadTreeMembers(this.treeID!!)
         }
@@ -79,6 +91,7 @@ class TreeMembersFragment : Fragment() {
         // Observe members
         treeMembersViewModel.treeMembers.observe(viewLifecycleOwner, {
             updateAllNodes(it.people)
+            (activity as AppCompatActivity).supportActionBar?.title = it.name
         })
     }
 
@@ -326,11 +339,6 @@ class TreeMembersFragment : Fragment() {
         val image = ImageView(context)
         if (item.imgUrl != null) {
             image.load(item.imgUrl)
-        } else {
-//            image.setImageResource(when (item.type) {
-//                ItemType.MALE -> R.drawable.ic_male
-//                else -> R.drawable.ic_female
-//            })
         }
         image.y = 0f
         image.z = -10f
@@ -363,22 +371,11 @@ class TreeMembersFragment : Fragment() {
         item.setPadding(5, 5, 5, 5)
         item.setBorder(Color.TRANSPARENT, 0)
         item.setOnClickListener {
-            if (focusedNode == item) {
-                focusedNode?.setBorder(Color.TRANSPARENT, 0)
-                focusedNode = null
-                memberMenuBar.visibility = View.INVISIBLE
+            if (focusedMember == item) {
+                unFocus()
             } else {
-                focusedNode?.setBorder(Color.TRANSPARENT, 0)
-                focusedNode = item
-                focusedNode!!.setBorder(Color.BLACK, 10)
-                memberMenuBar.visibility = View.VISIBLE
+                focus(item)
             }
-//            focusedNode = item
-//            memberMenuBar.visibility = when (memberMenuBar.visibility) {
-//                View.INVISIBLE -> View.VISIBLE
-//                View.VISIBLE -> View.INVISIBLE
-//                else -> View.VISIBLE
-//            }
         }
     }
 
@@ -398,29 +395,39 @@ class TreeMembersFragment : Fragment() {
         // Navigate to member info
         val memberInfoBtn = binding.memberInfoBtn
         memberInfoBtn.setOnClickListener {
-            it.findNavController().navigate(
-                TreeMembersFragmentDirections.actionTreeMembersFragmentToMemberInfoFragment(focusedNode!!.id)
-            )
+            treeFragment.navigateToMemberInfo(focusedMember!!.id)
         }
 
         // Navigate to add member
         val addMemberBtn = binding.addMemberBtn
         addMemberBtn.setOnClickListener {
-            it.findNavController().navigate(
-                TreeMembersFragmentDirections.actionTreeMembersFragmentToAddMemberFragment(focusedNode!!.id, treeID!!)
-            )
+            treeFragment.navigateToAddMember(focusedMember!!.id)
         }
 
         // Navigate to edit member
         val editMemberBtn = binding.editMemberBtn
         editMemberBtn.setOnClickListener {
-            it.findNavController().navigate(TreeMembersFragmentDirections.actionTreeMembersFragmentToEditMemberFragment(focusedNode!!.id))
+            treeFragment.navigateToEditMember(focusedMember!!.id)
         }
 
         // Delete member
         val deleteMemberBtn = binding.deleteMemberBtn
         deleteMemberBtn.setOnClickListener {
-            treeMembersViewModel.deleteMember(focusedNode!!.id)
+            treeMembersViewModel.deleteMember(focusedMember!!.id)
+            unFocus()
         }
+    }
+
+    private fun focus(item: Item) {
+        focusedMember?.setBorder(Color.TRANSPARENT, 0)
+        focusedMember = item
+        focusedMember!!.setBorder(Color.BLACK, 10)
+        memberMenuBar.visibility = View.VISIBLE
+    }
+
+    private fun unFocus() {
+        focusedMember?.setBorder(Color.TRANSPARENT, 0)
+        focusedMember = null
+        memberMenuBar.visibility = View.INVISIBLE
     }
 }

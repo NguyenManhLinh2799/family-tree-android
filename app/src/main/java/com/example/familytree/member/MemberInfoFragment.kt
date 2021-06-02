@@ -4,16 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import coil.load
 import com.example.familytree.DateHelper
-import com.example.familytree.R
 import com.example.familytree.databinding.FragmentMemberInfoBinding
-import com.example.familytree.tree_members.TreeMembersFragmentArgs
-import com.example.familytree.tree_members.TreeMembersViewModel
 
 class MemberInfoFragment: Fragment() {
 
@@ -49,7 +45,9 @@ class MemberInfoFragment: Fragment() {
             }
 
             fullName.text = it.fullName
-            activity!!.title = "${it.fullName}'s info"
+            val act = activity as AppCompatActivity
+            act.supportActionBar?.title = "${it.fullName}'s Info"
+
             sex.text = it.sex
             dob.text = DateHelper.isoToDate(it.dateOfBirth)
             dod.text = DateHelper.isoToDate(it.dateOfDeath)

@@ -11,25 +11,8 @@
         android:label="My Trees"
         tools:layout="@layout/fragment_my_trees">
         <action
-            android:id="@+id/action_my_trees_fragment_to_tree_members_fragment"
-            app:destination="@id/tree_members_fragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/tree_members_fragment"
-        android:name="com.example.familytree.tree_members.TreeMembersFragment"
-        android:label="TreeMembersFragment" >
-        <action
-            android:id="@+id/action_tree_members_fragment_to_member_info_fragment"
-            app:destination="@id/member_info_fragment" />
-        <action
-            android:id="@+id/action_tree_members_fragment_to_edit_member_fragment"
-            app:destination="@id/edit_member_fragment" />
-        <argument
-            android:name="treeID"
-            app:argType="integer" />
-        <action
-            android:id="@+id/action_tree_members_fragment_to_add_member_fragment"
-            app:destination="@id/add_member_fragment" />
+            android:id="@+id/action_my_trees_fragment_to_tree_fragment"
+            app:destination="@id/tree_fragment" />
     </fragment>
     <fragment
         android:id="@+id/member_info_fragment"
@@ -54,13 +37,29 @@
         <argument
             android:name="memberID"
             app:argType="integer" />
-        <action
-            android:id="@+id/action_add_member_fragment_to_tree_members_fragment"
-            app:destination="@id/tree_members_fragment"
-            app:popUpTo="@id/tree_members_fragment"
-            app:popUpToInclusive="true" />
         <argument
             android:name="treeID"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_add_member_fragment_to_tree_fragment"
+            app:destination="@id/tree_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/tree_fragment"
+        android:name="com.example.familytree.tree.TreeFragment"
+        android:label="Tree Fragment"
+        tools:layout="@layout/fragment_tree" >
+        <argument
+            android:name="treeID"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_tree_fragment_to_member_info_fragment"
+            app:destination="@id/member_info_fragment" />
+        <action
+            android:id="@+id/action_tree_fragment_to_edit_member_fragment"
+            app:destination="@id/edit_member_fragment" />
+        <action
+            android:id="@+id/action_tree_fragment_to_add_member_fragment"
+            app:destination="@id/add_member_fragment" />
     </fragment>
 </navigation>

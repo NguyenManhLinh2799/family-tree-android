@@ -1,4 +1,4 @@
-package com.example.familytree.tree_members
+package com.example.familytree.tree
 
 import android.content.Context
 import android.util.Log
@@ -7,8 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.familytree.database.getDatabase
-import com.example.familytree.my_trees.MyTreesViewModel
-import com.example.familytree.network.FamilyTreeApi
+import com.example.familytree.domain.ContributorList
 import com.example.familytree.network.TreeMembers
 import com.example.familytree.repository.FamilyTreeRepository
 import kotlinx.coroutines.launch
@@ -21,9 +20,11 @@ class TreeMembersViewModel(context: Context, treeID: Int): ViewModel() {
     private val familyTreeRepository = FamilyTreeRepository(database)
 
     var treeMembers = MutableLiveData<TreeMembers>()
+    var contributorList = MutableLiveData<ContributorList>()
 
     init {
         loadTreeMembers(treeID)
+        loadContributors(treeID)
     }
 
     fun loadTreeMembers(treeID: Int) {
@@ -33,6 +34,13 @@ class TreeMembersViewModel(context: Context, treeID: Int): ViewModel() {
             } catch (e: Exception) {
                 treeMembers.value = TreeMembers(0, "abc", "xyz", true, emptyList())
             }
+        }
+    }
+
+    fun loadContributors(treeID: Int) {
+        viewModelScope.launch {
+            contributorList.value = familyTreeRepository.getContributors(treeID)
+            Log.e("TreeMembersViewModel", contributorList.value!!.owner.userName)
         }
     }
 

@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.example.familytree.DateHelper
 import com.example.familytree.R
 import com.example.familytree.databinding.FragmentAddMemberBinding
@@ -30,15 +31,6 @@ enum class RelationshipType {
 class AddMemberFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var binding: FragmentAddMemberBinding
-
-//    private val addMemberViewModel: AddMemberViewModel by lazy {
-//        ViewModelProvider(this,
-//            AddMemberViewModel.Factory(
-//                requireNotNull(context),
-//                requireNotNull(AddMemberFragmentArgs.fromBundle(arguments!!).memberID)
-//            ))
-//            .get(AddMemberViewModel::class.java)
-//    }
 
     private lateinit var addMemberViewModel: AddMemberViewModel
     private var type = RelationshipType.PARENT
@@ -120,8 +112,8 @@ class AddMemberFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         addMemberViewModel.navigateToTreeMembers.observe(viewLifecycleOwner, {
             if (it == true) {
-                view.findNavController().navigate(
-                    AddMemberFragmentDirections.actionAddMemberFragmentToTreeMembersFragment(treeID!!)
+                findNavController().navigate(
+                    AddMemberFragmentDirections.actionAddMemberFragmentToTreeFragment(this.treeID!!)
                 )
                 addMemberViewModel.doneNavigating()
             }

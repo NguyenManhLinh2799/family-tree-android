@@ -35,7 +35,8 @@ class TreeAdapter(private val onItemClick: OnItemClick) : ListAdapter<Tree, Tree
             itemView.setOnClickListener { view: View ->
                 Log.e("TreeAdapter", tree!!.id.toString())
                 view.findNavController().navigate(
-                    MyTreesFragmentDirections.actionMyTreesFragmentToTreeMembersFragment(tree.id!!)
+                    //MyTreesFragmentDirections.actionMyTreesFragmentToTreeMembersFragment(tree.id!!)
+                    MyTreesFragmentDirections.actionMyTreesFragmentToTreeFragment(tree.id!!)
                 )
             }
             setUpMoreBtn(tree?.id, onItemClick)

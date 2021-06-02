@@ -33,6 +33,11 @@ data class User(
     val updatedDate: String?
 )
 
+data class ContributorList(
+    val owner: User,
+    val editors: List<User>?
+)
+
 data class AuthData(
     val userID: String,
     val accessToken: String,

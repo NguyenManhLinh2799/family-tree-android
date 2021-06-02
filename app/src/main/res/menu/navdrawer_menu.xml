@@ -4,22 +4,22 @@
         android:id="@+id/myTreesFragment"
         android:icon="@drawable/ic_my_trees"
         android:title="@string/my_trees"/>
-    <item
-        android:id="@+id/sharedWithMe"
-        android:icon="@drawable/ic_share"
-        android:title="@string/shared_with_me"/>
-    <item
-        android:id="@+id/settings"
-        android:icon="@drawable/ic_settings_filled"
-        android:title="@string/settings"/>
-    <item
-        android:id="@+id/help"
-        android:icon="@drawable/ic_help"
-        android:title="@string/help"/>
-    <item
-        android:id="@+id/feedback"
-        android:icon="@drawable/ic_feedback"
-        android:title="@string/feedback"/>
+<!--    <item-->
+<!--        android:id="@+id/sharedWithMe"-->
+<!--        android:icon="@drawable/ic_share"-->
+<!--        android:title="@string/shared_with_me"/>-->
+<!--    <item-->
+<!--        android:id="@+id/settings"-->
+<!--        android:icon="@drawable/ic_settings_filled"-->
+<!--        android:title="@string/settings"/>-->
+<!--    <item-->
+<!--        android:id="@+id/help"-->
+<!--        android:icon="@drawable/ic_help"-->
+<!--        android:title="@string/help"/>-->
+<!--    <item-->
+<!--        android:id="@+id/feedback"-->
+<!--        android:icon="@drawable/ic_feedback"-->
+<!--        android:title="@string/feedback"/>-->
     <item
         android:id="@+id/account"
         android:icon="@drawable/ic_user"

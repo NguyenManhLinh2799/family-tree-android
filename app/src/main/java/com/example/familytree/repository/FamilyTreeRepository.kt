@@ -76,6 +76,12 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
         return@withContext FamilyTreeApi.retrofitService.getTreeMembers(treeID, "Bearer ${authData.accessToken}")
     }
 
+    suspend fun getContributors(treeID: Int) = withContext(Dispatchers.IO) {
+        val authData = database.authDataDao.getAuthData()
+        return@withContext FamilyTreeApi.retrofitService.getEditors(treeID, "Bearer ${authData.accessToken}")
+            .data.asDomainModel()
+    }
+
     // Member
     suspend fun getMember(id: Int) = withContext(Dispatchers.IO) {
         val authData = database.authDataDao.getAuthData()
