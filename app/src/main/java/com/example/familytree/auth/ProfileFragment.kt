@@ -1,4 +1,4 @@
-package com.example.familytree.member
+package com.example.familytree.auth
 
 import android.app.Activity
 import android.app.DatePickerDialog
@@ -6,47 +6,36 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.familytree.DateHelper
 import com.example.familytree.R
-import com.example.familytree.databinding.FragmentEditMemberBinding
-import com.example.familytree.network.member.Member
+import com.example.familytree.databinding.FragmentProfileBinding
+import com.example.familytree.network.auth.EditProfileRequest
+import com.example.familytree.network.auth.NetworkUser
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.fragment_edit_member.*
 
+class ProfileFragment : Fragment() {
 
-class EditMemberFragment: Fragment() {
-
-    private lateinit var binding: FragmentEditMemberBinding
-
-    private val editMemberViewModel: EditMemberViewModel by lazy {
-        ViewModelProvider(
-            this,
-            EditMemberViewModel.Factory(
-                requireNotNull(context),
-                requireNotNull(EditMemberFragmentArgs.fromBundle(arguments!!).memberID)
-            )
-        )
-            .get(EditMemberViewModel::class.java)
+    private lateinit var binding: FragmentProfileBinding
+    private val profileViewModel: ProfileViewModel by lazy {
+        ViewModelProvider(this, ProfileViewModel.Factory(
+            requireNotNull(context)
+        )).get(ProfileViewModel::class.java)
     }
-
     private var imgUrl: String? = null
     private var croppedImgUri: Uri? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentEditMemberBinding.inflate(inflater, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -56,6 +45,7 @@ class EditMemberFragment: Fragment() {
         setUpAddAvatar()
 
         val firstName = binding.firstName
+        val midName = binding.midName
         val lastName = binding.lastName
         val male = binding.male
         val female = binding.female
@@ -64,45 +54,41 @@ class EditMemberFragment: Fragment() {
         dob.setOnClickListener {
             showDatePickerDialog(dob)
         }
-        val dod = binding.dateOfDeath
-        dod.setOnClickListener {
-            showDatePickerDialog(dod)
-        }
 
-        val note = binding.note
+        val address = binding.address
+        val phone = binding.phone
+        val email = binding.email
 
-        editMemberViewModel.member.observe(viewLifecycleOwner, {
-            this.imgUrl = it.imageUrl
+        profileViewModel.userProfile.observe(viewLifecycleOwner, {
+            this.imgUrl = it.avatarUrl
             if (this.imgUrl != null) {
                 binding.avatar.load(this.imgUrl)
             }
 
             firstName.setText(it.firstName)
+            midName.setText(it.midName)
             lastName.setText(it.lastName)
             when (it.isMale) {
                 true -> male.isChecked = true
                 else -> female.isChecked = true
             }
             dob.text = DateHelper.isoToDate(it.dateOfBirth)
-            dod.text = DateHelper.isoToDate(it.dateOfDeath)
-            note.setText(it.note)
+            address.setText(it.address)
+            phone.setText(it.phone)
+            email.hint = it.email
         })
 
         binding.save.setOnClickListener {
-            editMemberViewModel.editMember(
-                Member(
-                    null,
-                    EditMemberFragmentArgs.fromBundle(arguments!!).memberID,
+            profileViewModel.editProfile(
+                EditProfileRequest(
                     firstName.text.toString(),
+                    midName.text.toString(),
                     lastName.text.toString(),
-                    DateHelper.dateToIso(dob.text.toString()),
-                    DateHelper.dateToIso(dod.text.toString()),
-                    null,
-                    null,
+                    this.imgUrl,
+                    address.text.toString(),
+                    phone.text.toString(),
                     if (male.isChecked) 0 else 1,
-                    note.text.toString(),
-                    null,
-                    this.imgUrl
+                    DateHelper.dateToIso(dob.text.toString()),
                 ),
                 this.croppedImgUri
             )

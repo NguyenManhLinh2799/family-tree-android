@@ -1,9 +1,7 @@
 package com.example.familytree.network
 
-import com.example.familytree.network.auth.LoginRequest
-import com.example.familytree.network.auth.NetworkAuthContainer
-import com.example.familytree.network.auth.NetworkUser
-import com.example.familytree.network.auth.RegisterRequest
+import com.example.familytree.domain.User
+import com.example.familytree.network.auth.*
 import com.example.familytree.network.contributor.ContributorRequest
 import com.example.familytree.network.member.AddChildMemberRequest
 import com.example.familytree.network.member.Member
@@ -101,6 +99,15 @@ interface FamilyTreeApiService {
     @Multipart
     @POST("file-upload/image")
     suspend fun uploadImage(@Header("Authorization") token: String, @Part file: MultipartBody.Part): ApiResponse<String>
+
+
+
+    // User
+    @GET("user-management/user-by-token")
+    suspend fun getProfile(@Header("Authorization") token: String): ApiResponse<NetworkUser>
+
+    @PUT("user-management/user")
+    suspend fun editProfile(@Header("Authorization") token: String, @Body editedProfile: EditProfileRequest)
 
 }
 

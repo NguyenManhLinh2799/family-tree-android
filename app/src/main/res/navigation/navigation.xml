@@ -74,4 +74,8 @@
             android:name="treeID"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/profile_fragment"
+        android:name="com.example.familytree.auth.ProfileFragment"
+        android:label="My Profile" />
 </navigation>

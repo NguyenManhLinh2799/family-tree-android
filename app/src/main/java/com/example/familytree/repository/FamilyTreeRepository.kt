@@ -7,7 +7,9 @@ import com.example.familytree.domain.AuthData
 import com.example.familytree.network.FamilyTreeApi
 import com.example.familytree.network.member.Member
 import com.example.familytree.network.NetworkTree
+import com.example.familytree.network.auth.EditProfileRequest
 import com.example.familytree.network.auth.LoginRequest
+import com.example.familytree.network.auth.NetworkUser
 import com.example.familytree.network.auth.asDomainModel
 import com.example.familytree.network.contributor.ContributorRequest
 import com.example.familytree.network.member.AddChildMemberRequest
@@ -162,5 +164,18 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
         val authData = database.authDataDao.getAuthData()
 
         return@withContext FamilyTreeApi.retrofitService.uploadImage("Bearer ${authData.accessToken}", body)
+    }
+
+    // User
+    suspend fun getProfile() = withContext(Dispatchers.IO) {
+        val authData = database.authDataDao.getAuthData()
+        return@withContext FamilyTreeApi.retrofitService.getProfile("Bearer ${authData.accessToken}").data.asDomainModel()
+    }
+
+    suspend fun editProfile(editedProfile: EditProfileRequest) {
+        withContext(Dispatchers.IO) {
+            val authData = database.authDataDao.getAuthData()
+            FamilyTreeApi.retrofitService.editProfile("Bearer ${authData.accessToken}", editedProfile)
+        }
     }
 }

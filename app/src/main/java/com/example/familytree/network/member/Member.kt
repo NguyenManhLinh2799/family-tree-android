@@ -17,7 +17,8 @@ data class Member(
     val gender: Int?,
     val note: String?,
     val userId: String?,
-    var imageUrl: String?) : Parcelable {
+    var imageUrl: String?
+) : Parcelable {
 
     val fullName
         get() = "$firstName $lastName"

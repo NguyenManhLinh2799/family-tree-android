@@ -26,7 +26,7 @@ data class User(
     val avatarUrl: String?,
     val address: String?,
     val phone: String?,
-    val gender: String?,
+    val gender: Int?,
     val dateOfBirth: String?,
     val status: Int,
     val createdDate: String,
@@ -36,6 +36,12 @@ data class User(
         val otherUser = other as User
         return this.id == otherUser.id
     }
+
+    val isMale
+        get() = when (gender) {
+            0 -> true
+            else -> false
+        }
 }
 
 data class ContributorList(
