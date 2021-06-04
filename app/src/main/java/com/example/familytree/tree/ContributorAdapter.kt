@@ -31,7 +31,7 @@ class ContributorAdapter(private val onItemCLick: OnContributorItemClick)
             username.text = contributor?.userName
             email.text = contributor?.email
             removeBtn.setOnClickListener {
-                onItemCLick.onRemove(contributor?.id)
+                onItemCLick.onRemove(contributor?.userName)
             }
         }
         companion object {
@@ -44,7 +44,7 @@ class ContributorAdapter(private val onItemCLick: OnContributorItemClick)
     }
 
     interface OnContributorItemClick {
-        fun onRemove(id: String?)
+        fun onRemove(username: String?)
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<User>() {

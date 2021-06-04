@@ -44,6 +44,7 @@ class TreeFragment : Fragment() {
         val adapter = TreePagerAdapter(treeID!!, childFragmentManager)
         viewPager.adapter = adapter
         tabLayout.setupWithViewPager(viewPager)
+        //tabLayout.getTabAt(1)?.select()
     }
 
     fun hello() {
@@ -65,6 +66,12 @@ class TreeFragment : Fragment() {
     fun navigateToAddMember(memberID: Int) {
         findNavController().navigate(
             TreeFragmentDirections.actionTreeFragmentToAddMemberFragment(memberID, this.treeID!!)
+        )
+    }
+
+    fun navigateToAddContributor(treeID: Int) {
+        findNavController().navigate(
+            TreeFragmentDirections.actionTreeFragmentToAddContributorFragment(treeID)
         )
     }
 

@@ -17,28 +17,26 @@ class TreeContributorsViewModel(context: Context, treeID: Int): ViewModel() {
 
     private val database = getDatabase(context)
     private val familyTreeRepository = FamilyTreeRepository(database)
+    private var treeID: Int? = null
 
     var contributorList = MutableLiveData<ContributorList>()
-    var editorList = MutableLiveData<List<User>>() // Temp
 
     init {
+        this.treeID = treeID
         loadContributors(treeID)
     }
 
     fun loadContributors(treeID: Int) {
         viewModelScope.launch {
             contributorList.value = familyTreeRepository.getContributors(treeID)
-            Log.e("TreeMembersViewModel", contributorList.value!!.owner.userName)
-            editorList.value = listOf(
-                contributorList.value!!.owner,
-                contributorList.value!!.owner,
-                contributorList.value!!.owner,
-            )
         }
     }
 
-    fun removeContributor(id: String?) {
-
+    fun removeContributor(username: String?) {
+        viewModelScope.launch {
+            familyTreeRepository.removeContributor(treeID!!, username!!)
+            loadContributors(treeID!!)
+        }
     }
 
     class Factory(val context: Context, val treeID: Int) : ViewModelProvider.Factory {

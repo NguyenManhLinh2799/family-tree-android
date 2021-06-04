@@ -31,7 +31,12 @@ data class User(
     val status: Int,
     val createdDate: String,
     val updatedDate: String?
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        val otherUser = other as User
+        return this.id == otherUser.id
+    }
+}
 
 data class ContributorList(
     val owner: User,

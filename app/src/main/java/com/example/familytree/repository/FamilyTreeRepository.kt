@@ -8,7 +8,10 @@ import com.example.familytree.network.FamilyTreeApi
 import com.example.familytree.network.member.Member
 import com.example.familytree.network.NetworkTree
 import com.example.familytree.network.auth.LoginRequest
+import com.example.familytree.network.auth.asDomainModel
+import com.example.familytree.network.contributor.ContributorRequest
 import com.example.familytree.network.member.AddChildMemberRequest
+import com.example.familytree.network.contributor.FilterUsersRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType
@@ -76,10 +79,34 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
         return@withContext FamilyTreeApi.retrofitService.getTreeMembers(treeID, "Bearer ${authData.accessToken}")
     }
 
+    // Tree contributors
     suspend fun getContributors(treeID: Int) = withContext(Dispatchers.IO) {
         val authData = database.authDataDao.getAuthData()
         return@withContext FamilyTreeApi.retrofitService.getEditors(treeID, "Bearer ${authData.accessToken}")
             .data.asDomainModel()
+    }
+
+    suspend fun getAllUsers() = withContext(Dispatchers.IO) {
+        return@withContext FamilyTreeApi.retrofitService.filterUsers(FilterUsersRequest(null, null))
+            .data.asDomainModel()
+    }
+
+    suspend fun addContributor(treeID: Int, username: String) {
+        withContext(Dispatchers.IO) {
+            val authData = database.authDataDao.getAuthData()
+            FamilyTreeApi.retrofitService.addEditors(treeID,
+                "Bearer ${authData.accessToken}",
+                ContributorRequest(listOf(username)))
+        }
+    }
+
+    suspend fun removeContributor(treeID: Int, username: String) {
+        withContext(Dispatchers.IO) {
+            val authData = database.authDataDao.getAuthData()
+            FamilyTreeApi.retrofitService.removeEditors(treeID,
+                "Bearer ${authData.accessToken}",
+                ContributorRequest(listOf(username)))
+        }
     }
 
     // Member

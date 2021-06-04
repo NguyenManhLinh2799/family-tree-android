@@ -61,5 +61,17 @@
         <action
             android:id="@+id/action_tree_fragment_to_add_member_fragment"
             app:destination="@id/add_member_fragment" />
+        <action
+            android:id="@+id/action_tree_fragment_to_add_contributor_fragment"
+            app:destination="@id/add_contributor_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/add_contributor_fragment"
+        android:name="com.example.familytree.tree.AddContributorFragment"
+        android:label="Add a contributor"
+        tools:layout="@layout/fragment_add_contributor" >
+        <argument
+            android:name="treeID"
+            app:argType="integer" />
     </fragment>
 </navigation>

@@ -2,9 +2,12 @@ package com.example.familytree.network
 
 import com.example.familytree.network.auth.LoginRequest
 import com.example.familytree.network.auth.NetworkAuthContainer
+import com.example.familytree.network.auth.NetworkUser
 import com.example.familytree.network.auth.RegisterRequest
+import com.example.familytree.network.contributor.ContributorRequest
 import com.example.familytree.network.member.AddChildMemberRequest
 import com.example.familytree.network.member.Member
+import com.example.familytree.network.contributor.FilterUsersRequest
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.MultipartBody
@@ -34,6 +37,7 @@ interface FamilyTreeApiService {
     suspend fun login(@Body loginRequestBody: LoginRequest): Response<NetworkAuthContainer>
 
 
+
     // Family tree
     @GET("tree-management/trees/list")
     suspend fun getTrees(@Header("Authorization") token: String): NetworkTreeListContainer
@@ -48,6 +52,7 @@ interface FamilyTreeApiService {
     @Headers("Content-Type: application/json")
     @PUT("tree-management/tree/{treeId}")
     suspend fun editTree(@Path("treeId") id: Int?, @Header("Authorization") token: String, @Body editedTree: NetworkTree)
+
 
 
     // Member
@@ -69,12 +74,28 @@ interface FamilyTreeApiService {
     @DELETE("person-management/person/{personId}")
     suspend fun deletePerson(@Path("personId") id: Int, @Header("Authorization") token: String)
 
+
+
     // Tree members
     @GET("tree-management/tree/{treeId}")
     suspend fun getTreeMembers(@Path("treeId") id: Int?, @Header("Authorization") token: String): ApiResponse<TreeMembers>
 
+
+
+    // Tree contributor
     @GET("tree-management/tree/{treeId}/editors")
     suspend fun getEditors(@Path("treeId") id: Int?, @Header("Authorization") token: String): NetworkContributorListContainer
+
+    @POST("user-management/users")
+    suspend fun filterUsers(@Body filterRequest: FilterUsersRequest?): ApiResponse<List<NetworkUser>>
+
+    @POST("tree-management/tree/{treeId}/add-users-to-editor")
+    suspend fun addEditors(@Path("treeId") treeID: Int?, @Header("Authorization") token: String, @Body contributorRequest: ContributorRequest)
+
+    @POST("tree-management/tree/{treeId}/remove-users-from-editor")
+    suspend fun removeEditors(@Path("treeId") treeID: Int?, @Header("Authorization") token: String, @Body contributorRequest: ContributorRequest)
+
+
 
     // Upload image
     @Multipart
