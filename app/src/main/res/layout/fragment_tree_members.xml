@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.familytree.tree.TreeMembersFragment">
 
-
-
     <me.jagar.mindmappingandroidlibrary.Zoom.ZoomLayout
         android:id="@+id/zoomLayout"
         android:layout_width="match_parent"
@@ -24,9 +22,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:maxZoom="2.5"
+        app:maxZoom="3"
         app:maxZoomType="zoom"
-        app:minZoom="0.1"
+        app:minZoom="1"
         app:minZoomType="zoom"
         app:oneFingerScrollEnabled="false"
         app:overPinchable="true"
@@ -42,8 +40,8 @@
 
         <me.jagar.mindmappingandroidlibrary.Views.MindMappingView
             android:id="@+id/treeView"
-            android:layout_width="1500dp"
-            android:layout_height="1500dp"
+            android:layout_width="2000dp"
+            android:layout_height="2000dp"
             android:background="@android:color/white" />
 
 
@@ -56,7 +54,7 @@
         android:layout_height="75dp"
         android:background="@color/secondary"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="@+id/zoomLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:baselineAligned="false">
 
         <LinearLayout
@@ -140,5 +138,12 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:queryHint="@string/name" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

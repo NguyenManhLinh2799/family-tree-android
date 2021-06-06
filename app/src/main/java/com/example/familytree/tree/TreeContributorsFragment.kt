@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import coil.load
 import com.example.familytree.databinding.FragmentTreeContributorsBinding
 
 private const val TREE_ID = "treeID"
@@ -47,6 +48,7 @@ class TreeContributorsFragment : Fragment() {
             treeContributorsViewModel.loadContributors(this.treeID!!)
         }
 
+        val ownerAvatar = binding.ownerAvatar
         val ownerUsername = binding.ownerUsername
         val ownerEmail = binding.ownerEmail
 
@@ -54,6 +56,9 @@ class TreeContributorsFragment : Fragment() {
         binding.contributors.adapter = contributorAdapter
 
         treeContributorsViewModel.contributorList.observe(viewLifecycleOwner, {
+            if (it.owner.avatarUrl != null) {
+                ownerAvatar.load(it.owner.avatarUrl)
+            }
             ownerUsername.text = it.owner.userName
             ownerEmail.text = it.owner.email
 

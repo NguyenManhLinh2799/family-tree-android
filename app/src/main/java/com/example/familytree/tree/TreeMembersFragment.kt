@@ -2,23 +2,28 @@ package com.example.familytree.tree
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.familytree.R
 import com.example.familytree.databinding.FragmentTreeMembersBinding
 import com.example.familytree.network.member.Member
+import kotlinx.android.synthetic.main.activity_login.view.*
 import me.jagar.mindmappingandroidlibrary.Views.Item
 import me.jagar.mindmappingandroidlibrary.Views.ItemLocation
 import me.jagar.mindmappingandroidlibrary.Views.ItemType
 import me.jagar.mindmappingandroidlibrary.Views.MindMappingView
+import me.jagar.mindmappingandroidlibrary.Zoom.ZoomLayout
 
 private const val TREE_ID = "treeID"
 
@@ -36,9 +41,11 @@ class TreeMembersFragment : Fragment() {
 
     // Views
     private lateinit var binding: FragmentTreeMembersBinding
+    private lateinit var zoomLayout: ZoomLayout
     private lateinit var treeView: MindMappingView
     private lateinit var memberMenuBar: LinearLayout
     private lateinit var allNodes: List<Item>
+    private lateinit var searchView: SearchView
 
     // References
     private var treeID: Int? = null
@@ -86,12 +93,24 @@ class TreeMembersFragment : Fragment() {
         setupMenuBar()
 
         // Zoom layout
+        zoomLayout = binding.zoomLayout
+
+        // Tree view
         treeView = binding.treeView
 
         // Observe members
         treeMembersViewModel.treeMembers.observe(viewLifecycleOwner, {
             updateAllNodes(it.people)
             (activity as AppCompatActivity).supportActionBar?.title = it.name
+        })
+
+        // Search view
+        setupSearchView()
+        treeMembersViewModel.searchResult.observe(viewLifecycleOwner, {
+            if (it != null) {
+                unFocus()
+                focus(it)
+            }
         })
     }
 
@@ -117,6 +136,8 @@ class TreeMembersFragment : Fragment() {
         allNodes.forEach {
             setStyle(it)
         }
+
+        zoomLayout.zoomTo(2f, false)
     }
 
     private fun addAllMembers(members: List<Member>) {
@@ -380,10 +401,8 @@ class TreeMembersFragment : Fragment() {
     }
 
     private fun setFamilyStyle(family: Item) {
-        family.setBackgroundResource(R.drawable.ic_family)
-
         val params = family.layoutParams
-        params.height = 300
+        params.height = 250
         params.width = 200
         family.layoutParams = params
     }
@@ -421,13 +440,32 @@ class TreeMembersFragment : Fragment() {
     private fun focus(item: Item) {
         focusedMember?.setBorder(Color.TRANSPARENT, 0)
         focusedMember = item
-        focusedMember!!.setBorder(Color.BLACK, 10)
+        focusedMember!!.setBorder(Color.GRAY, 15)
         memberMenuBar.visibility = View.VISIBLE
+
+        zoomLayout.moveTo(3f, -item.x + 575f, -item.y + 950f, true)
     }
 
     private fun unFocus() {
         focusedMember?.setBorder(Color.TRANSPARENT, 0)
         focusedMember = null
         memberMenuBar.visibility = View.INVISIBLE
+    }
+
+    private fun setupSearchView() {
+        searchView = binding.searchView
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+
+                // Search all nodes
+                treeMembersViewModel.search(query, allNodes)
+
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+        })
     }
 }

@@ -277,7 +277,8 @@ internal constructor(context: Context) : ZoomApi {
      * @see realZoom
      */
     @Zoom
-    override val zoom get() = zoomManager.realZoomToZoom(realZoom)
+    override var zoom = 0.0f
+        get() = zoomManager.realZoomToZoom(realZoom)
 
     //region Listeners
 

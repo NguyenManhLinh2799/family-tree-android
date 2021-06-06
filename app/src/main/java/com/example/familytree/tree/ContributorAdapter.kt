@@ -5,9 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.familytree.R
 import com.example.familytree.domain.User
 
@@ -24,10 +26,16 @@ class ContributorAdapter(private val onItemCLick: OnContributorItemClick)
     }
 
     class ContributorViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val avatar: ImageView = itemView.findViewById(R.id.contributorAvatar)
         val username: TextView = itemView.findViewById(R.id.contributorUsername)
         val email: TextView = itemView.findViewById(R.id.contributorEmail)
         val removeBtn: ImageView = itemView.findViewById(R.id.removeContributorBtn)
         fun bind(contributor: User?, onItemCLick: OnContributorItemClick) {
+            if (contributor?.avatarUrl != null) {
+                avatar.load(contributor.avatarUrl)
+            } else {
+                avatar.setPadding(20)
+            }
             username.text = contributor?.userName
             email.text = contributor?.email
             removeBtn.setOnClickListener {

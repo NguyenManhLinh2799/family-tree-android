@@ -23,7 +23,7 @@ interface ZoomApi {
      * @see realZoom
      */
     @Zoom
-    val zoom: Float
+    var zoom: Float
     // TODO (v2) rename to e.g. transformedZoom
 
     /**

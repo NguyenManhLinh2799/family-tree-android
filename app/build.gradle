@@ -89,4 +89,7 @@ dependencies {
     // Tab layout
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.android.support:support-v4:26.1.0'
+
+    // Circle image view
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }

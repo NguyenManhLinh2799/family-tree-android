@@ -5,9 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.familytree.R
 import com.example.familytree.domain.User
 
@@ -25,10 +27,16 @@ class UserAdapter(private val onItemCLick: OnUserItemClick) :
 
 
     class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val avatar: ImageView = itemView.findViewById(R.id.avatar)
         val username: TextView = itemView.findViewById(R.id.username)
         val email: TextView = itemView.findViewById(R.id.email)
         val addBtn: ImageView = itemView.findViewById(R.id.addBtn)
         fun bind(user: User?, onItemCLick: OnUserItemClick) {
+            if (user?.avatarUrl != null) {
+                avatar.load(user.avatarUrl)
+            } else {
+                avatar.setPadding(20)
+            }
             username.text = user?.userName
             email.text = user?.email
             addBtn.setOnClickListener {
