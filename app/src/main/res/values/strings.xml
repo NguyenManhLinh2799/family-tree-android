@@ -47,4 +47,6 @@
     <string name="relationship">Relationship</string>
     <string name="owner">Owner</string>
     <string name="contributors">Contributors</string>
+    <string name="memory_date">Memory date</string>
+    <string name="post">Post</string>
 </resources>

@@ -19,7 +19,7 @@ class TreeContributorsFragment : Fragment() {
     private lateinit var treeFragment: TreeFragment
 
     private val onItemClick = object : ContributorAdapter.OnContributorItemClick {
-        override fun onRemove(username: String?) {
+        override fun onRemoveContributor(username: String?) {
             treeContributorsViewModel.removeContributor(username)
         }
     }
@@ -66,7 +66,7 @@ class TreeContributorsFragment : Fragment() {
         })
 
         binding.addContributor.setOnClickListener {
-            treeFragment.navigateToAddContributor(this.treeID!!)
+            treeFragment.navigateToAddContributor()
         }
     }
 

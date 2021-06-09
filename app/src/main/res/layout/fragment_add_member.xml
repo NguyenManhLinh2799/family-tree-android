@@ -29,7 +29,7 @@
         android:layout_height="50dp"
         android:padding="10dp"
         android:background="@drawable/bg_avatar_no_stroke"
-        android:src="@drawable/ic_camera"
+        android:src="@drawable/ic_add_image"
         app:layout_constraintBottom_toBottomOf="@+id/avatar"
         app:layout_constraintEnd_toEndOf="@+id/avatar" />
 

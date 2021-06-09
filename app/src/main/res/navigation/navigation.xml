@@ -64,6 +64,9 @@
         <action
             android:id="@+id/action_tree_fragment_to_add_contributor_fragment"
             app:destination="@id/add_contributor_fragment" />
+        <action
+            android:id="@+id/action_tree_fragment_to_post_memory_fragment"
+            app:destination="@id/post_memory_fragment" />
     </fragment>
     <fragment
         android:id="@+id/add_contributor_fragment"
@@ -78,4 +81,16 @@
         android:id="@+id/profile_fragment"
         android:name="com.example.familytree.auth.ProfileFragment"
         android:label="My Profile" />
+    <fragment
+        android:id="@+id/post_memory_fragment"
+        android:name="com.example.familytree.tree.PostMemoryFragment"
+        android:label="Post a Memory"
+        tools:layout="@layout/fragment_post_memory" >
+        <argument
+            android:name="treeID"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_post_memory_fragment_to_tree_fragment"
+            app:destination="@id/tree_fragment" />
+    </fragment>
 </navigation>

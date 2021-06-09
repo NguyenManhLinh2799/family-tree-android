@@ -36,6 +36,15 @@ interface FamilyTreeApiService {
 
 
 
+    // Memory
+    @GET("memory-management/memories/tree/{treeId}")
+    suspend fun getMemories(@Path("treeId") treeID: Int?): ApiResponse<List<NetworkMemory>>
+
+    @POST("memory-management/memory")
+    suspend fun postMemory(@Body newMemory: NetworkMemory)
+
+
+
     // Family tree
     @GET("tree-management/trees/list")
     suspend fun getTrees(@Header("Authorization") token: String): NetworkTreeListContainer
@@ -98,7 +107,11 @@ interface FamilyTreeApiService {
     // Upload image
     @Multipart
     @POST("file-upload/image")
-    suspend fun uploadImage(@Header("Authorization") token: String, @Part file: MultipartBody.Part): ApiResponse<String>
+    suspend fun uploadImage(@Part file: MultipartBody.Part): ApiResponse<String>
+
+    @Multipart
+    @POST("file-upload/images")
+    suspend fun uploadImages(@Part files: List<MultipartBody.Part>): ApiResponse<List<String>>
 
 
 

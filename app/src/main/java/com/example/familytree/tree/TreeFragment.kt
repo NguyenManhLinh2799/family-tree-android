@@ -44,11 +44,6 @@ class TreeFragment : Fragment() {
         val adapter = TreePagerAdapter(treeID!!, childFragmentManager)
         viewPager.adapter = adapter
         tabLayout.setupWithViewPager(viewPager)
-        //tabLayout.getTabAt(1)?.select()
-    }
-
-    fun hello() {
-        Toast.makeText(context, "Hello from TreeFragment", Toast.LENGTH_SHORT).show()
     }
 
     fun navigateToMemberInfo(memberID: Int) {
@@ -69,18 +64,24 @@ class TreeFragment : Fragment() {
         )
     }
 
-    fun navigateToAddContributor(treeID: Int) {
+    fun navigateToAddContributor() {
         findNavController().navigate(
-            TreeFragmentDirections.actionTreeFragmentToAddContributorFragment(treeID)
+            TreeFragmentDirections.actionTreeFragmentToAddContributorFragment(this.treeID!!)
         )
     }
 
-    class TreePagerAdapter(val treeID: Int, fm: FragmentManager): FragmentPagerAdapter(fm) {
+    fun navigateToPostMemory() {
+        findNavController().navigate(
+            TreeFragmentDirections.actionTreeFragmentToPostMemoryFragment(this.treeID!!)
+        )
+    }
+
+    class TreePagerAdapter(val treeID: Int, fm: FragmentManager): FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         override fun getItem(position: Int): Fragment {
             return when (position) {
                 0 -> TreeMembersFragment.newInstance(treeID)
                 1 -> TreeContributorsFragment.newInstance(treeID)
-                else -> TreeContributorsFragment.newInstance(treeID)
+                else -> TreeMemoriesFragment.newInstance(treeID)
             }
         }
 
@@ -88,12 +89,12 @@ class TreeFragment : Fragment() {
             return when(position) {
                 0 -> "Family tree"
                 1 -> "Contributors"
-                else -> ""
+                else -> "Memories"
             }
         }
 
         override fun getCount(): Int {
-            return 2
+            return 3
         }
     }
 }

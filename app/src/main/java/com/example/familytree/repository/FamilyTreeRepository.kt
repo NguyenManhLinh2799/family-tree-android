@@ -4,9 +4,12 @@ import android.net.Uri
 import android.util.Log
 import com.example.familytree.database.FamilyTreeDatabase
 import com.example.familytree.domain.AuthData
+import com.example.familytree.domain.Memory
 import com.example.familytree.network.FamilyTreeApi
+import com.example.familytree.network.NetworkMemory
 import com.example.familytree.network.member.Member
 import com.example.familytree.network.NetworkTree
+import com.example.familytree.network.asDomainModel
 import com.example.familytree.network.auth.EditProfileRequest
 import com.example.familytree.network.auth.LoginRequest
 import com.example.familytree.network.auth.NetworkUser
@@ -39,6 +42,17 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
 
     suspend fun getAuthData(): AuthData = withContext(Dispatchers.IO) {
         return@withContext database.authDataDao.getAuthData().asDomainModel()
+    }
+
+    // Memory
+    suspend fun getMemories(treeID: Int): List<Memory> = withContext(Dispatchers.IO) {
+        return@withContext FamilyTreeApi.retrofitService.getMemories(treeID).data.asDomainModel()
+    }
+
+    suspend fun postMemory(newMemory: NetworkMemory) {
+        withContext(Dispatchers.IO) {
+            FamilyTreeApi.retrofitService.postMemory(newMemory)
+        }
     }
 
     // Tree
@@ -161,9 +175,18 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
         val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), imgFile)
         val body = MultipartBody.Part.createFormData("file", imgFile.name, requestFile)
 
-        val authData = database.authDataDao.getAuthData()
+        return@withContext FamilyTreeApi.retrofitService.uploadImage(body)
+    }
 
-        return@withContext FamilyTreeApi.retrofitService.uploadImage("Bearer ${authData.accessToken}", body)
+    suspend fun uploadImages(allImageUris: List<Uri>) = withContext(Dispatchers.IO) {
+        val parts = ArrayList<MultipartBody.Part>(0)
+        for (imgUri in allImageUris) {
+            val imgFile = File(imgUri.path)
+            val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), imgFile)
+            val part = MultipartBody.Part.createFormData("file", imgFile.name, requestFile)
+            parts.add(part)
+        }
+        return@withContext FamilyTreeApi.retrofitService.uploadImages(parts)
     }
 
     // User

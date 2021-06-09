@@ -49,6 +49,15 @@ data class ContributorList(
     val editors: List<User>?
 )
 
+data class Memory(
+    val id: Int?,
+    val familyTreeId: Int?,
+    val description: String?,
+    val memoryDate: String?,
+    val imageUrls: List<String>?,
+    val dateCreated: String?
+)
+
 data class AuthData(
     val userID: String,
     val accessToken: String,
