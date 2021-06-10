@@ -22,7 +22,7 @@ data class NetworkUser(
     val phone: String?,
     val gender: Int?,
     val dateOfBirth: String?,
-    val status: Int,
+    val status: Boolean,
     val createdDate: String,
     val updatedDate: String?
 ) {

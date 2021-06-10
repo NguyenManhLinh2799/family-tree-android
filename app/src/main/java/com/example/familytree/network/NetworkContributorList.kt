@@ -14,11 +14,15 @@ data class NetworkContributorListContainer(
 )
 
 @JsonClass(generateAdapter = true)
-data class NetworkContributorList(val owner: NetworkUser, val editors: List<NetworkUser>?) {
+data class NetworkContributorList(
+    val owner: NetworkUser,
+    val editors: List<NetworkUser>?,
+    val owned: Boolean?) {
     fun asDomainModel(): ContributorList {
         return ContributorList(
             owner.asDomainModel(),
-            editors?.asDomainModel()
+            editors?.asDomainModel(),
+            owned
         )
     }
 }

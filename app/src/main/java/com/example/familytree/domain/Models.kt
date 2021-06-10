@@ -28,7 +28,7 @@ data class User(
     val phone: String?,
     val gender: Int?,
     val dateOfBirth: String?,
-    val status: Int,
+    val status: Boolean,
     val createdDate: String,
     val updatedDate: String?
 ) {
@@ -46,7 +46,8 @@ data class User(
 
 data class ContributorList(
     val owner: User,
-    val editors: List<User>?
+    val editors: List<User>?,
+    var owned: Boolean?
 )
 
 data class Memory(

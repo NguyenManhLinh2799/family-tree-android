@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.familytree.database.FamilyTreeDatabase
 import com.example.familytree.domain.AuthData
 import com.example.familytree.domain.Memory
+import com.example.familytree.domain.Tree
 import com.example.familytree.network.FamilyTreeApi
 import com.example.familytree.network.NetworkMemory
 import com.example.familytree.network.member.Member
@@ -12,7 +13,6 @@ import com.example.familytree.network.NetworkTree
 import com.example.familytree.network.asDomainModel
 import com.example.familytree.network.auth.EditProfileRequest
 import com.example.familytree.network.auth.LoginRequest
-import com.example.familytree.network.auth.NetworkUser
 import com.example.familytree.network.auth.asDomainModel
 import com.example.familytree.network.contributor.ContributorRequest
 import com.example.familytree.network.member.AddChildMemberRequest
@@ -56,9 +56,28 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
     }
 
     // Tree
-    suspend fun getAllTrees() = withContext(Dispatchers.IO) {
+    suspend fun getMyTrees() = withContext(Dispatchers.IO) {
         val authData = database.authDataDao.getAuthData()
-        return@withContext FamilyTreeApi.retrofitService.getTrees("Bearer ${authData.accessToken}")
+        val allTrees = FamilyTreeApi.retrofitService.getTrees("Bearer ${authData.accessToken}").asDomainModel()
+        val myTrees = ArrayList<Tree>(0)
+        for (tree in allTrees) {
+            if (tree.owner?.id == authData.userID) {
+                myTrees.add(tree)
+            }
+        }
+        return@withContext myTrees
+    }
+
+    suspend fun getSharedTrees() = withContext(Dispatchers.IO) {
+        val authData = database.authDataDao.getAuthData()
+        val allTrees = FamilyTreeApi.retrofitService.getTrees("Bearer ${authData.accessToken}").asDomainModel()
+        val sharedTrees = ArrayList<Tree>(0)
+        for (tree in allTrees) {
+            if (tree.owner?.id != authData.userID) {
+                sharedTrees.add(tree)
+            }
+        }
+        return@withContext sharedTrees
     }
 
     suspend fun addTree(name: String, description: String?) {
@@ -98,13 +117,18 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
     // Tree contributors
     suspend fun getContributors(treeID: Int) = withContext(Dispatchers.IO) {
         val authData = database.authDataDao.getAuthData()
-        return@withContext FamilyTreeApi.retrofitService.getEditors(treeID, "Bearer ${authData.accessToken}")
+        val contributorList = FamilyTreeApi.retrofitService.getEditors(treeID, "Bearer ${authData.accessToken}")
             .data.asDomainModel()
+        contributorList.owned = contributorList.owner.id == authData.userID
+        return@withContext contributorList
     }
 
     suspend fun getAllUsers() = withContext(Dispatchers.IO) {
-        return@withContext FamilyTreeApi.retrofitService.filterUsers(FilterUsersRequest(null, null))
-            .data.asDomainModel()
+        val authData = database.authDataDao.getAuthData()
+        return@withContext FamilyTreeApi.retrofitService.filterUsers(
+            "Bearer ${authData.accessToken}",
+            FilterUsersRequest(null, null)
+        ).data.asDomainModel()
     }
 
     suspend fun addContributor(treeID: Int, username: String) {

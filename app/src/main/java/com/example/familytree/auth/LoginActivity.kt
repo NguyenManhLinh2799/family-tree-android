@@ -1,18 +1,12 @@
 package com.example.familytree.auth
 
-import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.example.familytree.MainActivity
-import com.example.familytree.R
 import com.example.familytree.databinding.ActivityLoginBinding
-import com.example.familytree.my_trees.MyTreesViewModel
 
 // username: linh
 // password: linh.123

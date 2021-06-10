@@ -63,9 +63,7 @@ class PostMemoryFragment : Fragment() {
         postMemoryViewModel.navigateToTreeMembers.observe(viewLifecycleOwner, {
             if (it == true) {
                 findNavController().navigate(
-                    PostMemoryFragmentDirections.actionPostMemoryFragmentToTreeFragment(
-                        this.treeID!!
-                    )
+                    PostMemoryFragmentDirections.actionPostMemoryFragmentToTreeFragment(this.treeID!!)
                 )
                 postMemoryViewModel.doneNavigating()
             }

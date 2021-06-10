@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/tree_fragment"
+        android:id="@+id/my_trees_fragment"
         android:icon="@drawable/ic_my_trees"
         android:title="@string/my_trees"/>
-<!--    <item-->
-<!--        android:id="@+id/sharedWithMe"-->
-<!--        android:icon="@drawable/ic_share"-->
-<!--        android:title="@string/shared_with_me"/>-->
+    <item
+        android:id="@+id/shared_trees_fragment"
+        android:icon="@drawable/ic_share"
+        android:title="@string/shared_with_me"/>
 <!--    <item-->
 <!--        android:id="@+id/settings"-->
 <!--        android:icon="@drawable/ic_settings_filled"-->

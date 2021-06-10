@@ -94,7 +94,7 @@ interface FamilyTreeApiService {
     suspend fun getEditors(@Path("treeId") id: Int?, @Header("Authorization") token: String): NetworkContributorListContainer
 
     @POST("user-management/users")
-    suspend fun filterUsers(@Body filterRequest: FilterUsersRequest?): ApiResponse<List<NetworkUser>>
+    suspend fun filterUsers(@Header("Authorization") token: String, @Body filterRequest: FilterUsersRequest?): ApiResponse<List<NetworkUser>>
 
     @POST("tree-management/tree/{treeId}/add-users-to-editor")
     suspend fun addEditors(@Path("treeId") treeID: Int?, @Header("Authorization") token: String, @Body contributorRequest: ContributorRequest)

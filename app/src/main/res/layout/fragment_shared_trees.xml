@@ -8,7 +8,7 @@
     android:background="@color/secondary">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/myTrees"
+        android:id="@+id/sharedTrees"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -18,18 +18,5 @@
         app:layout_constraintTop_toTopOf="parent">
 
     </androidx.recyclerview.widget.RecyclerView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addTree"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/ic_add"
-        app:fabSize="normal"
-        app:tint="@color/white"
-        app:backgroundTint="@color/primary"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

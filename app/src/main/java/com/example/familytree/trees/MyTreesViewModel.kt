@@ -1,16 +1,12 @@
-package com.example.familytree.my_trees
+package com.example.familytree.trees
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.familytree.database.getDatabase
-import com.example.familytree.domain.AuthData
 import com.example.familytree.domain.Tree
-import com.example.familytree.network.FamilyTreeApi
-import com.example.familytree.network.NetworkTree
 import com.example.familytree.network.asDomainModel
 import com.example.familytree.repository.FamilyTreeRepository
 import kotlinx.coroutines.launch
@@ -26,7 +22,7 @@ class MyTreesViewModel(context: Context) : ViewModel() {
     init {
         viewModelScope.launch {
             try {
-                myTrees.value = familyTreeRepository.getAllTrees().asDomainModel()
+                myTrees.value = familyTreeRepository.getMyTrees()
             } catch (e: Exception) {
                 myTrees.value = listOf(
                         Tree(1, "Tree1", "", null, null, null),
@@ -42,7 +38,7 @@ class MyTreesViewModel(context: Context) : ViewModel() {
     fun addTree(name: String, description: String) {
         viewModelScope.launch {
             familyTreeRepository.addTree(name, description)
-            myTrees.value = familyTreeRepository.getAllTrees().asDomainModel()
+            myTrees.value = familyTreeRepository.getMyTrees()
         }
     }
 
@@ -55,7 +51,7 @@ class MyTreesViewModel(context: Context) : ViewModel() {
     fun editTree(id: Int?, name: String, description: String) {
         viewModelScope.launch {
             familyTreeRepository.upadateTree(id, name, description)
-            myTrees.value = familyTreeRepository.getAllTrees().asDomainModel()
+            myTrees.value = familyTreeRepository.getMyTrees()
         }
     }
 

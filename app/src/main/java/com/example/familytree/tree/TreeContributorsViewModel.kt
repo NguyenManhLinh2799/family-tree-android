@@ -23,6 +23,7 @@ class TreeContributorsViewModel(context: Context, treeID: Int): ViewModel() {
 
     init {
         this.treeID = treeID
+
         loadContributors(treeID)
     }
 

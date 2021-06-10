@@ -7,7 +7,7 @@
     app:startDestination="@id/my_trees_fragment">
     <fragment
         android:id="@+id/my_trees_fragment"
-        android:name="com.example.familytree.my_trees.MyTreesFragment"
+        android:name="com.example.familytree.trees.MyTreesFragment"
         android:label="My Trees"
         tools:layout="@layout/fragment_my_trees">
         <action
@@ -91,6 +91,14 @@
             app:argType="integer" />
         <action
             android:id="@+id/action_post_memory_fragment_to_tree_fragment"
+            app:destination="@id/tree_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/shared_trees_fragment"
+        android:name="com.example.familytree.trees.SharedTreesFragment"
+        android:label="Shared with me" >
+        <action
+            android:id="@+id/action_shared_trees_fragment_to_tree_fragment"
             app:destination="@id/tree_fragment" />
     </fragment>
 </navigation>

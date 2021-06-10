@@ -1,4 +1,4 @@
-package com.example.familytree.my_trees
+package com.example.familytree.trees
 
 import android.app.AlertDialog
 import android.app.Dialog

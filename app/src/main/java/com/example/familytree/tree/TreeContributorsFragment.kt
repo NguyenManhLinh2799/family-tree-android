@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.setPadding
 import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.familytree.databinding.FragmentTreeContributorsBinding
@@ -52,22 +53,30 @@ class TreeContributorsFragment : Fragment() {
         val ownerUsername = binding.ownerUsername
         val ownerEmail = binding.ownerEmail
 
-        val contributorAdapter = ContributorAdapter(onItemClick)
-        binding.contributors.adapter = contributorAdapter
+        val contributors = binding.contributors
+        val addContributor = binding.addContributor
 
         treeContributorsViewModel.contributorList.observe(viewLifecycleOwner, {
+            if (it.owned == true) {
+                addContributor.setOnClickListener {
+                    treeFragment.navigateToAddContributor()
+                }
+            } else if (it.owned == false) {
+                addContributor.visibility = View.INVISIBLE
+            }
+
             if (it.owner.avatarUrl != null) {
                 ownerAvatar.load(it.owner.avatarUrl)
+            } else {
+                ownerAvatar.setPadding(20)
             }
             ownerUsername.text = it.owner.userName
             ownerEmail.text = it.owner.email
 
+            val contributorAdapter = ContributorAdapter(onItemClick, it.owned!!)
+            contributors.adapter = contributorAdapter
             contributorAdapter.submitList(it.editors)
         })
-
-        binding.addContributor.setOnClickListener {
-            treeFragment.navigateToAddContributor()
-        }
     }
 
     companion object {

@@ -4,9 +4,6 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.familytree.database.getDatabase
-import com.example.familytree.my_trees.MyTreesViewModel
-import com.example.familytree.network.FamilyTreeApi
-import com.example.familytree.network.auth.LoginRequest
 import com.example.familytree.repository.FamilyTreeRepository
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
