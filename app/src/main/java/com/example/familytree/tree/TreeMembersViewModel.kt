@@ -18,6 +18,7 @@ import me.jagar.mindmappingandroidlibrary.Views.Item
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 import java.util.*
+import kotlin.collections.ArrayList
 
 class TreeMembersViewModel(context: Context, treeID: Int): ViewModel() {
 
@@ -25,7 +26,8 @@ class TreeMembersViewModel(context: Context, treeID: Int): ViewModel() {
     private val familyTreeRepository = FamilyTreeRepository(database)
 
     var treeMembers = MutableLiveData<TreeMembers>()
-    var searchResult = MutableLiveData<Item>()
+    var searchResult = MutableLiveData<List<Item>>()
+    var selectedMember = MutableLiveData<Item>()
 
     init {
         loadTreeMembers(treeID)
@@ -50,19 +52,24 @@ class TreeMembersViewModel(context: Context, treeID: Int): ViewModel() {
 
     fun search(query: String?, allNodes: List<Item>) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                if (query != null && query != "") {
-                    val queryUpper = query.toUpperCase(Locale.ROOT)
-                    for (node in allNodes) {
-                        val nodeNameUpper = node.title.text.toString().toUpperCase(Locale.ROOT)
-                        if (nodeNameUpper.contains(queryUpper)) {
-                            delay(500)
-                            searchResult.postValue(node)
-                            return@withContext
-                        }
+            val result = ArrayList<Item>(0)
+            if (query != null && query != "") {
+                val queryUpper = query.toUpperCase(Locale.ROOT)
+                for (node in allNodes) {
+                    val nodeNameUpper = node.title.text.toString().toUpperCase(Locale.ROOT)
+                    if (nodeNameUpper.contains(queryUpper)) {
+                        result.add(node)
                     }
                 }
             }
+            searchResult.value = result
+        }
+    }
+
+    fun select(member: Item?) {
+        viewModelScope.launch {
+            delay(500)
+            selectedMember.value = member!!
         }
     }
 

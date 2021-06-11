@@ -42,7 +42,7 @@
             android:id="@+id/treeView"
             android:layout_width="2000dp"
             android:layout_height="2000dp"
-            android:background="@android:color/white" />
+            android:background="@android:color/white"/>
 
 
     </me.jagar.mindmappingandroidlibrary.Zoom.ZoomLayout>
@@ -144,6 +144,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        app:queryHint="@string/name" />
+        app:queryHint="@string/name"
+        android:background="@color/white"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searchResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/searchView"
+        android:background="@color/white"
+        android:elevation="4dp">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

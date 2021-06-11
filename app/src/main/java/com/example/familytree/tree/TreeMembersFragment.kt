@@ -14,11 +14,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.familytree.R
 import com.example.familytree.databinding.FragmentTreeMembersBinding
 import com.example.familytree.network.member.Member
 import kotlinx.android.synthetic.main.activity_login.view.*
+import kotlinx.android.synthetic.main.fragment_tree_members.*
 import me.jagar.mindmappingandroidlibrary.Views.Item
 import me.jagar.mindmappingandroidlibrary.Views.ItemLocation
 import me.jagar.mindmappingandroidlibrary.Views.ItemType
@@ -39,6 +41,14 @@ class TreeMembersFragment : Fragment() {
         }
     }
 
+    // Search result item click
+    private val onSearchMemberItemClick = object : SearchMemberAdapter.OnSearchMemberItemClick {
+        override fun onClick(member: Item?) {
+            searchResult.visibility = View.INVISIBLE
+            treeMembersViewModel.select(member)
+        }
+    }
+
     // Views
     private lateinit var binding: FragmentTreeMembersBinding
     private lateinit var zoomLayout: ZoomLayout
@@ -46,6 +56,7 @@ class TreeMembersFragment : Fragment() {
     private lateinit var memberMenuBar: LinearLayout
     private lateinit var allNodes: List<Item>
     private lateinit var searchView: SearchView
+    private lateinit var searchResult: RecyclerView
 
     // References
     private var treeID: Int? = null
@@ -104,13 +115,19 @@ class TreeMembersFragment : Fragment() {
             (activity as AppCompatActivity).supportActionBar?.title = it.name
         })
 
-        // Search view
+        // Search
+        val searchMemberAdapter = SearchMemberAdapter(this.onSearchMemberItemClick)
+        searchResult = binding.searchResult
+        searchResult.adapter = searchMemberAdapter
         setupSearchView()
+        searchResult.visibility = View.INVISIBLE
         treeMembersViewModel.searchResult.observe(viewLifecycleOwner, {
-            if (it != null) {
-                unFocus()
-                focus(it)
-            }
+            searchResult.visibility = View.VISIBLE
+            searchMemberAdapter.submitList(it)
+        })
+        treeMembersViewModel.selectedMember.observe(viewLifecycleOwner, {
+            unFocus()
+            focus(it)
         })
     }
 
@@ -454,16 +471,18 @@ class TreeMembersFragment : Fragment() {
 
     private fun setupSearchView() {
         searchView = binding.searchView
+
         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
-
-                // Search all nodes
-                treeMembersViewModel.search(query, allNodes)
-
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != "") {
+                    treeMembersViewModel.search(newText, allNodes)
+                } else {
+                    searchResult.visibility = View.INVISIBLE
+                }
                 return false
             }
         })
