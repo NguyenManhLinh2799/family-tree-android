@@ -8,6 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.familytree.database.getDatabase
 import com.example.familytree.domain.User
 import com.example.familytree.repository.FamilyTreeRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
@@ -17,7 +20,6 @@ class AddContributorViewModel(context: Context, treeID: Int): ViewModel() {
     private val familyTreeRepository = FamilyTreeRepository(database)
     private var treeID: Int? = null
 
-    private lateinit var allContributors: ArrayList<User>
     private lateinit var notContributors: ArrayList<User>
     var searchResult = MutableLiveData<ArrayList<User>>()
     var searchQuery = ""
@@ -25,28 +27,23 @@ class AddContributorViewModel(context: Context, treeID: Int): ViewModel() {
     init {
         this.treeID = treeID
 
-        loadAllContributors()
         loadNotContributors()
     }
 
     private fun loadNotContributors() {
         viewModelScope.launch {
-            notContributors = familyTreeRepository.getAllUsers() as ArrayList<User>
-            notContributors.removeAll(allContributors)
-            search(searchQuery)
-        }
-    }
-
-    private fun loadAllContributors() {
-        viewModelScope.launch {
             val contributorList = familyTreeRepository.getContributors(treeID!!)
-            allContributors = ArrayList(0)
+            val allContributors = ArrayList<User>(0)
             allContributors.add(contributorList.owner)
             if (contributorList.editors != null) {
                 for (editor in contributorList.editors){
                     allContributors.add(editor)
                 }
             }
+
+            notContributors = familyTreeRepository.getAllUsers() as ArrayList<User>
+            notContributors.removeAll(allContributors)
+            search(searchQuery)
         }
     }
 
@@ -70,7 +67,6 @@ class AddContributorViewModel(context: Context, treeID: Int): ViewModel() {
     fun addContributor(username: String?) {
         viewModelScope.launch {
             familyTreeRepository.addContributor(treeID!!, username!!)
-            loadAllContributors()
             loadNotContributors()
         }
     }

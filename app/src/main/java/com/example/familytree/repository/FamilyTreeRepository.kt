@@ -8,21 +8,22 @@ import com.example.familytree.domain.Memory
 import com.example.familytree.domain.Tree
 import com.example.familytree.network.FamilyTreeApi
 import com.example.familytree.network.NetworkMemory
-import com.example.familytree.network.member.Member
 import com.example.familytree.network.NetworkTree
 import com.example.familytree.network.asDomainModel
 import com.example.familytree.network.auth.EditProfileRequest
 import com.example.familytree.network.auth.LoginRequest
 import com.example.familytree.network.auth.asDomainModel
 import com.example.familytree.network.contributor.ContributorRequest
-import com.example.familytree.network.member.AddChildMemberRequest
 import com.example.familytree.network.contributor.FilterUsersRequest
+import com.example.familytree.network.member.AddChildMemberRequest
+import com.example.familytree.network.member.Member
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+
 
 class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
 
@@ -46,12 +47,17 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
 
     // Memory
     suspend fun getMemories(treeID: Int): List<Memory> = withContext(Dispatchers.IO) {
-        return@withContext FamilyTreeApi.retrofitService.getMemories(treeID).data.asDomainModel()
+        val authData = database.authDataDao.getAuthData()
+        return@withContext FamilyTreeApi.retrofitService.getMemories(
+            "Bearer ${authData.accessToken}",
+            treeID
+        ).data.asDomainModel()
     }
 
     suspend fun postMemory(newMemory: NetworkMemory) {
         withContext(Dispatchers.IO) {
-            FamilyTreeApi.retrofitService.postMemory(newMemory)
+            val authData = database.authDataDao.getAuthData()
+            FamilyTreeApi.retrofitService.postMemory("Bearer ${authData.accessToken}", newMemory)
         }
     }
 
@@ -202,15 +208,16 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
         return@withContext FamilyTreeApi.retrofitService.uploadImage(body)
     }
 
-    suspend fun uploadImages(allImageUris: List<Uri>) = withContext(Dispatchers.IO) {
-        val parts = ArrayList<MultipartBody.Part>(0)
-        for (imgUri in allImageUris) {
-            val imgFile = File(imgUri.path)
+    suspend fun uploadImagesByPaths(allPaths: List<String>) = withContext(Dispatchers.IO) {
+        val builder = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+        for (path in allPaths) {
+            val imgFile = File(path)
             val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), imgFile)
-            val part = MultipartBody.Part.createFormData("file", imgFile.name, requestFile)
-            parts.add(part)
+            builder.addFormDataPart("Files", imgFile.name, requestFile)
         }
-        return@withContext FamilyTreeApi.retrofitService.uploadImages(parts)
+        val requestBody = builder.build()
+        return@withContext FamilyTreeApi.retrofitService.uploadImagesMultipart(requestBody)
     }
 
     // User

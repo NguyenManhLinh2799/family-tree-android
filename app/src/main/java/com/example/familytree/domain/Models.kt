@@ -28,7 +28,6 @@ data class User(
     val phone: String?,
     val gender: Int?,
     val dateOfBirth: String?,
-    val status: Boolean,
     val createdDate: String,
     val updatedDate: String?
 ) {

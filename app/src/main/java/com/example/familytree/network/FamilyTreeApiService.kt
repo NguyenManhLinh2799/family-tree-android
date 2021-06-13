@@ -9,6 +9,7 @@ import com.example.familytree.network.contributor.FilterUsersRequest
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -38,10 +39,10 @@ interface FamilyTreeApiService {
 
     // Memory
     @GET("memory-management/memories/tree/{treeId}")
-    suspend fun getMemories(@Path("treeId") treeID: Int?): ApiResponse<List<NetworkMemory>>
+    suspend fun getMemories(@Header("Authorization") token: String, @Path("treeId") treeID: Int?): ApiResponse<List<NetworkMemory>>
 
     @POST("memory-management/memory")
-    suspend fun postMemory(@Body newMemory: NetworkMemory)
+    suspend fun postMemory(@Header("Authorization") token: String, @Body newMemory: NetworkMemory)
 
 
 
@@ -109,9 +110,8 @@ interface FamilyTreeApiService {
     @POST("file-upload/image")
     suspend fun uploadImage(@Part file: MultipartBody.Part): ApiResponse<String>
 
-    @Multipart
     @POST("file-upload/images")
-    suspend fun uploadImages(@Part files: List<MultipartBody.Part>): ApiResponse<List<String>>
+    suspend fun uploadImagesMultipart(@Body Files: MultipartBody): ApiResponse<List<String>>
 
 
 

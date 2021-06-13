@@ -60,8 +60,8 @@ class MyTreesFragment: Fragment() {
             .setView(R.layout.dialog_tree_form)
             .setPositiveButton("Add") { dialogInterface, which ->
                 val dialog = Dialog::class.java.cast(dialogInterface)
-                val name = dialog.findViewById<EditText>(R.id.dialogTreeName)?.text.toString()
-                val description = dialog.findViewById<EditText>(R.id.dialogTreeDescription)?.text.toString()
+                val name = dialog?.findViewById<EditText>(R.id.dialogTreeName)?.text.toString()
+                val description = dialog?.findViewById<EditText>(R.id.dialogTreeDescription)?.text.toString()
                 Toast.makeText(context, "$name added", Toast.LENGTH_SHORT).show()
                 myTreesViewModel.addTree(name, description)
             }

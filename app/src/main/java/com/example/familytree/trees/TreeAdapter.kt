@@ -77,8 +77,8 @@ class TreeAdapter(private val onItemClick: OnTreeItemClick) : ListAdapter<Tree, 
                     .setView(R.layout.dialog_tree_form)
                     .setPositiveButton("Save") { dialog, which ->
                         val d = Dialog::class.java.cast(dialog)
-                        val name = d.findViewById<EditText>(R.id.dialogTreeName)?.text.toString()
-                        val description = d.findViewById<EditText>(R.id.dialogTreeDescription)?.text.toString()
+                        val name = d?.findViewById<EditText>(R.id.dialogTreeName)?.text.toString()
+                        val description = d?.findViewById<EditText>(R.id.dialogTreeDescription)?.text.toString()
                         Toast.makeText(itemView.context, "Edited", Toast.LENGTH_SHORT).show()
                         onItemClick.onEdit(id, name, description)
                     }

@@ -8,19 +8,19 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'androidx.navigation.safeargs'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 29
 
     buildFeatures {
         dataBinding true
         viewBinding true
     }
 
-    buildToolsVersion "30.0.3"
+    buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.example.familytree"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
@@ -44,7 +44,6 @@ android {
 
 dependencies {
     // Mindo
-    // implementation 'com.github.JagarYousef:Mindo:2.0.0'
     implementation project(":mindmappingandroidlibrary")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -58,8 +57,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     // Navigation
-    implementation "android.arch.navigation:navigation-fragment-ktx:$nav_version"
-    implementation "android.arch.navigation:navigation-ui-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     // ViewModel and LiveData
@@ -87,8 +86,8 @@ dependencies {
     implementation("io.coil-kt:coil:1.2.1")
 
     // Tab layout
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.android.support:design:29.1.0'
+    implementation 'com.android.support:support-v4:29.1.0'
 
     // Circle image view
     implementation 'de.hdodenhof:circleimageview:3.1.0'

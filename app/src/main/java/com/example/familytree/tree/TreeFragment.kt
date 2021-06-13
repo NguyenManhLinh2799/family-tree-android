@@ -24,7 +24,7 @@ class TreeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (treeID == null) {
-            treeID = TreeFragmentArgs.fromBundle(arguments!!).treeID
+            treeID = TreeFragmentArgs.fromBundle(requireArguments()).treeID
         }
     }
 

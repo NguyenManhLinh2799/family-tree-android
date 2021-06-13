@@ -30,7 +30,7 @@ class AddContributorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.treeID = AddContributorFragmentArgs.fromBundle(arguments!!).treeID
+        this.treeID = AddContributorFragmentArgs.fromBundle(requireArguments()).treeID
 
         addContributorsViewModel = ViewModelProvider(this,
             AddContributorViewModel.Factory(

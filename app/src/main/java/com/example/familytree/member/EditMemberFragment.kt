@@ -32,7 +32,7 @@ class EditMemberFragment: Fragment() {
             this,
             EditMemberViewModel.Factory(
                 requireNotNull(context),
-                requireNotNull(EditMemberFragmentArgs.fromBundle(arguments!!).memberID)
+                requireNotNull(EditMemberFragmentArgs.fromBundle(requireArguments()).memberID)
             )
         )
             .get(EditMemberViewModel::class.java)
@@ -92,7 +92,7 @@ class EditMemberFragment: Fragment() {
             editMemberViewModel.editMember(
                 Member(
                     null,
-                    EditMemberFragmentArgs.fromBundle(arguments!!).memberID,
+                    EditMemberFragmentArgs.fromBundle(requireArguments()).memberID,
                     firstName.text.toString(),
                     lastName.text.toString(),
                     DateHelper.dateToIso(dob.text.toString()),

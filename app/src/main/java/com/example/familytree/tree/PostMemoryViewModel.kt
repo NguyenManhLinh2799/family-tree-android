@@ -2,6 +2,7 @@ package com.example.familytree.tree
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -20,9 +21,12 @@ class PostMemoryViewModel(context: Context): ViewModel() {
 
     var navigateToTreeMembers = MutableLiveData<Boolean?>()
 
-    fun postMemory(newMemory: NetworkMemory, allImageUris: List<Uri>) {
+    fun postMemoryByPaths(newMemory: NetworkMemory, allImagePaths: List<String>) {
         viewModelScope.launch {
-            val allImageUrls = familyTreeRepository.uploadImages(allImageUris).data
+            val allImageUrls = familyTreeRepository.uploadImagesByPaths(allImagePaths).data
+            for (url in allImageUrls) {
+                Log.e("AllImagesUrls", url)
+            }
             newMemory.imageUrls = allImageUrls
             familyTreeRepository.postMemory(newMemory)
             navigateToTreeMembers.value = true

@@ -19,7 +19,7 @@ class MemberInfoFragment: Fragment() {
         ViewModelProvider(this,
             MemberInfoViewModel.Factory(
                 requireNotNull(context),
-                requireNotNull(MemberInfoFragmentArgs.fromBundle(arguments!!).memberID)
+                requireNotNull(MemberInfoFragmentArgs.fromBundle(requireArguments()).memberID)
             ))
             .get(MemberInfoViewModel::class.java)
     }

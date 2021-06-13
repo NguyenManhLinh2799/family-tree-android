@@ -4,14 +4,13 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.ClipData
 import android.content.Intent
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.text.Layout
 import android.util.Log
 import android.view.*
 import android.widget.*
-import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -30,6 +29,7 @@ class PostMemoryFragment : Fragment() {
     private lateinit var memoryDescription: EditText
     private lateinit var imageList: LinearLayout
     private val allImageUris = ArrayList<Uri>(0)
+    private val allImagePaths = ArrayList<String>(0)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -42,13 +42,13 @@ class PostMemoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // References
-        this.treeID = PostMemoryFragmentArgs.fromBundle(arguments!!).treeID
+        this.treeID = PostMemoryFragmentArgs.fromBundle(requireArguments()).treeID
         postMemoryViewModel = ViewModelProvider(this,
         PostMemoryViewModel.Factory(
             requireNotNull(context),
         )).get(PostMemoryViewModel::class.java)
 
-        // Basic infomation
+        // Basic information
         this.memoryDate = binding.memoryDate
         this.memoryDate.setOnClickListener {
             showDatePickerDialog(it as Button)
@@ -90,7 +90,7 @@ class PostMemoryFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.postMemory -> {
-                postMemoryViewModel.postMemory(
+                postMemoryViewModel.postMemoryByPaths(
                     NetworkMemory(
                         null,
                         this.treeID,
@@ -99,7 +99,7 @@ class PostMemoryFragment : Fragment() {
                         null,
                         null
                     ),
-                    this.allImageUris
+                    this.allImagePaths
                 )
                 Toast.makeText(context, "Posted", Toast.LENGTH_SHORT).show()
             }
@@ -132,6 +132,7 @@ class PostMemoryFragment : Fragment() {
         val count = clipData.itemCount
         for (i in (count - 1) downTo 0) {
             val imageUri = clipData.getItemAt(i).uri
+            val imagePath = getRealPathFromURI(imageUri)
 
             val imageView = ImageView(context)
             imageList.addView(imageView)
@@ -143,9 +144,28 @@ class PostMemoryFragment : Fragment() {
             imageView.setOnClickListener {
                 imageList.removeView(imageView)
                 allImageUris.remove(imageUri)
+                allImagePaths.remove(imagePath)
             }
 
             allImageUris.add(imageUri)
+            if (imagePath != null) {
+                allImagePaths.add(imagePath)
+            }
+            Log.e("PostMemoryFragment", imageUri.toString())
         }
+    }
+
+    private fun getRealPathFromURI(contentURI: Uri): String? {
+        val result: String?
+        val cursor: Cursor? = requireContext().contentResolver.query(contentURI, null, null, null, null)
+        if (cursor == null) {
+            result = contentURI.path
+        } else {
+            cursor.moveToFirst()
+            val idx: Int = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+            result = cursor.getString(idx)
+            cursor.close()
+        }
+        return result
     }
 }

@@ -47,7 +47,7 @@ class AddMemberFragment : Fragment(), AdapterView.OnItemSelectedListener {
         super.onViewCreated(view, savedInstanceState)
 
         // Save treeID for navigating back
-        this.treeID = AddMemberFragmentArgs.fromBundle(arguments!!).treeID
+        this.treeID = AddMemberFragmentArgs.fromBundle(requireArguments()).treeID
 
         // Add avatar
         setUpAddAvatar()
@@ -56,7 +56,7 @@ class AddMemberFragment : Fragment(), AdapterView.OnItemSelectedListener {
         addMemberViewModel = ViewModelProvider(this,
         AddMemberViewModel.Factory(
             requireNotNull(context),
-            requireNotNull(AddMemberFragmentArgs.fromBundle(arguments!!).memberID)
+            requireNotNull(AddMemberFragmentArgs.fromBundle(requireArguments()).memberID)
         )).get(AddMemberViewModel::class.java)
 
         // Relationship spinner

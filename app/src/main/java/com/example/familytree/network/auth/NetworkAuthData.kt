@@ -22,13 +22,12 @@ data class NetworkUser(
     val phone: String?,
     val gender: Int?,
     val dateOfBirth: String?,
-    val status: Boolean,
     val createdDate: String,
     val updatedDate: String?
 ) {
     fun asDomainModel(): User {
         return User(
-            id, userName, email, loginProvider, firstName, midName, lastName, avatarUrl, address, phone, gender, dateOfBirth, status, createdDate, updatedDate
+            id, userName, email, loginProvider, firstName, midName, lastName, avatarUrl, address, phone, gender, dateOfBirth, createdDate, updatedDate
         )
     }
 }
@@ -48,7 +47,6 @@ fun List<NetworkUser>.asDomainModel(): List<User> {
             phone = it.phone,
             gender = it.gender,
             dateOfBirth = it.dateOfBirth,
-            status = it.status,
             createdDate = it.createdDate,
             updatedDate = it.updatedDate
         )
