@@ -28,7 +28,6 @@ class PostMemoryFragment : Fragment() {
     private lateinit var memoryDate: Button
     private lateinit var memoryDescription: EditText
     private lateinit var imageList: LinearLayout
-    private val allImageUris = ArrayList<Uri>(0)
     private val allImagePaths = ArrayList<String>(0)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -97,6 +96,7 @@ class PostMemoryFragment : Fragment() {
                         memoryDescription.text.toString(),
                         DateHelper.dateToIso(memoryDate.text.toString()),
                         null,
+                        null,
                         null
                     ),
                     this.allImagePaths
@@ -130,7 +130,7 @@ class PostMemoryFragment : Fragment() {
             return;
         }
         val count = clipData.itemCount
-        for (i in (count - 1) downTo 0) {
+        for (i in 0 until count) {
             val imageUri = clipData.getItemAt(i).uri
             val imagePath = getRealPathFromURI(imageUri)
 
@@ -143,11 +143,9 @@ class PostMemoryFragment : Fragment() {
             imageView.scaleType = ImageView.ScaleType.CENTER_CROP
             imageView.setOnClickListener {
                 imageList.removeView(imageView)
-                allImageUris.remove(imageUri)
                 allImagePaths.remove(imagePath)
             }
 
-            allImageUris.add(imageUri)
             if (imagePath != null) {
                 allImagePaths.add(imagePath)
             }

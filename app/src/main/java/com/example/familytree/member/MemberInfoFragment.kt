@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.familytree.DateHelper
 import com.example.familytree.databinding.FragmentMemberInfoBinding
+import kotlinx.android.synthetic.main.fragment_add_member.*
 
 class MemberInfoFragment: Fragment() {
 
@@ -37,6 +38,9 @@ class MemberInfoFragment: Fragment() {
         val sex = binding.sex
         val dob = binding.dateOfBirth
         val dod = binding.dateOfDeath
+        val phone = binding.phone
+        val address = binding.address
+        val job = binding.job
         val note = binding.note
 
         memberInfoViewModel.member.observe(viewLifecycleOwner, {
@@ -51,6 +55,9 @@ class MemberInfoFragment: Fragment() {
             sex.text = it.sex
             dob.text = DateHelper.isoToDate(it.dateOfBirth)
             dod.text = DateHelper.isoToDate(it.dateOfDeath)
+            phone.text = it.phoneNumber
+            address.text = it.homeAddress
+            job.text = it.occupation
             note.text = it.note
         })
     }

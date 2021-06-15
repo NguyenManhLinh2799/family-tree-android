@@ -146,6 +146,24 @@
         </LinearLayout>
 
         <EditText
+            android:id="@+id/phone"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="@string/phone_number" />
+
+        <EditText
+            android:id="@+id/address"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="@string/address" />
+
+        <EditText
+            android:id="@+id/job"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="@string/career" />
+
+        <EditText
             android:id="@+id/note"
             android:layout_width="match_parent"
             android:layout_height="50dp"

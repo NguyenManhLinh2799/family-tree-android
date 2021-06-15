@@ -91,4 +91,7 @@ dependencies {
 
     // Circle image view
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    // Image popup
+    implementation 'com.github.chathuralakmal:AndroidImagePopup:1.2.2'
 }

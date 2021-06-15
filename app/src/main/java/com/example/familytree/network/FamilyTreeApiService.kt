@@ -6,6 +6,7 @@ import com.example.familytree.network.contributor.ContributorRequest
 import com.example.familytree.network.member.AddChildMemberRequest
 import com.example.familytree.network.member.Member
 import com.example.familytree.network.contributor.FilterUsersRequest
+import com.example.familytree.network.member.MemberDetail
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.MultipartBody
@@ -44,6 +45,8 @@ interface FamilyTreeApiService {
     @POST("memory-management/memory")
     suspend fun postMemory(@Header("Authorization") token: String, @Body newMemory: NetworkMemory)
 
+    @DELETE("memory-management/memory/{memoryId}")
+    suspend fun deleteMemory(@Path("memoryId") memoryID: Int?, @Header("Authorization") token: String)
 
 
     // Family tree
@@ -66,6 +69,9 @@ interface FamilyTreeApiService {
     // Member
     @GET("person-management/person/{personId}")
     suspend fun getPerson(@Path("personId") id: Int, @Header("Authorization") token: String): ApiResponse<Member>
+
+    @GET("person-management/person/{personId}/details")
+    suspend fun getPersonDetails(@Path("personId") id: Int, @Header("Authorization") token: String): ApiResponse<MemberDetail>
 
     @POST("person-management/person/{personId}/parent")
     suspend fun addParent(@Path("personId") id: Int, @Header("Authorization") token: String, @Body parentMember: Member)

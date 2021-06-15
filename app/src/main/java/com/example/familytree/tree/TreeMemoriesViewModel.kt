@@ -26,17 +26,15 @@ class TreeMemoriesViewModel(context: Context, treeID: Int) : ViewModel() {
 
     fun loadMemories(treeID: Int) {
         viewModelScope.launch {
-            //memoryList.value = familyTreeRepository.getMemories(treeID)
-            memoryList.value = listOf(
-                Memory(null, null, "Memory 1", "2021-06-06T15:29:04.581Z", null, null),
-                Memory(null, null, "Memory 2", "2021-06-06T15:29:04.581Z", null, null),
-                Memory(null, null, "Memory 3", "2021-06-06T15:29:04.581Z", null, null)
-            )
+            memoryList.value = familyTreeRepository.getMemories(treeID)
         }
     }
 
     fun deleteMemory(memoryID: Int?) {
-
+        viewModelScope.launch {
+            familyTreeRepository.deleteMemory(memoryID)
+            memoryList.value = familyTreeRepository.getMemories(treeID!!)
+        }
     }
 
     class Factory(val context: Context, val treeID: Int) : ViewModelProvider.Factory {

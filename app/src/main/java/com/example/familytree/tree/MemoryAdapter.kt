@@ -4,11 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.setPadding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.familytree.DateHelper
 import com.example.familytree.R
 import com.example.familytree.domain.Memory
@@ -30,11 +32,32 @@ class MemoryAdapter(private val onItemClick: OnMemoryItemClick)
         val username: TextView = itemView.findViewById(R.id.posterUsername)
         val date: TextView = itemView.findViewById(R.id.memoryDate)
         val description: TextView = itemView.findViewById(R.id.memoryDescription)
+        val imageList: LinearLayout = itemView.findViewById(R.id.imageList)
         val deleteBtn: ImageView = itemView.findViewById(R.id.deleteMemoryBtn)
         fun bind(memory: Memory?, onItemClick: OnMemoryItemClick) {
-            avatar.setPadding(20)
+            // Creator info
+            if (memory?.creator?.avatarUrl != null) {
+                avatar.load(memory.creator.avatarUrl)
+            } else {
+                avatar.setPadding(20)
+            }
+            username.text = memory?.creator?.userName
+
+            // Basic info
             date.text = DateHelper.isoToDate(memory?.memoryDate)
             description.text = memory?.description
+
+            // Images
+            for (imgUrl in memory?.imageUrls!!) {
+                val image = ImageView(itemView.context)
+                imageList.addView(image)
+                val imgParams = LinearLayout.LayoutParams(500, 500)
+                image.layoutParams = imgParams
+                image.load(imgUrl)
+                image.scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+
+            // Delete button
             deleteBtn.setOnClickListener {
                 onItemClick.onDeleteMemory(memory?.id)
             }

@@ -69,6 +69,9 @@ class EditMemberFragment: Fragment() {
             showDatePickerDialog(dod)
         }
 
+        val phone = binding.phone
+        val address = binding.address
+        val job = binding.job
         val note = binding.note
 
         editMemberViewModel.member.observe(viewLifecycleOwner, {
@@ -85,6 +88,9 @@ class EditMemberFragment: Fragment() {
             }
             dob.text = DateHelper.isoToDate(it.dateOfBirth)
             dod.text = DateHelper.isoToDate(it.dateOfDeath)
+            phone.setText(it.phoneNumber)
+            address.setText(it.homeAddress)
+            job.setText(it.occupation)
             note.setText(it.note)
         })
 
@@ -100,6 +106,9 @@ class EditMemberFragment: Fragment() {
                     null,
                     null,
                     if (male.isChecked) 0 else 1,
+                    phone.text.toString(),
+                    address.text.toString(),
+                    job.text.toString(),
                     note.text.toString(),
                     null,
                     this.imgUrl

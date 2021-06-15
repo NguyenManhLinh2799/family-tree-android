@@ -17,6 +17,7 @@
         android:theme="@style/Theme.FamilyTree"
         android:usesCleartextTraffic="true"
         tools:targetApi="m"
+        tools:replace="android:allowBackup"
         android:requestLegacyExternalStorage="true">
         <activity android:name=".MainActivity"/>
         <activity android:name=".auth.LoginActivity" android:theme="@style/Theme.FamilyTreeNoActionBar">

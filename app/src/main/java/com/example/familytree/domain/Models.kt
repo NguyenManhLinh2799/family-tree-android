@@ -55,7 +55,8 @@ data class Memory(
     val description: String?,
     val memoryDate: String?,
     val imageUrls: List<String>?,
-    val dateCreated: String?
+    val dateCreated: String?,
+    val creator: User?
 )
 
 data class AuthData(

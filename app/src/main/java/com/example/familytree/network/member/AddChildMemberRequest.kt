@@ -1,11 +1,10 @@
 package com.example.familytree.network.member
 
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import com.squareup.moshi.JsonClass
 
-@Parcelize
+@JsonClass(generateAdapter = true)
 data class AddChildMemberRequest(
     val fatherId: Int?,
     val motherId: Int?,
     val childInfo: Member
-) : Parcelable
+)

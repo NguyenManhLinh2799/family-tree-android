@@ -61,6 +61,13 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
         }
     }
 
+    suspend fun deleteMemory(memoryID: Int?) {
+        withContext(Dispatchers.IO) {
+            val authData = database.authDataDao.getAuthData()
+            FamilyTreeApi.retrofitService.deleteMemory(memoryID, "Bearer ${authData.accessToken}")
+        }
+    }
+
     // Tree
     suspend fun getMyTrees() = withContext(Dispatchers.IO) {
         val authData = database.authDataDao.getAuthData()
@@ -158,8 +165,12 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
     // Member
     suspend fun getMember(id: Int) = withContext(Dispatchers.IO) {
         val authData = database.authDataDao.getAuthData()
-        Log.e("FamilyTreeRepository", id.toString())
         return@withContext FamilyTreeApi.retrofitService.getPerson(id, "Bearer ${authData.accessToken}")
+    }
+
+    suspend fun getMemberDetails(id: Int) = withContext(Dispatchers.IO) {
+        val authData = database.authDataDao.getAuthData()
+        return@withContext FamilyTreeApi.retrofitService.getPersonDetails(id, "Bearer ${authData.accessToken}").data
     }
 
     suspend fun addParentMember(id: Int, parentMember: Member) {

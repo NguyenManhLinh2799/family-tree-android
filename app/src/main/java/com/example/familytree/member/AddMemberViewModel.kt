@@ -27,19 +27,7 @@ class AddMemberViewModel(context: Context, memberID: Int) : ViewModel() {
             try {
                 member.value = familyTreeRepository.getMember(memberID).data!!
             } catch (e: Exception) {
-                member.value = Member(
-                    null,
-                    0,
-                    "",
-                    "",
-                    "",
-                    "",
-                    null,
-                    null,
-                    0,
-                    null,
-                    null,
-                    null)
+
             }
         }
     }

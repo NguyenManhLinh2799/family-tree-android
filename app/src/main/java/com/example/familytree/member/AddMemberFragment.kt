@@ -82,6 +82,9 @@ class AddMemberFragment : Fragment(), AdapterView.OnItemSelectedListener {
             showDatePickerDialog(dod)
         }
 
+        val phone = binding.phone
+        val address = binding.address
+        val job = binding.job
         val note = binding.note
 
         // Save button
@@ -96,6 +99,9 @@ class AddMemberFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 null,
                 null,
                 if (male.isChecked) 0 else 1,
+                phone.text.toString(),
+                address.text.toString(),
+                job.text.toString(),
                 note.text.toString(),
                 null,
                 null
