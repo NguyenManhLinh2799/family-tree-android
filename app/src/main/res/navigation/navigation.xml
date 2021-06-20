@@ -42,7 +42,9 @@
             app:argType="integer" />
         <action
             android:id="@+id/action_add_member_fragment_to_tree_fragment"
-            app:destination="@id/tree_fragment" />
+            app:destination="@id/tree_fragment"
+            app:popUpTo="@id/tree_fragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/tree_fragment"
@@ -91,7 +93,9 @@
             app:argType="integer" />
         <action
             android:id="@+id/action_post_memory_fragment_to_tree_fragment"
-            app:destination="@id/tree_fragment" />
+            app:destination="@id/tree_fragment"
+            app:popUpTo="@id/tree_fragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/shared_trees_fragment"

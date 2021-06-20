@@ -5,6 +5,11 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 class FilterUsersRequest(
-    val username: String?,
+    val name: String?,
+    val phone: String?,
+    val gender: Int?,
+    val bornBefore: String?,
+    val usernameOrEmailContains: String?,
+    val userName: String?,
     val email: String?
 ) : Parcelable

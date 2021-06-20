@@ -8,9 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.familytree.database.getDatabase
 import com.example.familytree.domain.User
 import com.example.familytree.repository.FamilyTreeRepository
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
@@ -26,12 +23,21 @@ class AddContributorViewModel(context: Context, treeID: Int): ViewModel() {
 
     init {
         this.treeID = treeID
-
-        loadNotContributors()
     }
 
-    private fun loadNotContributors() {
+    fun search(query: String?) {
         viewModelScope.launch {
+            if (query != null) {
+                searchQuery = query
+            }
+            // Find all users with provided query
+            notContributors = if (query == "") {
+                familyTreeRepository.filterUsers(null) as ArrayList<User>
+            } else {
+                familyTreeRepository.filterUsers(query) as ArrayList<User>
+            }
+
+            // Remove users that have been contributor
             val contributorList = familyTreeRepository.getContributors(treeID!!)
             val allContributors = ArrayList<User>(0)
             allContributors.add(contributorList.owner)
@@ -40,34 +46,16 @@ class AddContributorViewModel(context: Context, treeID: Int): ViewModel() {
                     allContributors.add(editor)
                 }
             }
-
-            notContributors = familyTreeRepository.getAllUsers() as ArrayList<User>
             notContributors.removeAll(allContributors)
-            search(searchQuery)
-        }
-    }
-
-    fun search(query: String?) {
-        viewModelScope.launch {
-            if (query == null || query == "") {
-                searchQuery = ""
-                searchResult.value = notContributors
-            } else {
-                searchQuery = query
-                searchResult.value = ArrayList(0)
-                for (notContributor in notContributors) {
-                    if (notContributor.userName.contains(query)) {
-                        searchResult.value!!.add(notContributor)
-                    }
-                }
-            }
+            // Update search result
+            searchResult.value = notContributors
         }
     }
 
     fun addContributor(username: String?) {
         viewModelScope.launch {
             familyTreeRepository.addContributor(treeID!!, username!!)
-            loadNotContributors()
+            search(searchQuery)
         }
     }
 

@@ -34,8 +34,7 @@ class UserAdapter(private val onItemCLick: OnUserItemClick) :
         fun bind(user: User?, onItemCLick: OnUserItemClick) {
             if (user?.avatarUrl != null) {
                 avatar.load(user.avatarUrl)
-            } else {
-                avatar.setPadding(20)
+                avatar.setPadding(0)
             }
             username.text = user?.userName
             email.text = user?.email

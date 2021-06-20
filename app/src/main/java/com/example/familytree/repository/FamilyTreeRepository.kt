@@ -136,11 +136,11 @@ class FamilyTreeRepository(private val database: FamilyTreeDatabase) {
         return@withContext contributorList
     }
 
-    suspend fun getAllUsers() = withContext(Dispatchers.IO) {
+    suspend fun filterUsers(query: String?) = withContext(Dispatchers.IO) {
         val authData = database.authDataDao.getAuthData()
         return@withContext FamilyTreeApi.retrofitService.filterUsers(
             "Bearer ${authData.accessToken}",
-            FilterUsersRequest(null, null)
+            FilterUsersRequest(null, null, null, null, query, null, null)
         ).data.asDomainModel()
     }
 

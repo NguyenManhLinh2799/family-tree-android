@@ -51,7 +51,8 @@ class MemoryAdapter(private val onItemClick: OnMemoryItemClick)
             for (imgUrl in memory?.imageUrls!!) {
                 val image = ImageView(itemView.context)
                 imageList.addView(image)
-                val imgParams = LinearLayout.LayoutParams(500, 500)
+                val imgParams = LinearLayout.LayoutParams(650, 650)
+                //val imgParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                 image.layoutParams = imgParams
                 image.load(imgUrl)
                 image.scaleType = ImageView.ScaleType.CENTER_CROP

@@ -47,11 +47,12 @@ class AddContributorFragment : Fragment() {
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
+                addContributorsViewModel.search(query)
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                addContributorsViewModel.search(newText)
+                //addContributorsViewModel.search(newText)
                 return false
             }
         })

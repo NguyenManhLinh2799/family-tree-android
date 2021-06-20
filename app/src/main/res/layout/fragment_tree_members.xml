@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.familytree.tree.TreeMembersFragment">
+    android:background="@color/secondary">
 
     <me.jagar.mindmappingandroidlibrary.Zoom.ZoomLayout
         android:id="@+id/zoomLayout"
@@ -42,7 +42,7 @@
             android:id="@+id/treeView"
             android:layout_width="2000dp"
             android:layout_height="2000dp"
-            android:background="@android:color/white"/>
+            android:background="@color/secondary"/>
 
 
     </me.jagar.mindmappingandroidlibrary.Zoom.ZoomLayout>
@@ -52,7 +52,8 @@
         android:id="@+id/memberMenuBar"
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:background="@color/secondary"
+        android:background="@color/white"
+        android:elevation="8dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         android:baselineAligned="false">
@@ -145,7 +146,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:queryHint="@string/name"
-        android:background="@color/white"/>
+        android:background="@color/white"
+        android:elevation="8dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchResult"
