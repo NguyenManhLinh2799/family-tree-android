@@ -129,6 +129,15 @@ class TreeMembersFragment : Fragment() {
             unFocus()
             focus(it)
         })
+
+        // Delete
+        treeMembersViewModel.deleteSuccess.observe(viewLifecycleOwner, {
+            if (it) {
+                Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Cannot delete this member", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun updateAllNodes(members: List<Member>) {

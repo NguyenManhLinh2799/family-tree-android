@@ -112,9 +112,11 @@ class AddMemberFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 RelationshipType.PARTNER -> addMemberViewModel.addPartnerMember(newMember, this.croppedImgUri)
                 RelationshipType.CHILD -> addMemberViewModel.addChildMember(newMember, this.croppedImgUri)
             }
-
-            Toast.makeText(context, "Added", Toast.LENGTH_SHORT).show()
         }
+
+        addMemberViewModel.addMessage.observe(viewLifecycleOwner, {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        })
 
         addMemberViewModel.navigateToTreeMembers.observe(viewLifecycleOwner, {
             if (it == true) {

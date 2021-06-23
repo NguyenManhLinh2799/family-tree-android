@@ -22,6 +22,8 @@ class AddMemberViewModel(context: Context, memberID: Int) : ViewModel() {
     var member = MutableLiveData<Member>()
     var navigateToTreeMembers = MutableLiveData<Boolean?>()
 
+    var addMessage = MutableLiveData<String>()
+
     init {
         viewModelScope.launch {
             try {
@@ -34,18 +36,36 @@ class AddMemberViewModel(context: Context, memberID: Int) : ViewModel() {
 
     fun addParentMember(parentMember: Member, imgUri: Uri?) {
         viewModelScope.launch {
+            // Check if can add parent
+            if (member.value?.parent1Id != null || member.value?.parent2Id != null) {
+                addMessage.value = "Cannot add parent to the current member"
+                return@launch
+            }
+            val memberPartner = familyTreeRepository.getMember(member.value?.spouses?.get(0)?.id!!).data
+            if (memberPartner.parent1Id != null || memberPartner.parent2Id != null) {
+                addMessage.value = "Cannot add parent to the current member"
+                return@launch
+            }
+
             if (imgUri != null) {
                 val imgUrl = familyTreeRepository.uploadImage(imgUri).data
                 parentMember.imageUrl = imgUrl
             }
 
-            familyTreeRepository.addParentMember(member.value?.id!!, parentMember)
+            //familyTreeRepository.addParentMember(member.value?.id!!, parentMember)
             navigateToTreeMembers.value = true
+            addMessage.value = "Added"
         }
     }
 
     fun addPartnerMember(partnerMember: Member, imgUri: Uri?) {
         viewModelScope.launch {
+            // Check if already have partner
+            if (member.value?.spouses?.isNotEmpty() == true) {
+                addMessage.value = "Add multiple partner is not available on Android"
+                return@launch
+            }
+
             if (imgUri != null) {
                 val imgUrl = familyTreeRepository.uploadImage(imgUri).data
                 partnerMember.imageUrl = imgUrl

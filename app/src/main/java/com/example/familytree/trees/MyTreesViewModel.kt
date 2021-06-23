@@ -45,6 +45,7 @@ class MyTreesViewModel(context: Context) : ViewModel() {
     fun deleteTree(id: Int?) {
         viewModelScope.launch {
             familyTreeRepository.deleteTree(id)
+            myTrees.value = familyTreeRepository.getMyTrees()
         }
     }
 

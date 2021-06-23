@@ -1,16 +1,20 @@
 package com.example.familytree.tree
 
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.ClipData
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -18,6 +22,9 @@ import com.example.familytree.DateHelper
 import com.example.familytree.R
 import com.example.familytree.databinding.FragmentPostMemoryBinding
 import com.example.familytree.network.NetworkMemory
+
+private const val PICK_IMAGE_REQUEST = 1
+private const val READ_EXTERNAL_REQUEST = 2
 
 class PostMemoryFragment : Fragment() {
 
@@ -108,19 +115,51 @@ class PostMemoryFragment : Fragment() {
     }
 
     private fun setUpAddImages() {
-        val requestCode = 1
         val addImages = binding.addImages
         addImages.setOnClickListener {
-            val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-            gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-            startActivityForResult(Intent.createChooser(gallery, "Select Images"), requestCode)
+            requestPermissionAndPickImages()
+//            val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+//            gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+//            startActivityForResult(Intent.createChooser(gallery, "Select Images"), PICK_IMAGE_REQUEST)
         }
+    }
+
+    private fun requestPermissionAndPickImages() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            pickImages()
+            return
+        }
+        val result = ContextCompat.checkSelfPermission(requireContext(), READ_EXTERNAL_STORAGE)
+        if (result == PackageManager.PERMISSION_GRANTED) {
+            pickImages()
+        } else {
+            requestPermissions(listOf(READ_EXTERNAL_STORAGE).toTypedArray(), READ_EXTERNAL_REQUEST)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode != READ_EXTERNAL_REQUEST) return;
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            pickImages()
+        } else {
+            Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun pickImages() {
+        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        startActivityForResult(Intent.createChooser(gallery, "Select Images"), PICK_IMAGE_REQUEST)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
             setImageList(data?.clipData)
         }
     }

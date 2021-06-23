@@ -29,6 +29,8 @@ class TreeMembersViewModel(context: Context, treeID: Int): ViewModel() {
     var searchResult = MutableLiveData<List<Item>>()
     var selectedMember = MutableLiveData<Item>()
 
+    var deleteSuccess = MutableLiveData<Boolean>()
+
     init {
         loadTreeMembers(treeID)
     }
@@ -45,8 +47,21 @@ class TreeMembersViewModel(context: Context, treeID: Int): ViewModel() {
 
     fun deleteMember(memberID: Int) {
         viewModelScope.launch {
-            familyTreeRepository.deleteMember(memberID)
-            loadTreeMembers(treeMembers.value!!.id)
+            // Check if this member is deletable
+            var isDeletable = true
+            val member = familyTreeRepository.getMemberDetails(memberID)
+            if (member.father != null && member.mother != null && member.spouses?.isNotEmpty() == true) {
+                isDeletable = false
+            }
+            if (member.father == null && member.mother == null && member.children?.isNotEmpty() == true) {
+                isDeletable = false
+            }
+
+            if (isDeletable) {
+                familyTreeRepository.deleteMember(memberID)
+                loadTreeMembers(treeMembers.value!!.id)
+            }
+            deleteSuccess.value = isDeletable
         }
     }
 
